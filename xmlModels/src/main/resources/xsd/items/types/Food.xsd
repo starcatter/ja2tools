@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema  xmlns:xs=        "http://www.w3.org/2001/XMLSchema" 
+            xmlns:food=	"ja2/xml/items/food"
+
+            targetNamespace=	"ja2/xml/items/food"
+            
+            xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+            xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"           
+            jaxb:extensionBindingPrefixes="xjc"
+            jaxb:version="2.0"
+            elementFormDefault="qualified">
+  <xs:element name="FOODSLIST">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="FOOD">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="uiIndex" type="xs:unsignedByte" />
+              <xs:element name="szName" type="xs:string" />
+              <xs:element name="bFoodPoints" type="xs:unsignedShort" />
+              <xs:element name="bDrinkPoints" type="xs:unsignedInt" />
+              <xs:element name="ubPortionSize" type="xs:unsignedByte" />
+              <xs:element name="bMoraleMod" type="xs:byte" />
+              <xs:element name="usDecayRate" type="xs:decimal" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

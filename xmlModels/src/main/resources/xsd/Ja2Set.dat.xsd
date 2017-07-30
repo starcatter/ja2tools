@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='utf-8'?>
+<xs:schema  xmlns:xs=        "http://www.w3.org/2001/XMLSchema" 
+            xmlns:tileset=     "ja2/xml/tilesets"
+            targetNamespace= "ja2/xml/tilesets"     
+            elementFormDefault="qualified"
+            attributeFormDefault="qualified">
+    
+    <xs:element name="JA2SET">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="1" maxOccurs="1" name="tilesets" type="tileset:tilesetList" />            
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:complexType name="tilesetFile">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="index" type="xs:unsignedByte" use="required" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    
+    <xs:complexType name="tilesetFileList">
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="file" type="tileset:tilesetFile" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="tilesetDef">
+        <xs:sequence>
+            <xs:element name="Name" type="xs:string" />
+            <xs:element name="AmbientID" type="xs:unsignedByte" />
+            <xs:element name="Files" type="tileset:tilesetFileList"/>
+        </xs:sequence>
+        <xs:attribute name="index" type="xs:unsignedByte" use="required"/>
+    </xs:complexType>
+        
+    <xs:complexType name="tilesetList">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" name="Tileset" type="tileset:tilesetDef" />
+        </xs:sequence>
+        <xs:attribute name="numTilesets" type="xs:unsignedByte" use="required" />
+        <xs:attribute name="numFiles" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+                    
+</xs:schema>

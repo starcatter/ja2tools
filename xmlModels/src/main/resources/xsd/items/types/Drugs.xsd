@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema  xmlns:xs=        "http://www.w3.org/2001/XMLSchema" 
+            xmlns:drugs=	"ja2/xml/items/drugs"
+
+            targetNamespace=	"ja2/xml/items/drugs"
+            
+            xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+            xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"           
+            jaxb:extensionBindingPrefixes="xjc"
+            jaxb:version="2.0"
+            elementFormDefault="qualified">
+  <xs:element name="DRUGSLIST">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="DRUG">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="uiIndex" type="xs:unsignedByte" />
+              <xs:element name="szName" type="xs:string" />
+              <xs:element minOccurs="0" name="opinionevent" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="DRUG_EFFECT">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="effect" type="xs:unsignedByte" />
+                    <xs:element name="duration" type="xs:unsignedByte" />
+                    <xs:element name="size" type="xs:short" />
+                    <xs:element minOccurs="0" name="chance" type="xs:unsignedByte" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="DISEASE_EFFECT">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="disease" type="xs:unsignedByte" />
+                    <xs:element name="size" type="xs:short" />
+                    <xs:element minOccurs="0" name="chance" type="xs:unsignedByte" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="DISABILITY_EFFECT">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="disability" type="xs:unsignedByte" />
+                    <xs:element name="duration" type="xs:unsignedByte" />
+                    <xs:element minOccurs="0" name="chance" type="xs:unsignedByte" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="PERSONALITY_EFFECT">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="personality" type="xs:unsignedByte" />
+                    <xs:element name="duration" type="xs:unsignedByte" />
+                    <xs:element minOccurs="0" name="chance" type="xs:unsignedByte" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

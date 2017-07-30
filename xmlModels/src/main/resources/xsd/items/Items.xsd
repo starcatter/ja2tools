@@ -1,0 +1,249 @@
+<?xml version='1.0' encoding='utf-8'?>
+<xs:schema  xmlns:xs=        "http://www.w3.org/2001/XMLSchema" 
+            xmlns:items=     "ja2/xml/items"
+
+            targetNamespace= "ja2/xml/items"
+            
+            xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+            xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"           
+            jaxb:extensionBindingPrefixes="xjc"
+            jaxb:version="2.0"
+            elementFormDefault="qualified">
+    <xs:element name="ITEMLIST">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" name="ITEM" type="items:ITEMTYPE" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:complexType name="ITEMTYPE">
+        <xs:sequence>            
+            <xs:element name="uiIndex" type="xs:unsignedShort" />
+            <xs:element name="szItemName" type="xs:string" />
+            <xs:element name="szLongItemName" type="xs:string" />
+            <xs:element name="szItemDesc" type="xs:string" />
+            <xs:element name="szBRName" type="xs:string" />
+            <xs:element name="szBRDesc" type="xs:string" />
+            <xs:element name="usItemClass" type="xs:unsignedInt" />
+            <xs:element name="AttachmentClass" type="xs:unsignedInt" />
+            <xs:element name="nasAttachmentClass" type="xs:unsignedShort" />
+            <xs:element name="nasLayoutClass" type="xs:unsignedByte" />
+            <xs:element maxOccurs="unbounded" name="AvailableAttachmentPoint" type="xs:unsignedByte" />
+            <xs:element name="AttachmentPoint" type="xs:unsignedByte" />
+            <xs:element name="AttachToPointAPCost" type="xs:unsignedByte" />
+            <xs:element name="ubClassIndex" type="xs:unsignedShort" />
+            <xs:element name="ItemFlag" type="xs:unsignedInt" />
+            <xs:element name="ubCursor" type="xs:unsignedByte" />
+            <xs:element name="bSoundType" type="xs:unsignedByte" />
+            <xs:element name="ubGraphicType" type="xs:unsignedByte" />
+            <xs:element name="ubGraphicNum" type="xs:unsignedShort" />
+            <xs:element name="ubWeight" type="xs:unsignedShort" />
+            <xs:element name="ubPerPocket" type="xs:unsignedByte" />
+            <xs:element name="ItemSize" type="xs:unsignedShort" />
+            <xs:element name="ItemSizeBonus" type="xs:byte" />
+            <xs:element name="usPrice" type="xs:unsignedInt" />
+            <xs:element name="ubCoolness" type="xs:unsignedByte" />
+            <xs:element name="bReliability" type="xs:byte" />
+            <xs:element name="bRepairEase" type="xs:byte" />
+            <xs:element name="Damageable" type="xs:unsignedByte" />
+            <xs:element name="Repairable" type="xs:unsignedByte" />
+            <xs:element name="WaterDamages" type="xs:unsignedByte" />
+            <xs:element name="Metal" type="xs:unsignedByte" />
+            <xs:element name="Sinks" type="xs:unsignedByte" />
+            <xs:element name="ShowStatus" type="xs:unsignedByte" />
+            <xs:element name="HiddenAddon" type="xs:unsignedByte" />
+            <xs:element name="TwoHanded" type="xs:unsignedByte" />
+            <xs:element name="NotBuyable" type="xs:unsignedByte" />
+            <xs:element name="Attachment" type="xs:unsignedByte" />
+            <xs:element name="HiddenAttachment" type="xs:unsignedByte" />
+            <xs:element name="BlockIronSight" type="xs:unsignedByte" />
+            <xs:element name="BigGunList" type="xs:unsignedByte" />
+            <xs:element name="SciFi" type="xs:unsignedByte" />
+            <xs:element name="NotInEditor" type="xs:unsignedByte" />
+            <xs:element name="DefaultUndroppable" type="xs:unsignedByte" />
+            <xs:element name="Unaerodynamic" type="xs:unsignedByte" />
+            <xs:element name="Electronic" type="xs:unsignedByte" />
+            <xs:element name="Inseparable" type="xs:unsignedByte" />
+            <xs:element name="BR_NewInventory" type="xs:unsignedByte" />
+            <xs:element name="BR_UsedInventory" type="xs:unsignedByte" />
+            <xs:element name="BR_ROF" type="xs:unsignedShort" />
+            <xs:element name="PercentNoiseReduction" type="xs:unsignedByte" />
+            <xs:element name="HideMuzzleFlash" type="xs:unsignedByte" />
+            <xs:element name="Bipod" type="xs:unsignedByte" />
+            <xs:element name="RangeBonus" type="xs:byte" />
+            <xs:element name="PercentRangeBonus" type="xs:unsignedByte" />
+            <xs:element name="ToHitBonus" type="xs:byte" />
+            <xs:element name="BestLaserRange" type="xs:unsignedShort" />
+            <xs:element name="AimBonus" type="xs:byte" />
+            <xs:element name="MinRangeForAimBonus" type="xs:unsignedByte" />
+            <xs:element name="MagSizeBonus" type="xs:unsignedByte" />
+            <xs:element name="RateOfFireBonus" type="xs:unsignedByte" />
+            <xs:element name="BulletSpeedBonus" type="xs:byte" />
+            <xs:element name="BurstSizeBonus" type="xs:unsignedByte" />
+            <xs:element name="BurstToHitBonus" type="xs:unsignedByte" />
+            <xs:element name="AutoFireToHitBonus" type="xs:unsignedByte" />
+            <xs:element name="APBonus" type="xs:byte" />
+            <xs:element name="PercentBurstFireAPReduction" type="xs:unsignedByte" />
+            <xs:element name="PercentAutofireAPReduction" type="xs:unsignedByte" />
+            <xs:element name="PercentReadyTimeAPReduction" type="xs:unsignedByte" />
+            <xs:element name="PercentReloadTimeAPReduction" type="xs:byte" />
+            <xs:element name="PercentAPReduction" type="xs:byte" />
+            <xs:element name="PercentStatusDrainReduction" type="xs:unsignedByte" />
+            <xs:element name="DamageBonus" type="xs:byte" />
+            <xs:element name="MeleeDamageBonus" type="xs:unsignedByte" />
+            <xs:element name="GrenadeLauncher" type="xs:unsignedByte" />
+            <xs:element name="Duckbill" type="xs:unsignedByte" />
+            <xs:element name="GLGrenade" type="xs:unsignedByte" />
+            <xs:element name="Mine" type="xs:unsignedByte" />
+            <xs:element name="Mortar" type="xs:unsignedByte" />
+            <xs:element name="RocketLauncher" type="xs:unsignedByte" />
+            <xs:element name="SingleShotRocketLauncher" type="xs:unsignedByte" />
+            <xs:element name="DiscardedLauncherItem" type="xs:unsignedShort" />
+            <xs:element name="RocketRifle" type="xs:unsignedByte" />
+            <xs:element name="Cannon" type="xs:unsignedByte" />
+            <xs:element maxOccurs="unbounded" name="DefaultAttachment" type="xs:unsignedShort" />
+            <xs:element name="BrassKnuckles" type="xs:unsignedByte" />
+            <xs:element name="Crowbar" type="xs:unsignedByte" />
+            <xs:element name="BloodiedItem" type="xs:unsignedByte" />
+            <xs:element name="Rock" type="xs:unsignedByte" />
+            <xs:element name="CamoBonus" type="xs:byte" />
+            <xs:element name="UrbanCamoBonus" type="xs:byte" />
+            <xs:element name="DesertCamoBonus" type="xs:byte" />
+            <xs:element name="SnowCamoBonus" type="xs:byte" />
+            <xs:element name="StealthBonus" type="xs:byte" />
+            <xs:element name="FlakJacket" type="xs:unsignedByte" />
+            <xs:element name="LeatherJacket" type="xs:unsignedByte" />
+            <xs:element name="Directional" type="xs:unsignedByte" />
+            <xs:element name="RemoteTrigger" type="xs:unsignedByte" />
+            <xs:element name="LockBomb" type="xs:unsignedByte" />
+            <xs:element name="Flare" type="xs:unsignedByte" />
+            <xs:element name="RobotRemoteControl" type="xs:unsignedByte" />
+            <xs:element name="Walkman" type="xs:unsignedByte" />
+            <xs:element name="HearingRangeBonus" type="xs:unsignedByte" />
+            <xs:element name="VisionRangeBonus" type="xs:unsignedByte" />
+            <xs:element name="NightVisionRangeBonus" type="xs:byte" />
+            <xs:element name="DayVisionRangeBonus" type="xs:byte" />
+            <xs:element name="CaveVisionRangeBonus" type="xs:byte" />
+            <xs:element name="BrightLightVisionRangeBonus" type="xs:byte" />
+            <xs:element name="PercentTunnelVision" type="xs:unsignedByte" />
+            <xs:element name="FlashLightRange" type="xs:unsignedByte" />
+            <xs:element name="ThermalOptics" type="xs:unsignedByte" />
+            <xs:element name="GasMask" type="xs:unsignedByte" />
+            <xs:element name="Alcohol" type="xs:decimal" />
+            <xs:element name="Hardware" type="xs:unsignedByte" />
+            <xs:element name="Medical" type="xs:unsignedByte" />
+            <xs:element name="DrugType" type="xs:unsignedByte" />
+            <xs:element name="CamouflageKit" type="xs:unsignedByte" />
+            <xs:element name="LocksmithKit" type="xs:unsignedByte" />
+            <xs:element name="Toolkit" type="xs:unsignedByte" />
+            <xs:element name="FirstAidKit" type="xs:unsignedByte" />
+            <xs:element name="MedicalKit" type="xs:unsignedByte" />
+            <xs:element name="WireCutters" type="xs:unsignedByte" />
+            <xs:element name="Canteen" type="xs:unsignedByte" />
+            <xs:element name="GasCan" type="xs:unsignedByte" />
+            <xs:element name="Marbles" type="xs:unsignedByte" />
+            <xs:element name="CanAndString" type="xs:unsignedByte" />
+            <xs:element name="Jar" type="xs:unsignedByte" />
+            <xs:element name="XRay" type="xs:unsignedByte" />
+            <xs:element name="Batteries" type="xs:unsignedByte" />
+            <xs:element name="NeedsBatteries" type="xs:unsignedByte" />
+            <xs:element name="ContainsLiquid" type="xs:unsignedByte" />
+            <xs:element name="MetalDetector" type="xs:unsignedByte" />
+            <xs:element name="usSpotting" type="xs:unsignedByte" />
+            <xs:element name="FingerPrintID" type="xs:unsignedByte" />
+            <xs:element name="TripWireActivation" type="xs:unsignedByte" />
+            <xs:element name="TripWire" type="xs:unsignedByte" />
+            <xs:element name="NewInv" type="xs:unsignedByte" />
+            <xs:element name="AttachmentSystem" type="xs:unsignedByte" />
+            <xs:element name="ScopeMagFactor" type="xs:decimal" />
+            <xs:element name="ProjectionFactor" type="xs:decimal" />
+            <xs:element name="RecoilModifierX" type="xs:unsignedByte" />
+            <xs:element name="RecoilModifierY" type="xs:unsignedByte" />
+            <xs:element name="PercentRecoilModifier" type="xs:byte" />
+            <xs:element name="PercentAccuracyModifier" type="xs:byte" />
+            <xs:element name="spreadPattern" type="xs:string" />
+            <xs:element name="barrel" type="xs:unsignedByte" />
+            <xs:element name="usOverheatingCooldownFactor" type="xs:decimal" />
+            <xs:element name="overheatTemperatureModificator" type="xs:decimal" />
+            <xs:element name="overheatCooldownModificator" type="xs:decimal" />
+            <xs:element name="overheatJamThresholdModificator" type="xs:decimal" />
+            <xs:element name="overheatDamageThresholdModificator" type="xs:decimal" />
+            <xs:element name="PoisonPercentage" type="xs:unsignedByte" />
+            <xs:element name="FoodType" type="xs:unsignedByte" />
+            <xs:element name="LockPickModifier" type="xs:byte" />
+            <xs:element name="CrowbarModifier" type="xs:unsignedByte" />
+            <xs:element name="DisarmModifier" type="xs:unsignedByte" />
+            <xs:element name="RepairModifier" type="xs:unsignedByte" />
+            <xs:element name="DamageChance" type="xs:unsignedByte" />
+            <xs:element name="DirtIncreaseFactor" type="xs:decimal" />
+            <xs:element name="clothestype" type="xs:unsignedByte" />
+            <xs:element name="usActionItemFlag" type="xs:unsignedShort" />
+            <xs:element name="randomitem" type="xs:unsignedByte" />
+            <xs:element name="randomitemcoolnessmodificator" type="xs:byte" />
+            <xs:element name="ItemChoiceTimeSetting" type="xs:unsignedByte" />
+            <xs:element name="buddyitem" type="xs:unsignedShort" />
+            <xs:element name="SleepModifier" type="xs:unsignedByte" />
+            <xs:element name="sBackpackWeightModifier" type="xs:unsignedByte" />
+            <xs:element name="fAllowClimbing" type="xs:unsignedByte" />
+            <xs:element name="antitankmine" type="xs:unsignedByte" />
+            <xs:element name="cigarette" type="xs:unsignedByte" />
+            <xs:element name="usPortionSize" type="xs:unsignedByte" />
+            <xs:element name="diseaseprotectionface" type="xs:unsignedByte" />
+            <xs:element name="diseaseprotectionhand" type="xs:unsignedByte" />
+            <xs:element name="STAND_MODIFIERS">
+                <xs:complexType>
+                    <xs:sequence minOccurs="0">
+                        <xs:element minOccurs="0" name="FlatBase" type="xs:unsignedByte" />
+                        <xs:element minOccurs="0" name="PercentBase" type="xs:byte" />
+                        <xs:element minOccurs="0" name="FlatAim" type="xs:unsignedByte" />
+                        <xs:element minOccurs="0" name="PercentCap" type="xs:byte" />
+                        <xs:element minOccurs="0" name="PercentHandling" type="xs:byte" />
+                        <xs:element minOccurs="0" name="PercentTargetTrackingSpeed" type="xs:unsignedByte" />
+                        <xs:element minOccurs="0" name="PercentDropCompensation" type="xs:unsignedByte" />
+                        <xs:element minOccurs="0" name="PercentMaxCounterForce" type="xs:byte" />
+                        <xs:element minOccurs="0" name="PercentCounterForceAccuracy" type="xs:byte" />
+                        <xs:element minOccurs="0" name="PercentCounterForceFrequency" type="xs:byte" />
+                        <xs:element minOccurs="0" name="AimLevels" type="xs:byte" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CROUCH_MODIFIERS">
+                <xs:complexType>
+                    <xs:sequence minOccurs="0">
+                        <xs:element minOccurs="0" name="FlatBase" type="xs:unsignedByte" />
+                        <xs:element minOccurs="0" name="PercentBase" type="xs:byte" />
+                        <xs:element minOccurs="0" name="FlatAim" type="xs:unsignedByte" />
+                        <xs:element minOccurs="0" name="PercentCap" type="xs:byte" />
+                        <xs:element minOccurs="0" name="PercentHandling" type="xs:byte" />
+                        <xs:element minOccurs="0" name="PercentTargetTrackingSpeed" type="xs:unsignedByte" />
+                        <xs:element minOccurs="0" name="PercentDropCompensation" type="xs:unsignedByte" />
+                        <xs:element minOccurs="0" name="PercentMaxCounterForce" type="xs:unsignedByte" />
+                        <xs:element minOccurs="0" name="PercentCounterForceAccuracy" type="xs:byte" />
+                        <xs:element minOccurs="0" name="PercentCounterForceFrequency" type="xs:byte" />
+                        <xs:element minOccurs="0" name="AimLevels" type="xs:unsignedByte" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="PRONE_MODIFIERS">
+                <xs:complexType>
+                    <xs:sequence minOccurs="0">
+                        <xs:element minOccurs="0" name="FlatBase" type="xs:unsignedByte" />
+                        <xs:element minOccurs="0" name="PercentBase" type="xs:byte" />
+                        <xs:element minOccurs="0" name="FlatAim" type="xs:unsignedByte" />
+                        <xs:element minOccurs="0" name="PercentCap" type="xs:byte" />
+                        <xs:element minOccurs="0" name="PercentHandling" type="xs:byte" />
+                        <xs:element minOccurs="0" name="PercentTargetTrackingSpeed" type="xs:unsignedByte" />
+                        <xs:element minOccurs="0" name="PercentDropCompensation" type="xs:unsignedByte" />
+                        <xs:element minOccurs="0" name="PercentMaxCounterForce" type="xs:byte" />
+                        <xs:element minOccurs="0" name="PercentCounterForceAccuracy" type="xs:byte" />
+                        <xs:element minOccurs="0" name="PercentCounterForceFrequency" type="xs:byte" />
+                        <xs:element minOccurs="0" name="AimLevels" type="xs:unsignedByte" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="usHackingModifier" type="xs:unsignedByte" />            
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>

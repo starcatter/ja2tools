@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+The MIT License
+
+Copyright 2017 the_bob.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+-->
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="thebob.ja2maptool.ui.main.MainScreenView">
+    <children>
+	<BorderPane prefHeight="400.0" prefWidth="614.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	    <center>
+		<TabPane fx:id="main_tabs" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+		    <tabs>
+			<Tab text="Welcome">
+			    <content>
+				<fx:include source="../tabs/intro/IntroTabView.fxml" />
+			    </content>
+			</Tab>
+			<Tab fx:id="tab_setup" text="VFS Setup">
+			    <content>
+				<fx:include source="../tabs/vfs/VfsSetupTabView.fxml" />
+			    </content>
+			</Tab>
+			<Tab fx:id="tab_mapping" text="Create mapping">
+			    <content>
+				<fx:include source="../tabs/mapping/setup/MappingSetupTabView.fxml" />
+			    </content>
+			</Tab>
+		    </tabs>
+		</TabPane>
+	    </center>
+         <top>
+            <MenuBar BorderPane.alignment="CENTER">
+              <menus>
+                <Menu mnemonicParsing="false" text="File">
+                  <items>
+                    <MenuItem mnemonicParsing="false" onAction="#menu_open_map" text="Open map file" />
+                        <MenuItem mnemonicParsing="false" onAction="#menu_open_sti" text="Open STI file" />
+                        <MenuItem disable="true" mnemonicParsing="false" onAction="#menu_open_slf" text="Open SLF file" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" onAction="#menu_close" text="Close" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="VFS">
+                  <items>
+                    <MenuItem mnemonicParsing="false" onAction="#menu_vfs_setup" text="VFS Setup" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <Menu fx:id="menu_vfs_configs" disable="true" mnemonicParsing="false" text="Configs" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Mapping">
+                  <items>
+                        <MenuItem mnemonicParsing="false" onAction="#menu_create_mapping" text="Create mapping" />
+                    <MenuItem mnemonicParsing="false" onAction="#menu_load_item_map" text="Load item mapping" />
+                        <MenuItem mnemonicParsing="false" onAction="#menu_load_tileset_map" text="Load tileset mapping" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <Menu fx:id="menu_mappings" disable="true" mnemonicParsing="false" text="Mappings" />
+                  </items>
+                </Menu>
+                  <Menu mnemonicParsing="false" text="Convert">
+                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#menu_convert" text="Convert map" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <Menu fx:id="menu_maps" disable="true" mnemonicParsing="false" text="Maps" />
+                     </items>
+                  </Menu>
+              </menus>
+            </MenuBar>
+         </top>
+	</BorderPane>
+    </children>
+</AnchorPane>

@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema  xmlns:xs=        "http://www.w3.org/2001/XMLSchema" 
+            xmlns:weapons=	"ja2/xml/items/weapons"
+
+            targetNamespace=	"ja2/xml/items/weapons"
+            
+            xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+            xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"           
+            jaxb:extensionBindingPrefixes="xjc"
+            jaxb:version="2.0"
+            elementFormDefault="qualified">
+  <xs:element name="WEAPONLIST">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="WEAPON">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="uiIndex" type="xs:unsignedShort" />
+              <xs:element name="szWeaponName" type="xs:string" />
+              <xs:element minOccurs="0" name="ubWeaponClass" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="ubWeaponType" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="ubCalibre" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="ubReadyTime" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="ubShotsPer4Turns" type="xs:decimal" />
+              <xs:element minOccurs="0" name="ubShotsPerBurst" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="ubBurstPenalty" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="ubBulletSpeed" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="ubImpact" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="ubDeadliness" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="bAccuracy" type="xs:byte" />
+              <xs:element minOccurs="0" name="ubMagSize" type="xs:unsignedShort" />
+              <xs:element minOccurs="0" name="usRange" type="xs:unsignedShort" />
+              <xs:element minOccurs="0" name="usReloadDelay" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="BurstAniDelay" type="xs:unsignedShort" />
+              <xs:element minOccurs="0" name="ubAttackVolume" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="ubHitVolume" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="sSound" type="xs:unsignedShort" />
+              <xs:element minOccurs="0" name="sBurstSound" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="sSilencedBurstSound" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="sReloadSound" type="xs:unsignedShort" />
+              <xs:element minOccurs="0" name="sLocknLoadSound" type="xs:unsignedShort" />
+              <xs:element minOccurs="0" name="SilencedSound" type="xs:unsignedShort" />
+              <xs:element minOccurs="0" name="bBurstAP" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="bAutofireShotsPerFiveAP" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="APsToReload" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="SwapClips" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="MaxDistForMessyDeath" type="xs:unsignedShort" />
+              <xs:element minOccurs="0" name="AutoPenalty" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="NoSemiAuto" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="EasyUnjam" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="APsToReloadManually" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="ManualReloadSound" type="xs:unsignedShort" />
+              <xs:element minOccurs="0" name="nAccuracy" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="bRecoilX" type="xs:decimal" />
+              <xs:element minOccurs="0" name="bRecoilY" type="xs:decimal" />
+              <xs:element minOccurs="0" name="ubAimLevels" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="ubRecoilDelay" type="xs:unsignedByte" />
+              <xs:element minOccurs="0" name="Handling" type="xs:unsignedByte" />
+              <xs:element name="usOverheatingJamThreshold" type="xs:unsignedShort" />
+              <xs:element name="usOverheatingDamageThreshold" type="xs:unsignedShort" />
+              <xs:element name="usOverheatingSingleShotTemperature" type="xs:decimal" />
+              <xs:element minOccurs="0" name="HeavyWeapon" type="xs:unsignedByte" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema  xmlns:xs=        "http://www.w3.org/2001/XMLSchema" 
+            xmlns:types=	"ja2/xml/ammo/types"
+            targetNamespace=	"ja2/xml/ammo/types"
+            
+            xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+            xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"           
+            jaxb:extensionBindingPrefixes="xjc"
+            jaxb:version="2.0"
+            elementFormDefault="qualified">
+  <xs:element name="AMMOTYPELIST">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="AMMOTYPE">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="uiIndex" type="xs:unsignedByte" />
+              <xs:element name="name" type="xs:string" />
+              <xs:element name="fontColour" type="xs:unsignedByte" />
+              <xs:element name="grayed" type="xs:unsignedByte" />
+              <xs:element name="offNormal" type="xs:unsignedByte" />
+              <xs:element name="onNormal" type="xs:unsignedByte" />
+              <xs:element name="structureImpactReductionMultiplier" type="xs:unsignedByte" />
+              <xs:element name="structureImpactReductionDivisor" type="xs:unsignedByte" />
+              <xs:element name="armourImpactReductionMultiplier" type="xs:unsignedByte" />
+              <xs:element name="armourImpactReductionDivisor" type="xs:unsignedByte" />
+              <xs:element name="beforeArmourDamageMultiplier" type="xs:unsignedByte" />
+              <xs:element name="beforeArmourDamageDivisor" type="xs:unsignedByte" />
+              <xs:element name="afterArmourDamageMultiplier" type="xs:unsignedByte" />
+              <xs:element name="afterArmourDamageDivisor" type="xs:unsignedByte" />
+              <xs:element name="zeroMinimumDamage" type="xs:unsignedByte" />
+              <xs:element name="canGoThrough" type="xs:unsignedByte" />
+              <xs:element name="standardIssue" type="xs:unsignedByte" />
+              <xs:element name="numberOfBullets" type="xs:unsignedByte" />
+              <xs:element name="multipleBulletDamageMultiplier" type="xs:unsignedByte" />
+              <xs:element name="multipleBulletDamageDivisor" type="xs:unsignedByte" />
+              <xs:element name="highExplosive" type="xs:unsignedByte" />
+              <xs:element name="explosionSize" type="xs:unsignedByte" />
+              <xs:element name="antiTank" type="xs:unsignedByte" />
+              <xs:element name="dart" type="xs:unsignedByte" />
+              <xs:element name="knife" type="xs:unsignedByte" />
+              <xs:element name="monsterSpit" type="xs:unsignedByte" />
+              <xs:element name="acidic" type="xs:unsignedByte" />
+              <xs:element name="ignoreArmour" type="xs:unsignedByte" />
+              <xs:element name="lockBustingPower" type="xs:unsignedByte" />
+              <xs:element name="tracerEffect" type="xs:unsignedByte" />
+              <xs:element name="spreadPattern" type="xs:string" />
+              <xs:element name="temperatureModificator" type="xs:unsignedByte" />
+              <xs:element name="PoisonPercentage" type="xs:unsignedByte" />
+              <xs:element name="dirtModificator" type="xs:unsignedByte" />
+              <xs:element name="ammoflag" type="xs:unsignedByte" />
+              <xs:element name="dDamageModifierLife" type="xs:decimal" />
+              <xs:element name="dDamageModifierBreath" type="xs:decimal" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

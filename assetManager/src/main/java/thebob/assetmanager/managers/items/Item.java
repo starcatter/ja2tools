@@ -1,0 +1,261 @@
+/* 
+ * The MIT License
+ *
+ * Copyright 2017 the_bob.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+package thebob.assetmanager.managers.items;
+
+import ja2.xml.ammo.calibers.AMMO;
+import ja2.xml.ammo.types.AMMOTYPELIST;
+import ja2.xml.items.armor.ARMOURLIST;
+import ja2.xml.items.drugs.DRUGSLIST.DRUG;
+import ja2.xml.items.explosives.EXPLOSIVELIST;
+import ja2.xml.items.food.FOODSLIST.FOOD;
+import ja2.xml.items.lbe.LOADBEARINGEQUIPMENTLIST;
+import ja2.xml.items.magazines.MAGAZINELIST;
+import ja2.xml.items.weapons.WEAPONLIST;
+import ja2.xml.lookup.drugtype.JA2Data;
+import javafx.scene.image.Image;
+import thebob.assetloader.common.ImageAdapter;
+import thebob.assetloader.sti.StiLoader;
+
+/**
+ *
+ * @author the_bob
+ */
+public class Item {
+    
+    int id;
+    String name;
+    long itemType;
+    int itemTypeId;
+    
+    int coolness;
+    
+    int imageType;
+    int imageId;
+    Image image = null;
+    
+    int clothesType;
+    int foodType;
+    int drugType;
+    
+    MAGAZINELIST.MAGAZINE magazineData = null;
+    AMMO CaliberData = null;
+    AMMOTYPELIST.AMMOTYPE AmmoTypeData = null;
+    WEAPONLIST.WEAPON WeaponData = null;
+    EXPLOSIVELIST.EXPLOSIVE explosiveData = null;
+    ARMOURLIST.ARMOUR armorData = null;
+    LOADBEARINGEQUIPMENTLIST.LOADBEARINGEQUIPMENT lbeData = null;
+
+    StiLoader loader = null;
+    
+    Item(int uiIndex, String szItemName) {
+	id = uiIndex;
+	name = szItemName;
+    }
+
+    public Item(int id, String name, long itemType, int itemTypeId, int imageType, int imageId, int coolness) {
+	this.id = id;
+	this.name = name;
+	this.itemType = itemType;
+	this.itemTypeId = itemTypeId;
+	this.imageType = imageType;
+	this.imageId = imageId;
+	this.coolness = coolness;
+    }
+
+    public Image getImage() {
+	if (image == null) {
+	    loadImage();
+	}
+	return image;
+    }
+
+    private void loadImage() {	
+	int width = loader.getImageWidth(imageId);
+	int height = loader.getImageHeight(imageId);
+	// TODO: do this once per file, in stiloader or tileloader (right now we're createing multiple JavaFX Images per STI subimage instance)
+	image = ImageAdapter.convertStiImage(width, height, loader.getImage(imageId), loader.getPalette());
+    }
+
+    public int getId() {
+	return id;
+    }
+
+    public void setId(int id) {
+	this.id = id;
+    }
+
+    public String getName() {
+	return name;
+    }
+
+    public void setName(String name) {
+	this.name = name;
+    }
+
+    public long getItemType() {
+	return itemType;
+    }
+
+    public void setItemType(long itemType) {
+	this.itemType = itemType;
+    }
+
+    public int getItemTypeId() {
+	return itemTypeId;
+    }
+
+    public void setItemTypeId(int itemTypeId) {
+	this.itemTypeId = itemTypeId;
+    }
+
+    public int getImageType() {
+	return imageType;
+    }
+
+    public void setImageType(int imageType) {
+	this.imageType = imageType;
+    }
+
+    public int getImageId() {
+	return imageId;
+    }
+
+    public void setImageId(int imageId) {
+	this.imageId = imageId;
+    }
+
+    public int getClothesType() {
+	return clothesType;
+    }
+
+    public void setClothesType(int clothesType) {
+	this.clothesType = clothesType;
+    }
+
+    public int getFoodType() {
+	return foodType;
+    }
+
+    public void setFoodType(int foodType) {
+	this.foodType = foodType;
+    }
+
+    public int getDrugType() {
+	return drugType;
+    }
+
+    public void setDrugType(int drugType) {
+	this.drugType = drugType;
+    }
+
+    public MAGAZINELIST.MAGAZINE getMagazineData() {
+	return magazineData;
+    }
+
+    public void setMagazineData(MAGAZINELIST.MAGAZINE magazineData) {
+	this.magazineData = magazineData;
+    }
+
+    public AMMO getCaliberData() {
+	return CaliberData;
+    }
+
+    public void setCaliberData(AMMO CaliberData) {
+	this.CaliberData = CaliberData;
+    }
+
+    public AMMOTYPELIST.AMMOTYPE getAmmoTypeData() {
+	return AmmoTypeData;
+    }
+
+    public void setAmmoTypeData(AMMOTYPELIST.AMMOTYPE AmmoTypeData) {
+	this.AmmoTypeData = AmmoTypeData;
+    }
+
+    public WEAPONLIST.WEAPON getWeaponData() {
+	return WeaponData;
+    }
+
+    public void setWeaponData(WEAPONLIST.WEAPON WeaponData) {
+	this.WeaponData = WeaponData;
+    }
+
+    public EXPLOSIVELIST.EXPLOSIVE getExplosiveData() {
+	return explosiveData;
+    }
+
+    public void setExplosiveData(EXPLOSIVELIST.EXPLOSIVE explosiveData) {
+	this.explosiveData = explosiveData;
+    }
+
+    public ARMOURLIST.ARMOUR getArmorData() {
+	return armorData;
+    }
+
+    public void setArmorData(ARMOURLIST.ARMOUR armorData) {
+	this.armorData = armorData;
+    }
+
+    public LOADBEARINGEQUIPMENTLIST.LOADBEARINGEQUIPMENT getLbeData() {
+	return lbeData;
+    }
+
+    public void setLbeData(LOADBEARINGEQUIPMENTLIST.LOADBEARINGEQUIPMENT lbeData) {
+	this.lbeData = lbeData;
+    }
+
+    DRUG drugData;
+    FOOD foodData;
+
+    public DRUG getDrugData() {
+	return drugData;
+    }
+
+    public void setDrugData(DRUG drugData) {
+	this.drugData = drugData;
+    }
+
+    public FOOD getFoodData() {
+	return foodData;
+    }
+
+    public void setFoodData(FOOD foodData) {
+	this.foodData = foodData;
+    }
+
+    public void setImageSource(StiLoader get) {
+	loader = get;
+    }
+
+    public int getCoolness() {
+	return coolness;
+    }
+
+    public void setCoolness(int coolness) {
+	this.coolness = coolness;
+    }
+    
+    
+    
+}

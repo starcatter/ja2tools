@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema  xmlns:xs=        "http://www.w3.org/2001/XMLSchema" 
+            xmlns:explosivse=	"ja2/xml/items/explosivse"
+
+            targetNamespace=	"ja2/xml/items/explosives"
+            
+            xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+            xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"           
+            jaxb:extensionBindingPrefixes="xjc"
+            jaxb:version="2.0"
+            elementFormDefault="qualified">
+  <xs:element name="EXPLOSIVELIST">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="EXPLOSIVE">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="uiIndex" type="xs:unsignedByte" />
+              <xs:element name="ubType" type="xs:unsignedByte" />
+              <xs:element name="ubDamage" type="xs:unsignedByte" />
+              <xs:element name="ubStunDamage" type="xs:unsignedByte" />
+              <xs:element name="ubRadius" type="xs:unsignedByte" />
+              <xs:element name="ubVolume" type="xs:unsignedByte" />
+              <xs:element name="ubVolatility" type="xs:unsignedByte" />
+              <xs:element name="ubAnimationID" type="xs:unsignedByte" />
+              <xs:element name="ubDuration" type="xs:unsignedByte" />
+              <xs:element name="ubStartRadius" type="xs:unsignedByte" />
+              <xs:element name="ubMagSize" type="xs:unsignedByte" />
+              <xs:element name="fExplodeOnImpact" type="xs:unsignedByte" />
+              <xs:element name="usNumFragments" type="xs:unsignedShort" />
+              <xs:element name="ubFragType" type="xs:unsignedByte" />
+              <xs:element name="ubFragDamage" type="xs:unsignedByte" />
+              <xs:element name="ubFragRange" type="xs:unsignedByte" />
+              <xs:element name="ubHorizontalDegree" type="xs:unsignedByte" />
+              <xs:element name="ubVerticalDegree" type="xs:unsignedByte" />
+              <xs:element name="bIndoorModifier" type="xs:decimal" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

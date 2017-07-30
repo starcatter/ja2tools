@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema  xmlns:xs=        "http://www.w3.org/2001/XMLSchema" 
+            xmlns:lbe=	"ja2/xml/items/lbe"
+
+            targetNamespace=	"ja2/xml/items/lbe"
+            
+            xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+            xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"           
+            jaxb:extensionBindingPrefixes="xjc"
+            jaxb:version="2.0"
+            elementFormDefault="qualified">
+  <xs:element name="LOADBEARINGEQUIPMENTLIST">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="LOADBEARINGEQUIPMENT">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="lbeIndex" type="xs:unsignedShort" />
+              <xs:element name="lbeClass" type="xs:unsignedByte" />
+              <xs:element name="lbeCombo" type="xs:unsignedByte" />
+              <xs:element name="lbeFilledSize" type="xs:unsignedShort" />
+              <xs:element name="lbeAvailableVolume" type="xs:unsignedByte" />
+              <xs:element name="lbePocketsAvailable" type="xs:unsignedShort" />
+              <xs:element name="lbePocketIndex1" type="xs:unsignedByte" />
+              <xs:element name="lbePocketIndex2" type="xs:unsignedByte" />
+              <xs:element name="lbePocketIndex3" type="xs:unsignedByte" />
+              <xs:element name="lbePocketIndex4" type="xs:unsignedByte" />
+              <xs:element name="lbePocketIndex5" type="xs:unsignedByte" />
+              <xs:element name="lbePocketIndex6" type="xs:unsignedByte" />
+              <xs:element name="lbePocketIndex7" type="xs:unsignedByte" />
+              <xs:element name="lbePocketIndex8" type="xs:unsignedByte" />
+              <xs:element name="lbePocketIndex9" type="xs:unsignedByte" />
+              <xs:element name="lbePocketIndex10" type="xs:unsignedByte" />
+              <xs:element name="lbePocketIndex11" type="xs:unsignedByte" />
+              <xs:element name="lbePocketIndex12" type="xs:unsignedByte" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

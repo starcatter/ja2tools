@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema  xmlns:xs=        "http://www.w3.org/2001/XMLSchema" 
+	    xmlns:calibers=	"ja2/xml/ammo/calibers"
+	    targetNamespace=	"ja2/xml/ammo/calibers"
+            
+	    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	    xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"           
+	    jaxb:extensionBindingPrefixes="xjc"
+	    jaxb:version="2.0"
+	    elementFormDefault="qualified">
+    <xs:element name="AMMOLIST">
+	<xs:complexType>
+	    <xs:sequence>
+		<xs:element maxOccurs="unbounded" name="AMMO" type="calibers:AMMO" />
+	    </xs:sequence>
+	</xs:complexType>
+    </xs:element>
+  
+    <xs:complexType name="AMMO">
+	<xs:sequence>
+	    <xs:element name="uiIndex" type="xs:unsignedByte" />
+	    <xs:element name="AmmoCaliber" type="xs:string" />
+	    <xs:element name="BRCaliber" type="xs:string" />
+	</xs:sequence>      
+    </xs:complexType>
+</xs:schema>

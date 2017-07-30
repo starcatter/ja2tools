@@ -1,0 +1,2 @@
+# ja2tools - ja2MapToolPackage
+Essentially a maven config for building a standalone JavaFX package of the GUI tool, made separate because I couldn't figure out how to set this up in the pom so that Netbeans wouldn't repackage the whole thing at every opportunity.

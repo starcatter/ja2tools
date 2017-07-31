@@ -10,7 +10,7 @@
 
     <groupId>thebob</groupId>
     <artifactId>ja2MapToolPackage</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>ja2MapToolPackage</name>

@@ -92,6 +92,16 @@ public class Tile {
     public int getIndex() {
 	return index;
     }
+
+    public StiLoader getLoader() {
+	return loader;
+    }
+
+    @Override
+    public String toString() {
+	return "Tile{" + "type=" + type + ", index=" + index + '}';
+    }
     
     
+        
 }

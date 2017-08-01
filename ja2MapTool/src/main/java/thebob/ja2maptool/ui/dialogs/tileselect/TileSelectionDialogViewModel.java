@@ -43,26 +43,33 @@ public class TileSelectionDialogViewModel implements ViewModel {
 
     public static final String UPDATE_SELECTION = "UPDATE_SELECTION";
     public static final String CLOSE_DIALOG_NOTIFICATION = "CLOSE_DIALOG_NOTIFICATION";
-    
+    ObservableList<String> categories = FXCollections.observableArrayList();
+
     private int type = 0;
     private int index = 0;
-    
+
     @InjectScope
     private TilesetMappingScope mappingScope;
 
+    public void initialize() {
+	for (int i = 0; i < mappingScope.getTargetAssets().getTilesets().getNumFiles(); i++) {
+	    categories.add(TilesetMappingScope.getTileCategortyName(i));
+	}
+    }
+
     public ObservableList<String> getTileCategories() {
-	return FXCollections.observableArrayList(gTileSurfaceName);
+	return categories;
     }
 
     public void setInitialSelection(int selectedType, int selectedIndex) {
 	type = selectedType;
 	index = selectedIndex;
-	
+
 	publish(UPDATE_SELECTION);
     }
 
     ObservableList<Tile> getTilesForType(int selectedIndex) {
-	return FXCollections.observableArrayList( mappingScope.getTargetTileset().getTiles(selectedIndex) );
+	return FXCollections.observableArrayList(mappingScope.getTargetTileset().getTiles(selectedIndex));
     }
 
     public int getType() {
@@ -84,11 +91,12 @@ public class TileSelectionDialogViewModel implements ViewModel {
     }
 
     void updateTiles(int selectedType, int selectedIndex) {
-	TileMapping tileMapping = mappingScope.getMappingList().get(type).get(index);
-	
+	TileMapping tileMapping = mappingScope.getMappingList().get(type).getMappings().get(index);
+
 	tileMapping.setTargetType(selectedType);
 	tileMapping.setTargetIndex(selectedIndex);
+	tileMapping.setMappingMode( TileMapping.MappingMode.Manual );
 	mappingScope.publish(REFRESH_MAPPING_LIST);
     }
-    
+
 }

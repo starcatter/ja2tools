@@ -28,6 +28,7 @@ import javafx.collections.ObservableList;
 import thebob.assetloader.map.core.MapData;
 import thebob.assetloader.map.core.components.IndexedElement;
 import thebob.assetloader.map.wrappers.WorldItemStack;
+import thebob.ja2maptool.model.TileCategoryMapping;
 import thebob.ja2maptool.model.TileMapping;
 import thebob.ja2maptool.scopes.ConvertMapScope;
 
@@ -38,7 +39,7 @@ import thebob.ja2maptool.scopes.ConvertMapScope;
 public class MapTransformer {
 
     MapData map = null;
-    Map<Integer, ObservableList<TileMapping>> tileMapping = null;
+    Map<Integer, TileCategoryMapping> tileMapping = null;
     Map<Integer, Integer> itemMapping = null;
     Integer tileset = null;
 
@@ -57,11 +58,11 @@ public class MapTransformer {
 	this.map = map;
     }
 
-    public Map<Integer, ObservableList<TileMapping>> getTileMapping() {
+    public Map<Integer, TileCategoryMapping> getTileMapping() {
 	return tileMapping;
     }
 
-    public void setTileMapping(Map<Integer, ObservableList<TileMapping>> mapping) {
+    public void setTileMapping(Map<Integer, TileCategoryMapping> mapping) {
 	this.tileMapping = mapping;
     }
 
@@ -116,7 +117,7 @@ public class MapTransformer {
 
 	    for (int j = 0; j < layers.length; j++) {
 		IndexedElement tile = layers[j];
-		ObservableList<TileMapping> mappingType = tileMapping.get(tile.type);
+		ObservableList<TileMapping> mappingType = tileMapping.get(tile.type).getMappings();
 
 		if (mappingType.size() >= tile.index) {
 		    TileMapping mapping = mappingType.get(tile.index - 1);

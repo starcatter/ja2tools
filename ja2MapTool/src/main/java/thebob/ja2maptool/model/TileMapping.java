@@ -23,16 +23,32 @@
  */
 package thebob.ja2maptool.model;
 
+import java.util.HashMap;
+import java.util.Map;
+import thebob.assetloader.tileset.Tile;
+import thebob.ja2maptool.util.tilesearch.TileSearchResult;
+
 /**
  *
  * @author the_bob
  */
 public class TileMapping {
-    
+
+    public enum MappingMode {
+	None,
+	SameFile,
+	MatchedFile,
+	AutoMatched,
+	Manual
+    }
+
     int sourceType;
     int sourceIndex;
     int targetType;
     int targetIndex;
+    MappingMode mappingMode = MappingMode.None;
+
+    Map<Double, Tile> autoMapSuggestions = new HashMap<Double, Tile>();
 
     public TileMapping(int sourceType, int sourceIndex, int targetType, int targetIndex) {
 	this.sourceType = sourceType;
@@ -73,10 +89,27 @@ public class TileMapping {
 	this.targetIndex = targetIndex;
     }
 
+    public MappingMode getMappingMode() {
+	return mappingMode;
+    }
+
+    public void setMappingMode(MappingMode mappingMode) {
+	this.mappingMode = mappingMode;
+    }
+
     @Override
     public String toString() {
 	return "TileMapping{" + "sourceType=" + sourceType + ", sourceIndex=" + sourceIndex + ", targetType=" + targetType + ", targetIndex=" + targetIndex + '}';
     }
- 
-    
+
+    TileSearchResult autoMapResult = null;
+
+    public void setAutoMapResult(TileSearchResult bestTile) {
+	autoMapResult = bestTile;
+    }
+
+    public TileSearchResult getAutoMapResult() {
+	return autoMapResult;
+    }
+
 }

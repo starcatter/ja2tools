@@ -56,8 +56,6 @@ public class TilesetManager extends VFSContextBoundManager {
     public boolean init() {
 	VFSConfig vfs = context.getVfs();
 
-	TilesetLoader loader = new TilesetLoader(vfs);
-
 	if (vfs.getUseXmlTileset()) {
 	    XmlLoader xml = context.getXml();
 	    if (xml == null) {
@@ -76,6 +74,8 @@ public class TilesetManager extends VFSContextBoundManager {
 	    if (numFiles == 0 || numTilesets == 0) {
 		return false;
 	    }
+	    
+	    TilesetLoader loader = new TilesetLoader(vfs, numFiles);
 
 	    for (TilesetDef tileDef : tilesetDefs.getTileset()) {
 		Tileset tileset = loader.loadTilesetFromXmlDef(tileDef);
@@ -87,6 +87,8 @@ public class TilesetManager extends VFSContextBoundManager {
 	    
 	    numTilesets = (short) tileData.tilesetCount;
 	    numFiles = (short) tileData.filesPerTileset;
+	    
+	    TilesetLoader loader = new TilesetLoader(vfs, numFiles);
 	    
 	    for (int i = 0; i < tileData.tilesetCount; i++) {
 		Tileset tileset = loader.loadTilesetFromData(tileData.tilesets.get(i));

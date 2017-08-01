@@ -39,6 +39,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
+import thebob.ja2maptool.model.TileCategoryMapping;
 import thebob.ja2maptool.model.TileMapping;
 import thebob.ja2maptool.scopes.ItemMappingScope;
 import thebob.ja2maptool.scopes.TilesetMappingScope;
@@ -84,13 +85,13 @@ public class MappingIO {
 	try (FileWriter fileWriter = new FileWriter(fileName); CSVPrinter csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat)) {
 	    csvFilePrinter.printRecord(FILE_HEADER);
 
-	    for (Map.Entry<Integer, ObservableList<TileMapping>> mappingForType : mappingFileData.getMappingList().entrySet()) {
+	    for (Map.Entry<Integer, TileCategoryMapping> mappingForType : mappingFileData.getMappingList().entrySet()) {
 		List mappingArray = new ArrayList();
 		mappingArray.add(String.valueOf(mappingForType.getKey()));
-		mappingArray.add(String.valueOf(mappingForType.getValue().size()));
+		mappingArray.add(String.valueOf(mappingForType.getValue().getMappings().size()));
 		csvFilePrinter.printRecord(mappingArray);
 
-		for (thebob.ja2maptool.model.TileMapping mapping : mappingForType.getValue()) {
+		for (thebob.ja2maptool.model.TileMapping mapping : mappingForType.getValue().getMappings()) {
 		    List mappingData = new ArrayList();
 		    mappingData.add(String.valueOf(mapping.getSourceIndex()));
 		    mappingData.add(String.valueOf(mapping.getTargetType()));
@@ -148,7 +149,7 @@ public class MappingIO {
 		int tileCount = Integer.valueOf(typeMappingHeader.get(1));
 
 		ObservableList<TileMapping> mappingListForType = FXCollections.observableArrayList();
-		mappingFileData.getMappingList().put(type, mappingListForType);
+		mappingFileData.getMappingList().put(type, new TileCategoryMapping(type, mappingListForType));
 
 		for (int j = 0; j < tileCount; j++) {
 		    CSVRecord typeMapping = csv.iterator().next();

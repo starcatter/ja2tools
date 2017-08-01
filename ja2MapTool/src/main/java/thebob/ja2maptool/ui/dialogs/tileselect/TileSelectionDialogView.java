@@ -45,6 +45,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import thebob.assetloader.tileset.Tile;
 import static thebob.ja2maptool.ui.dialogs.tileselect.TileSelectionDialogViewModel.UPDATE_SELECTION;
+import static thebob.ja2maptool.ui.tabs.mapping.tileset.TilesetMappingTabView.getTableCellTileImage;
 
 /**
  * FXML Controller class
@@ -107,7 +108,7 @@ public class TileSelectionDialogView implements FxmlView<TileSelectionDialogView
 	tc0.setCellValueFactory(new Callback<CellDataFeatures<Tile, String>, ObservableValue<String>>() {
 	    public ObservableValue<String> call(CellDataFeatures<Tile, String> p) {
 		Tile tile = p.getValue();
-		return new ReadOnlyObjectWrapper( tile.getType() + "-" + tile.getIndex() );
+		return new ReadOnlyObjectWrapper(tile.getType() + "-" + tile.getIndex());
 	    }
 	});
 
@@ -118,8 +119,9 @@ public class TileSelectionDialogView implements FxmlView<TileSelectionDialogView
 		    Image tileImage = tile.getImage();
 
 		    if (tileImage != null) {
-			return new ReadOnlyObjectWrapper(new ImageView(tileImage));
+			return new ReadOnlyObjectWrapper(getTableCellTileImage(tileImage, tile.getType(), tile.getIndex()));
 		    }
+
 		}
 		return new ReadOnlyObjectWrapper("error");
 	    }
@@ -133,8 +135,11 @@ public class TileSelectionDialogView implements FxmlView<TileSelectionDialogView
 
 	viewModel.subscribe(UPDATE_SELECTION, (key, data) -> {
 	    type_list.getSelectionModel().select(viewModel.getType());
+	    type_list.scrollTo(viewModel.getType());
+	    
 	    tile_table.setItems(viewModel.getTilesForType(viewModel.getType()));
 	    tile_table.getSelectionModel().select(viewModel.getIndex());
+	    tile_table.scrollTo(viewModel.getIndex());
 	});
 
 	viewModel.subscribe(TileSelectionDialogViewModel.CLOSE_DIALOG_NOTIFICATION, (key, payload) -> {

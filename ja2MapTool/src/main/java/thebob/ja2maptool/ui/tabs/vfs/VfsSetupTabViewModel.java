@@ -70,7 +70,8 @@ public class VfsSetupTabViewModel implements ViewModel {
         }, precondition, true); //Async
         
 	addConfig(".");
-	addConfig("../gameData");
+
+	vfsAssets.getOrLoadAssetManager("../../JA113.data/gameData", "vfs_config.JA2Vanilla.ini");
     }
 
     public Command getLoadSelectedConfigsCommand() {
@@ -147,7 +148,7 @@ public class VfsSetupTabViewModel implements ViewModel {
 
 	}
 
-	vfsAssets.publish(VfsAssetScope.UPDATE_MAP_SCREEN, null);
+	vfsAssets.publish(VfsAssetScope.UPDATE_MAP_SCREEN);
     }
 
     void configSelected(boolean b) {

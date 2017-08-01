@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import thebob.assetloader.dat.tileset.data.TilesetData;
 import thebob.assetloader.vfs.VFSConfig;
+import thebob.assetloader.vfs.accessors.VFSAccessor;
 import thebob.assetloader.xml.XmlLoader;
 
 /**
@@ -41,25 +42,27 @@ public class TilesetLoader {
     final VFSConfig vfs;
 
     Tileset tilesetZero = null;
+    int filesPerTileset;
 
     Map<String, TileArray> tileCache = new HashMap<String, TileArray>();
 
-    public TilesetLoader(VFSConfig vfs) {
+    public TilesetLoader(VFSConfig vfs, int filesPerTileset) {
 	this.vfs = vfs;
+	this.filesPerTileset = filesPerTileset;
     }
+    
     // 1 - load def for tileset 0
     // 2 - load def fot desired tileset over it
     // 3 - loop through files to produce gTileTypeStartIndex[ ];
 
+    // TODO: de-duplicate the code in these load methods.
     public Tileset loadTilesetFromXmlDef(TilesetDef tileDef) {
 	int index = tileDef.getIndex();
 	String name = tileDef.getName();
 
-	Tileset tileset = new Tileset();
-	tileset.setName(name);
-	tileset.setIndex(index);
+	Tileset tileset = new Tileset(index,filesPerTileset,name);
 
-	ByteBuffer fileBuffer = null;
+	VFSAccessor fileBuffer = null;
 
 	// System.out.println("tileDef " + index + ":" + tileDef.getName());
 	for (TilesetFile fileDef : tileDef.getFiles().getFile()) {
@@ -71,7 +74,7 @@ public class TilesetLoader {
 	    String fPath = ("\\TILESETS\\" + index + "\\" + fileName).toUpperCase();
 	    String fPathFallback = ("\\TILESETS\\0\\" + fileName).toUpperCase();
 
-	    fileBuffer = vfs.getFile(fPath);
+	    fileBuffer = vfs.getFileAccess(fPath);
 
 	    if (fileBuffer != null) {
 
@@ -83,7 +86,7 @@ public class TilesetLoader {
 		}
 
 	    } else {
-		fileBuffer = vfs.getFile(fPathFallback);
+		fileBuffer = vfs.getFileAccess(fPathFallback);
 
 		if (fileBuffer != null) {
 
@@ -116,9 +119,7 @@ public class TilesetLoader {
     }
 
     public Tileset loadTilesetFromData(TilesetData tilesetData) {
-	Tileset tileset = new Tileset();
-	tileset.setName(tilesetData.name);
-	tileset.setIndex(tilesetData.index);
+	Tileset tileset = new Tileset(tilesetData.index, tilesetData.files.size(), tilesetData.name);
 
 	for (int fileIndex = 0; fileIndex < tilesetData.files.size(); fileIndex++) {
 	    String fileName = tilesetData.files.get(fileIndex);
@@ -127,15 +128,15 @@ public class TilesetLoader {
 		continue;
 	    }
 
-	    ByteBuffer fileBuffer = null;
+	    VFSAccessor fileBuffer = null;
 	    String fPath = ("\\TILESETS\\" + tilesetData.index + "\\" + fileName).toUpperCase();
 	    String fPathFallback = ("\\TILESETS\\0\\" + fileName).toUpperCase();
 
-	    fileBuffer = vfs.getFile(fPath);
+	    fileBuffer = vfs.getFileAccess(fPath);
 
 	    if (fileBuffer == null) {
 		fPath = fPathFallback;
-		fileBuffer = vfs.getFile(fPathFallback);
+		fileBuffer = vfs.getFileAccess(fPathFallback);
 	    }
 
 	    if (fileBuffer != null) {

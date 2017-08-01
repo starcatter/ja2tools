@@ -25,6 +25,7 @@ package thebob.assetloader.tileset;
 
 import java.nio.ByteBuffer;
 import thebob.assetloader.sti.StiLoader;
+import thebob.assetloader.vfs.accessors.VFSAccessor;
 
 /**
  *
@@ -32,11 +33,14 @@ import thebob.assetloader.sti.StiLoader;
  */
 public class TileArray {
     
+    StiLoader loader = new StiLoader();
+    VFSAccessor file;
     Tile[] tileArray;
 
-    public TileArray(ByteBuffer file, int tileType) {
-        StiLoader loader = new StiLoader();
-        loader.loadAsset(file);
+    public TileArray(VFSAccessor file, int tileType) {
+	this.file=file;
+	
+        loader.loadAsset(file.getBytes());
         int tileCount = loader.getImageCount();
         
         tileArray = new Tile[tileCount];
@@ -47,6 +51,14 @@ public class TileArray {
 
     public Tile[] getTiles() {
         return tileArray;
+    }
+
+    public VFSAccessor getFile() {
+	return file;
+    }        
+
+    public StiLoader getLoader() {
+	return loader;
     }
     
 }

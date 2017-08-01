@@ -265,6 +265,10 @@ public class VFSConfig {
         return accessor == null ? null : accessor.getBytes();
     }
 
+    public VFSAccessor getFileAccess(String path) {
+        return getAccessorForPath(path);
+    }
+
     public FileInputStream getFileStream(String path) {
         VFSAccessor accessor = getAccessorForPath(path);
         return accessor == null ? null : accessor.getStream();

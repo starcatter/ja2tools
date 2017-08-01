@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
 The MIT License
 
@@ -75,7 +76,7 @@ THE SOFTWARE.
                   </AnchorPane>
                   <AnchorPane GridPane.columnIndex="2">
                      <children>
-                        <Button disable="true" mnemonicParsing="false" text="Check" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0" />
+                        <Button mnemonicParsing="false" onAction="#mapping_auto" text="Auto map" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0" />
                      </children>
                   </AnchorPane>
                </children>

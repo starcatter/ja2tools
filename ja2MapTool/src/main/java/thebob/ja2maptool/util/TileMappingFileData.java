@@ -26,6 +26,7 @@ package thebob.ja2maptool.util;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.collections.ObservableList;
+import thebob.ja2maptool.model.TileCategoryMapping;
 import thebob.ja2maptool.model.TileMapping;
 
 /**
@@ -34,7 +35,7 @@ import thebob.ja2maptool.model.TileMapping;
  */
 public class TileMappingFileData {
 
-    Map<Integer, ObservableList<TileMapping>> mappings = new HashMap<Integer, ObservableList<TileMapping>>();
+    Map<Integer, TileCategoryMapping> mappings = new HashMap<Integer, TileCategoryMapping>();
     int sourceTilesetId;
     int targetTilesetId;
     int tileCategoryCount;
@@ -46,7 +47,7 @@ public class TileMappingFileData {
     public TileMappingFileData() {
     }
 
-    public TileMappingFileData(Map<Integer, ObservableList<TileMapping>> mappings, int srcTilesetId, int dstTilesetId, int tileCategoryCount, String srcConfDir, String srcConf, String dstConfDir, String dstConf) {
+    public TileMappingFileData(Map<Integer, TileCategoryMapping> mappings, int srcTilesetId, int dstTilesetId, int tileCategoryCount, String srcConfDir, String srcConf, String dstConfDir, String dstConf) {
 	this.mappings = mappings;
 	this.sourceTilesetId = srcTilesetId;
 	this.targetTilesetId = dstTilesetId;
@@ -57,7 +58,7 @@ public class TileMappingFileData {
 	this.dstConf = dstConf;
     }
 
-    public Map<Integer, ObservableList<TileMapping>> getMappingList() {
+    public Map<Integer, TileCategoryMapping> getMappingList() {
 	return mappings;
     }
 
@@ -89,7 +90,7 @@ public class TileMappingFileData {
 	return dstConf;
     }
 
-    public void setMappings(Map<Integer, ObservableList<TileMapping>> mappings) {
+    public void setMappings(Map<Integer, TileCategoryMapping> mappings) {
 	this.mappings = mappings;
     }
 

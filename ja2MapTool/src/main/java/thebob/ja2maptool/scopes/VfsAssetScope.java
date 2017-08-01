@@ -24,6 +24,7 @@
 package thebob.ja2maptool.scopes;
 
 import de.saxsys.mvvmfx.Scope;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import thebob.assetloader.vfs.VFSConfig;
@@ -54,28 +55,34 @@ public class VfsAssetScope implements Scope {
     }
 
     public AssetManager getOrLoadAssetManager(String vfsDir, String configName) {
-	String managerPath = vfsDir + "\\" + configName; // TODO: proper path creation
+	String vfsPath = Paths.get(vfsDir).toAbsolutePath().normalize().toString();
+	String managerPath = Paths.get(vfsPath + "\\" + configName).toAbsolutePath().normalize().toString();
+	
 	// check if the assed manager is already loaded
 	AssetManager assets = getManagers().get(managerPath);
 	if (assets == null) {
 	    // looks like it wasn't not loaded. Try to get its VFS root
-	    VirtualFileSystem assetRoot = getConfigs().get(vfsDir);
+	    VirtualFileSystem assetRoot = getConfigs().get(vfsPath);
 	    if (assetRoot == null) {
 		// looks like the root isn't loaded either! Try to load it.
-		assetRoot = new VirtualFileSystem(vfsDir);
+		assetRoot = new VirtualFileSystem(vfsPath);
 	    }
 
 	    if (assetRoot != null && assetRoot.getConfigNames().size() > 0) { // assetRoot shouldn't be null at this point anyway, but we still need it to contain configs!
 		VFSConfig assetConfig = assetRoot.getConfig(configName);
 		if (assetConfig != null) {
 		    assets = new AssetManager(assetConfig);
-		    
+
 		    configs.put(assetConfig.getPath().getParent().toString(), new VirtualFileSystem(assetConfig.getPath().getParent().toString()));
-		    managers.put(assetConfig.getPath().toString(), assets);		    
+		    managers.put(managerPath, assets);
 		}
 	    }
 	}
+
 	publish(REFRESH_CONFIGS);
+	publish(UPDATE_MAP_SCREEN);
+	System.out.println("thebob.ja2maptool.scopes.VfsAssetScope.getOrLoadAssetManager(): " + managerPath + " " + (assets != null ? "LOADED" : "NOT LOADED"));
+
 	return assets;
     }
 

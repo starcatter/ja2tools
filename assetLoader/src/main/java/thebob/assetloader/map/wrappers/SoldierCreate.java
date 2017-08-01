@@ -23,10 +23,8 @@
  */
 package thebob.assetloader.map.wrappers;
 
-import com.sun.media.sound.InvalidDataException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;

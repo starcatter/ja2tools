@@ -26,11 +26,12 @@ package thebob.ja2maptool.scopes;
 import de.saxsys.mvvmfx.Scope;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import thebob.assetloader.common.LayerConstants;
 import thebob.assetloader.tileset.Tileset;
-import thebob.assetloader.vfs.VFSConfig;
-import thebob.assetloader.vfs.VirtualFileSystem;
 import thebob.assetmanager.AssetManager;
+import thebob.ja2maptool.model.TileCategoryMapping;
 import thebob.ja2maptool.model.TileMapping;
 import thebob.ja2maptool.util.MappingIO;
 import thebob.ja2maptool.util.TileMappingFileData;
@@ -43,7 +44,46 @@ public class TilesetMappingScope implements Scope {
 
     public static final String REFRESH_MAPPING_LIST = "REFRESH_MAPPING_LIST";
 
-    Map<Integer, ObservableList<TileMapping>> mappingList = new HashMap<Integer, ObservableList<TileMapping>>();
+    public static TilesetMappingScope loadFromFile(String path, VfsAssetScope vfsAssets) {
+	TileMappingFileData mappingData = MappingIO.loadTilesetMapping(path);
+
+	AssetManager sourceAssets = vfsAssets.getOrLoadAssetManager(mappingData.getSrcConfDir(), mappingData.getSrcConf());
+	AssetManager targetAssets = vfsAssets.getOrLoadAssetManager(mappingData.getDstConfDir(), mappingData.getDstConf());
+
+	TilesetMappingScope scope = new TilesetMappingScope();
+	scope.getMappingList().putAll(mappingData.getMappingList());
+
+	scope.setTargetTilesetId(mappingData.getTargetTilesetId());
+	if (targetAssets != null) {
+	    scope.setTargetAssets(targetAssets);
+	    scope.setTargetTileset(targetAssets.getTilesets().getTileset(mappingData.getTargetTilesetId()));
+	} else {
+	    // TODO: display a prompt here to either ignore this error or pick a directory!
+	    System.out.println("thebob.ja2maptool.scopes.TilesetMappingScope.loadFromFile(): failed to load " + mappingData.getDstConfDir() + "/" + mappingData.getDstConf());
+	}
+
+	scope.setSourceTilesetId(mappingData.getSourceTilesetId());
+	if (sourceAssets != null) {
+	    scope.setSourceAssets(sourceAssets);
+	    scope.setSourceTileset(sourceAssets.getTilesets().getTileset(mappingData.getSourceTilesetId()));
+	} else {
+	    // TODO: display a prompt here to either ignore this error or pick a directory!
+	    System.out.println("thebob.ja2maptool.scopes.TilesetMappingScope.loadFromFile(): failed to load " + mappingData.getSrcConfDir() + "/" + mappingData.getSrcConf());
+	}
+
+	return scope;
+    }
+
+    public static String getTileCategortyName(int i) {
+	if (i < LayerConstants.gTileSurfaceName.length) {
+	    return LayerConstants.gTileSurfaceName[i];
+	} else {
+	    return "Extra " + (1 + i - LayerConstants.gTileSurfaceName.length);
+	}
+    }
+
+    ObservableList<TileCategoryMapping> mappings = FXCollections.observableArrayList();
+    Map<Integer, TileCategoryMapping> mappingList = new HashMap<Integer, TileCategoryMapping>();
 
     int sourceTilesetId;
     Tileset sourceTileset;
@@ -53,7 +93,7 @@ public class TilesetMappingScope implements Scope {
     Tileset targetTileset;
     AssetManager targetAssets;
 
-    public Map<Integer, ObservableList<TileMapping>> getMappingList() {
+    public Map<Integer, TileCategoryMapping> getMappingList() {
 	return mappingList;
     }
 
@@ -105,34 +145,8 @@ public class TilesetMappingScope implements Scope {
 	this.targetAssets = targetAssets;
     }
 
-    public static TilesetMappingScope loadFromFile(String path, VfsAssetScope vfsAssets) {
-	TileMappingFileData mappingData = MappingIO.loadTilesetMapping(path);
-
-	AssetManager sourceAssets = vfsAssets.getOrLoadAssetManager(mappingData.getSrcConfDir(), mappingData.getSrcConf());
-	AssetManager targetAssets = vfsAssets.getOrLoadAssetManager(mappingData.getDstConfDir(), mappingData.getDstConf());
-
-	TilesetMappingScope scope = new TilesetMappingScope();
-	scope.getMappingList().putAll(mappingData.getMappingList());
-
-	scope.setTargetTilesetId(mappingData.getTargetTilesetId());
-	if (targetAssets != null) {
-	    scope.setTargetAssets(targetAssets);
-	    scope.setTargetTileset(targetAssets.getTilesets().getTileset(mappingData.getTargetTilesetId()));
-	} else {
-	    // TODO: display a prompt here to either ignore this error or pick a directory!
-	    System.out.println("thebob.ja2maptool.scopes.TilesetMappingScope.loadFromFile(): failed to load " + mappingData.getDstConfDir() + "/" + mappingData.getDstConf());
-	}
-
-	scope.setSourceTilesetId(mappingData.getSourceTilesetId());
-	if (sourceAssets != null) {
-	    scope.setSourceAssets(sourceAssets);
-	    scope.setSourceTileset(sourceAssets.getTilesets().getTileset(mappingData.getSourceTilesetId()));
-	} else {
-	    // TODO: display a prompt here to either ignore this error or pick a directory!
-	    System.out.println("thebob.ja2maptool.scopes.TilesetMappingScope.loadFromFile(): failed to load " + mappingData.getSrcConfDir() + "/" + mappingData.getSrcConf());
-	}
-
-	return scope;
+    public ObservableList<TileCategoryMapping> getMappings() {
+	return mappings;
     }
 
 }

@@ -33,6 +33,7 @@ import thebob.assetloader.map.core.MapData;
 import thebob.assetloader.map.core.components.IndexedElement;
 import thebob.assetloader.tileset.Tile;
 import thebob.assetloader.tileset.Tileset;
+import thebob.ja2maptool.model.TileCategoryMapping;
 import thebob.ja2maptool.model.TileMapping;
 
 public class MapRenderer {
@@ -113,14 +114,14 @@ public class MapRenderer {
 	moveWindow(0, 0);
     }
 
-    public void applyRemapping(Map<Integer, ObservableList<TileMapping>> mappingList) {
+    public void applyRemapping(Map<Integer, TileCategoryMapping> mappingList) {
 	landLayer = remapLayer(landLayer, mappingList);
 	objectLayer = remapLayer(objectLayer, mappingList);
 	structLayer = remapLayer(structLayer, mappingList);
 	//shadowLayer = remapLayer(shadowLayer, mappingList);
     }
 
-    private IndexedElement[][] remapLayer(IndexedElement[][] layerType, Map<Integer, ObservableList<TileMapping>> mappingList) {
+    private IndexedElement[][] remapLayer(IndexedElement[][] layerType, Map<Integer, TileCategoryMapping> mappingList) {
 	IndexedElement[][] newLayer = new IndexedElement[layerType.length][];
 
 	for (int i = 0; i < layerType.length; i++) {
@@ -130,7 +131,7 @@ public class MapRenderer {
 	    for (int j = 0; j < layers.length; j++) {
 		IndexedElement tile = layers[j];
 
-		ObservableList<TileMapping> mappingType = mappingList.get(tile.type);
+		ObservableList<TileMapping> mappingType = mappingList.get(tile.type).getMappings();
 		if (mappingType.size() >= tile.index) {
 		    TileMapping mapping = mappingType.get(tile.index - 1);
 		    newLayer[i][j] = new IndexedElement(mapping.getTargetType(), mapping.getTargetIndex() + 1);

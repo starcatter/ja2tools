@@ -46,9 +46,10 @@ public class MappingSetupTabViewModel implements ViewModel {
     MainScope mainScreen;
     
    public void initialize() {
-        vfsAssets.subscribe(vfsAssets.UPDATE_MAP_SCREEN, (key, payload) -> {
+        vfsAssets.subscribe(VfsAssetScope.UPDATE_MAP_SCREEN, (key, payload) -> {
             populateMappingSetupScreen();
         });
+	populateMappingSetupScreen();
     }
     
     TreeItem<String> mapLeftRoot = new TreeItem<String>("Mapping source");

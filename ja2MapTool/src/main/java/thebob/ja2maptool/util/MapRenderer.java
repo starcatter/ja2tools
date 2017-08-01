@@ -171,7 +171,6 @@ public class MapRenderer {
     public void setScale(double scale) {
 	this.scale = scale;
     }
-    
 
     protected void displayCellLayers(IndexedElement[] layers, int canvasX, int canvasY) {
 	for (IndexedElement layer : layers) {
@@ -190,6 +189,8 @@ public class MapRenderer {
     protected int mapRowColToPos(int r, int c) {
 	return ((r) * mapCols + (c));
     }
+
+    IndexedElement[] cursorLayer = new IndexedElement[]{new IndexedElement(131, 4)};
 
     protected void renderMap() {
 	canvasGraphicsContext.clearRect(0, 0, canvasX, canvasY);
@@ -228,13 +229,21 @@ public class MapRenderer {
 		    displayCellLayers(objectLayer[cell], displayX, displayY);
 		    displayCellLayers(structLayer[cell], displayX, displayY);
 		    displayCellLayers(shadowLayer[cell], displayX, displayY);
+
+		    if (psCell != null) {
+			for (MapCursor pos : psCell) {
+			    if (cell == pos.cell) {
+				displayCellLayers(pos.cursor, displayX, displayY);
+			    }
+			}
+		    }
 		}
 		mapPosX++;
 		mapPosY--;
 
 		displayX += xSpacing;
 
-	    } while (displayX*scale < canvasX);
+	    } while (displayX * scale < canvasX);
 
 	    if (bXOddFlag) {
 		windowStartOffsetY++;
@@ -245,7 +254,7 @@ public class MapRenderer {
 	    bXOddFlag = !bXOddFlag;
 	    canvasStartOffsetY += ySpacing / 2;
 
-	} while (displayY*scale < canvasY);
+	} while (displayY * scale < canvasY);
 
     }
 
@@ -342,4 +351,83 @@ public class MapRenderer {
 
     }
 
+    MapCursor[] psCell = null;
+
+    public void sendClick(double dx, double dy) {
+	psCell = new MapCursor[5];
+
+	double psScreenX = (2 * windowOffsetX) - (2 * windowOffsetY);
+	double psScreenY = windowOffsetX + windowOffsetY;
+
+	double scaledCanvasX = canvasX / scale;
+	double scaledCanvasY = canvasY / scale;
+
+	dx /= scale;
+	dy /= scale;
+
+	psCell[0] = new MapCursor(psScreenX + (dx / 10) + 2, psScreenY + (dy / 10) + 1);
+
+	int ctyp = 8;
+	psCell[1] = new MapCursor(psScreenX + 4, psScreenY + 2, new IndexedElement(131, ctyp));
+	psCell[2] = new MapCursor(psScreenX + 4, psScreenY + (scaledCanvasY / 10) - 1, new IndexedElement(131, ctyp));
+	psCell[3] = new MapCursor(psScreenX + (scaledCanvasX / 10) - 1, psScreenY + (scaledCanvasY / 10) - 1, new IndexedElement(131, ctyp));
+	psCell[4] = new MapCursor(psScreenX + (scaledCanvasX / 10) - 1, psScreenY + 2, new IndexedElement(131, ctyp));
+    }
+
+    public void hideCursor() {
+	psCell = null;
+    }
+
+    class MapCursor {
+
+	int x;
+	int y;
+	int cell;
+
+	IndexedElement[] cursor = new IndexedElement[]{new IndexedElement(131, 14)};
+
+	public MapCursor(int x, int y) {
+	    this.x = (x + (2 * y) + 2) / 4;
+	    this.y = ((2 * y) - x + 2) / 4;
+
+	    cell = mapRowColToPos(this.y, this.x);
+	}
+
+	private MapCursor(double psScreenX, double psScreenY) {
+	    this((int) psScreenX, (int) psScreenY);
+	}
+
+	private MapCursor(double psScreenX, double psScreenY, IndexedElement cursor) {
+	    this((int) psScreenX, (int) psScreenY);
+	    this.cursor = new IndexedElement[]{cursor};
+	}
+    }
+
+    /*
+	System.out.println("thebob.ja2maptool.util.MapRenderer.sendClick(): "+ dx + "/"+dy);
+	
+	double x = dx/scale;
+	double y = dy/scale;
+	
+	System.out.println("thebob.ja2maptool.util.MapRenderer.sendClick(): "+ x + "/"+y);
+			
+	double gsVIEWPORT_START_X = (windowOffsetX*xSpacing);
+	double gsVIEWPORT_END_X = gsVIEWPORT_START_X+canvasX;
+	double gsVIEWPORT_START_Y = (windowOffsetY*ySpacing);
+	double gsVIEWPORT_END_Y = gsVIEWPORT_START_Y+canvasY;
+	
+	double sOffsetX = x - ((gsVIEWPORT_END_X - gsVIEWPORT_START_X) / 2); // + gsRenderWorldOffsetX;
+	double sOffsetY = x - ((gsVIEWPORT_END_Y - gsVIEWPORT_START_Y) / 2) + 10;// + gsRenderWorldOffsetY;
+	
+	System.out.println("thebob.ja2maptool.util.MapRenderer.sendClick(): "+ sOffsetX + "/"+sOffsetY);
+	
+	psCellX = (int)( ( sOffsetX + ( 2 * sOffsetY ) + 2 ) / 4 );
+	psCellY = (int)( ( 2 * sOffsetY ) - sOffsetX + 2 ) / 4;
+	
+	System.out.println("thebob.ja2maptool.util.MapRenderer.sendClick() cell: "+ psCellX + "/"+psCellY);	
+
+	Integer CursorPos = mapRowColToPos(psCellX, psCellY);
+		
+	System.out.println("thebob.ja2maptool.util.MapRenderer.sendClick() cell#: "+ CursorPos);	
+     */
 }

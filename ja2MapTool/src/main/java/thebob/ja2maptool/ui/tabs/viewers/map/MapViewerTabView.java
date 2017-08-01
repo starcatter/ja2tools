@@ -70,7 +70,15 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
 
 	System.out.println("thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabView.prev_window_click(): " + deltaX + " / " + deltaY);
 
-	viewModel.scrollPreview((int) (transX * 10d), (int) (transY * 10d));
+	
+	
+	if (event.isControlDown()) {
+	    viewModel.getRenderer().sendClick(dx, dy);
+	    viewModel.scrollPreview(0, 0);
+	} else {
+	    viewModel.getRenderer().hideCursor();
+	    viewModel.scrollPreview((int) (transX * 10d), (int) (transY * 10d));
+	}
     }
 
     @FXML
@@ -116,7 +124,7 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
 	// setup renderer
 	viewModel.getRenderer().setCanvas(prev_window);
 
-	map_name.textProperty().bind( viewModel.getMapNameProperty() );
+	map_name.textProperty().bind(viewModel.getMapNameProperty());
 	viewModel.updateRenderer(true);
     }
 

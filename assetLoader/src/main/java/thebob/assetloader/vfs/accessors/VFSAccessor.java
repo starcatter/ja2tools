@@ -30,13 +30,23 @@ import java.nio.ByteBuffer;
  *
  * @author the_bob
  */
-public abstract class VFSAccessor {
+public abstract class VFSAccessor implements Comparable<VFSAccessor> {
 
     public abstract String getPath();
-    
+
+    public abstract String getVFSPath();
+
     public abstract ByteBuffer getBytes();
-    public FileInputStream getStream(){
-        throw new RuntimeException("getStream not supported for this asset");
-    };
-    
+
+    public FileInputStream getStream() {
+	throw new RuntimeException("getStream not supported for this asset");
+    }
+
+    ;
+
+    @Override
+    public int compareTo(VFSAccessor o) {
+	return getVFSPath().compareTo(o.getVFSPath());
+    }
+
 }

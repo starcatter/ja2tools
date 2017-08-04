@@ -33,11 +33,13 @@ import thebob.assetloader.slf.SlfLoader;
 public class SLFAccessor extends VFSAccessor {
     
     SlfLoader loader;
-    String filePath;
+    String filePath;	// file name in slf library
+    String vfsPath;	// file name in VFS tree
 
-    public SLFAccessor(SlfLoader loader, String filePath) {
+    public SLFAccessor(SlfLoader loader, String filePath, String vfsPath) {
         this.loader = loader;
         this.filePath = filePath;
+        this.vfsPath = vfsPath;
     }
 
     public ByteBuffer getBytes() {
@@ -56,6 +58,11 @@ public class SLFAccessor extends VFSAccessor {
 
     public SlfLoader getLoader() {
 	return loader;
+    }
+
+    @Override
+    public String getVFSPath() {
+	return vfsPath;
     }
     
 }

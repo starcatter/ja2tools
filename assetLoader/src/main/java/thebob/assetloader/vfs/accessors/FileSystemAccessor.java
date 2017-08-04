@@ -42,12 +42,14 @@ import thebob.assetloader.slf.SlfLoader;
  */
 public class FileSystemAccessor extends VFSAccessor {
 
-    String filePath;
+    String filePath;	// file name in file system
+    String vfsPath;	// file name in VFS tree
     MappedByteBuffer byteBuffer;
     FileChannel fc;
 
-    public FileSystemAccessor(String filePath) {
+    public FileSystemAccessor(String filePath,String vfsPath) {
         this.filePath = filePath;
+        this.vfsPath = vfsPath;
     }
 
     @Override
@@ -91,6 +93,11 @@ public class FileSystemAccessor extends VFSAccessor {
     @Override
     public String getPath() {
         return filePath;
+    }
+
+    @Override
+    public String getVFSPath() {
+	return vfsPath;
     }
 
 }

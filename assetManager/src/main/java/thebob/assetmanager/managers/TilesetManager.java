@@ -56,6 +56,10 @@ public class TilesetManager extends VFSContextBoundManager {
     public boolean init() {
 	VFSConfig vfs = context.getVfs();
 
+	if (vfs == null) {
+	    return false;
+	}
+
 	if (vfs.getUseXmlTileset()) {
 	    XmlLoader xml = context.getXml();
 	    if (xml == null) {
@@ -74,7 +78,7 @@ public class TilesetManager extends VFSContextBoundManager {
 	    if (numFiles == 0 || numTilesets == 0) {
 		return false;
 	    }
-	    
+
 	    TilesetLoader loader = new TilesetLoader(vfs, numFiles);
 
 	    for (TilesetDef tileDef : tilesetDefs.getTileset()) {
@@ -84,12 +88,12 @@ public class TilesetManager extends VFSContextBoundManager {
 	} else {
 	    ByteBuffer tilesetDefs = vfs.getFile("\\BinaryData\\JA2set.dat");
 	    TilesetDataFile tileData = TilesetDataFileLoader.load(tilesetDefs);
-	    
+
 	    numTilesets = (short) tileData.tilesetCount;
 	    numFiles = (short) tileData.filesPerTileset;
-	    
+
 	    TilesetLoader loader = new TilesetLoader(vfs, numFiles);
-	    
+
 	    for (int i = 0; i < tileData.tilesetCount; i++) {
 		Tileset tileset = loader.loadTilesetFromData(tileData.tilesets.get(i));
 		tilesets.put(i, tileset);

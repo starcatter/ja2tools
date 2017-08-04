@@ -27,13 +27,17 @@ import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ViewModel;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 import thebob.assetloader.map.core.MapData;
 import thebob.assetloader.vfs.VFSConfig;
 import thebob.assetloader.vfs.VirtualFileSystem;
+import thebob.assetloader.vfs.accessors.VFSAccessor;
 import thebob.assetmanager.AssetManager;
+import thebob.ja2maptool.components.MapSelectionTreeItem;
 import thebob.ja2maptool.components.TilesetMappingTreeItem;
 import thebob.ja2maptool.scopes.map.MapScope;
 import thebob.ja2maptool.scopes.VfsAssetScope;
@@ -117,13 +121,20 @@ public class MapSelectionDialogViewModel implements ViewModel {
 	    TreeItem<String> assetManagerNode = new TilesetMappingTreeItem(managerName, null, assets);
 	    assetManagerNode.setExpanded(true);
 
-	    for (String mapName : assets.getMaps().getMapFiles()) {
+	    for (String profile : assets.getVfs().getProfiles().keySet()) {
+		TreeItem<String> profileNode = new TreeItem<String>(profile);
+		profileNode.setExpanded(true);
 
-		TreeItem<String> mapNode = new TilesetMappingTreeItem(mapName, null, assets);;
+		ArrayList<VFSAccessor> files = assets.getVfs().getProfiles().get(profile);
+		files.stream().filter(f -> f.getVFSPath().startsWith("\\MAPS\\")).sorted().forEach(mapAccessor -> {
+		    TreeItem<String> mapNode = new MapSelectionTreeItem(mapAccessor.getVFSPath().replace("\\MAPS\\", ""), mapAccessor, assets);;
+		    profileNode.getChildren().add(mapNode);
+		});
 
-		assetManagerNode.getChildren().add(mapNode);
+		assetManagerNode.getChildren().add(profileNode);		
 	    }
 
+	    Collections.reverse(assetManagerNode.getChildren());
 	    root.getChildren().add(assetManagerNode);
 	}
 
@@ -189,14 +200,15 @@ public class MapSelectionDialogViewModel implements ViewModel {
     }
 
     void loadVfs(TreeItem<String> selectedItem) {
-	TilesetMappingTreeItem item = (TilesetMappingTreeItem) selectedItem;
+	MapSelectionTreeItem item = (MapSelectionTreeItem) selectedItem;
 	AssetManager manager = item.getManager();
+	VFSAccessor accessor = item.getAccessor();
 	String mapFileName = item.getValue();
 
-	MapData data = manager.getMaps().loadMap(mapFileName);
+	MapData data = manager.getMaps().loadMapData(accessor.getBytes());
 	if (data != null) {
 	    mapScope.setMapName(mapFileName);
-	    mapScope.setMapAssetPath(mapFileName);
+	    mapScope.setMapAssetPath(accessor.getVFSPath());
 	    mapScope.setLoadMode(MapScope.mapLoadMode.From_VFS);
 
 	    mapScope.setMapData(data);

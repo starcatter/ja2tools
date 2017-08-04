@@ -37,8 +37,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import thebob.ja2maptool.scopes.ItemMappingScope;
-import thebob.ja2maptool.scopes.TilesetMappingScope;
+import thebob.ja2maptool.scopes.mapping.ItemMappingScope;
+import thebob.ja2maptool.scopes.mapping.TilesetMappingScope;
 
 /**
  * FXML Controller class

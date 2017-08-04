@@ -23,14 +23,16 @@
  */
 package thebob.ja2maptool.util;
 
+import thebob.ja2maptool.util.compositor.SelectedTiles;
 import java.util.Map;
 import javafx.collections.ObservableList;
 import thebob.assetloader.map.core.MapData;
 import thebob.assetloader.map.core.components.IndexedElement;
 import thebob.assetloader.map.wrappers.WorldItemStack;
+import thebob.assetmanager.AssetManager;
 import thebob.ja2maptool.model.TileCategoryMapping;
 import thebob.ja2maptool.model.TileMapping;
-import thebob.ja2maptool.scopes.ConvertMapScope;
+import thebob.ja2maptool.scopes.map.ConvertMapScope;
 
 /**
  *
@@ -38,12 +40,15 @@ import thebob.ja2maptool.scopes.ConvertMapScope;
  */
 public class MapTransformer {
 
+    AssetManager mapAssets = null;
     MapData map = null;
     Map<Integer, TileCategoryMapping> tileMapping = null;
     Map<Integer, Integer> itemMapping = null;
     Integer tileset = null;
 
     public MapTransformer(ConvertMapScope convertMapScope) {
+	mapAssets = convertMapScope.getMap().getMapAssets();
+
 	map = convertMapScope.getMap().getMapData();
 	tileMapping = convertMapScope.getTilesetMapping() != null ? convertMapScope.getTilesetMapping().getMappingList() : null;
 	itemMapping = convertMapScope.getItemMapping() != null ? convertMapScope.getItemMapping().getMappingAsMap() : null;
@@ -83,23 +88,15 @@ public class MapTransformer {
     }
 
     public void saveTo(String path) {
-	if (map == null) {
-	    return;
-	}
+	getRemappedData(true).saveMap(path);
+    }
 
-	if (tileset != null) {
-	    map.getSettings().iTilesetID = tileset;
-	}
-
+    public void remapSnippet(SelectedTiles snippet) {
 	if (tileMapping != null) {
-	    applyTileRemapping();
+	    for (IndexedElement[][] layer : snippet.getLayers()) {
+		remapLayer(layer);
+	    }
 	}
-
-	if (itemMapping != null) {
-	    applyItemRemapping();
-	}
-
-	map.saveMap(path);
     }
 
     public void applyTileRemapping() {
@@ -111,6 +108,30 @@ public class MapTransformer {
 	remapLayer(map.getLayers().onRoofLayer);
     }
 
+    /*
+    private IndexedElement[][] remapLayer(IndexedElement[][] layerType, Map<Integer, TileCategoryMapping> mappingList) {
+	IndexedElement[][] newLayer = new IndexedElement[layerType.length][];
+
+	for (int i = 0; i < layerType.length; i++) {
+	    IndexedElement[] layers = layerType[i];
+	    newLayer[i] = new IndexedElement[layers.length];
+
+	    for (int j = 0; j < layers.length; j++) {
+		IndexedElement tile = layers[j];
+
+		ObservableList<TileMapping> mappingType = mappingList.get(tile.type).getMappings();
+		if (mappingType.size() >= tile.index) {
+		    TileMapping mapping = mappingType.get(tile.index - 1);
+		    newLayer[i][j] = new IndexedElement(mapping.getTargetType(), mapping.getTargetIndex() + 1);
+		} else {
+		    newLayer[i][j] = tile;
+		}
+
+	    }
+	}
+	return newLayer;
+    }
+     */
     private void remapLayer(IndexedElement[][] layerType) {
 	for (int i = 0; i < layerType.length; i++) {
 	    IndexedElement[] layers = layerType[i];
@@ -149,6 +170,31 @@ public class MapTransformer {
 	    }
 
 	}
+    }
+
+    public MapData getRemappedData(boolean preview) {
+	if (map == null) {
+	    return null;
+	}
+
+	if (preview) { // loads a copy of the input map and does the remapping there
+	    map.getByteBuffer().rewind();
+	    map = mapAssets.getMaps().loadMapData(map.getByteBuffer());
+	}
+
+	if (tileset != null) {
+	    map.getSettings().iTilesetID = tileset;
+	}
+
+	if (tileMapping != null) {
+	    applyTileRemapping();
+	}
+
+	if (itemMapping != null) {
+	    applyItemRemapping();
+	}
+
+	return map;
     }
 
 }

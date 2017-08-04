@@ -134,6 +134,10 @@ public class Tileset {
     public void setFileCount(int fileCount) {
 	this.fileCount = fileCount;
     }
+
+    public int getIndex() {
+	return index;
+    }
     
     
 

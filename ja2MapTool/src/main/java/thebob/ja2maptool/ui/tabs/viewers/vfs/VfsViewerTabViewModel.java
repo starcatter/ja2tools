@@ -42,9 +42,9 @@ import thebob.assetloader.vfs.VFSConfig;
 import thebob.assetloader.vfs.accessors.SLFAccessor;
 import thebob.assetloader.vfs.accessors.VFSAccessor;
 import thebob.assetmanager.AssetManager;
-import thebob.ja2maptool.scopes.MapScope;
+import thebob.ja2maptool.scopes.map.MapScope;
 import thebob.ja2maptool.scopes.VfsAssetScope;
-import thebob.ja2maptool.scopes.VfsBrowserScope;
+import thebob.ja2maptool.scopes.view.VfsBrowserScope;
 
 /**
  *

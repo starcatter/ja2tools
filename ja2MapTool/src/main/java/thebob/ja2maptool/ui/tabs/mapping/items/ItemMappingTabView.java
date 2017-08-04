@@ -48,7 +48,7 @@ import static thebob.ja2maptool.ui.tabs.mapping.items.ItemMappingTabViewModel.SE
 import static thebob.ja2maptool.ui.tabs.mapping.items.ItemMappingTabViewModel.UPDATE_MAPPING;
 import static thebob.ja2maptool.ui.tabs.mapping.items.ItemMappingTabViewModel.UPDATE_PROPS_LEFT;
 import static thebob.ja2maptool.ui.tabs.mapping.items.ItemMappingTabViewModel.UPDATE_PROPS_RIGHT;
-import thebob.ja2maptool.util.ItemMapping;
+import thebob.ja2maptool.util.mapping.ItemMapping;
 import static thebob.ja2maptool.ui.tabs.mapping.items.ItemMappingTabViewModel.SELECT_MAPPING_RIGHT;
 
 public class ItemMappingTabView implements FxmlView<ItemMappingTabViewModel>, Initializable {
@@ -78,8 +78,12 @@ public class ItemMappingTabView implements FxmlView<ItemMappingTabViewModel>, In
 	FileChooser chooser = new FileChooser();
 	chooser.setTitle("Load mapping");
 	chooser.setInitialDirectory(new File("."));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("item mapping files", "*.itemmap"));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("all files", "*.*"));
 	File selectedDirectory = chooser.showOpenDialog(list_left.getScene().getWindow());
-	viewModel.loadMapping(selectedDirectory.getPath());
+	if (selectedDirectory != null) {
+	    viewModel.loadMapping(selectedDirectory.getPath());
+	}
     }
 
     @FXML
@@ -87,8 +91,12 @@ public class ItemMappingTabView implements FxmlView<ItemMappingTabViewModel>, In
 	FileChooser chooser = new FileChooser();
 	chooser.setTitle("Save mapping as...");
 	chooser.setInitialDirectory(new File("."));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("item mapping files", "*.itemmap"));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("all files", "*.*"));
 	File selectedDirectory = chooser.showSaveDialog(list_left.getScene().getWindow());
-	viewModel.saveMapping(selectedDirectory.getPath());
+	if (selectedDirectory != null) {
+	    viewModel.saveMapping(selectedDirectory.getPath());
+	}
     }
 
     // MVVMFX inject
@@ -140,7 +148,6 @@ public class ItemMappingTabView implements FxmlView<ItemMappingTabViewModel>, In
 	});
 
 	// setup prop lists
-	
 	viewModel.setPropsLeft(props_left.getItems());
 	viewModel.setPropsRight(props_right.getItems());
 
@@ -183,12 +190,11 @@ public class ItemMappingTabView implements FxmlView<ItemMappingTabViewModel>, In
 	});
 
 	// setup mapping list
-	
 	mapping_list.setItems(viewModel.getMappingList());
-	mapping_list.setOnMouseClicked( event -> {
+	mapping_list.setOnMouseClicked(event -> {
 	    ItemMapping selectedMapping = mapping_list.getSelectionModel().getSelectedItem();
-	    viewModel.showMapping(selectedMapping);	    
-	} );	
+	    viewModel.showMapping(selectedMapping);
+	});
 
 	// setup events
 	viewModel.subscribe(SELECT_MAPPING_LEFT, (key, value) -> {
@@ -197,28 +203,28 @@ public class ItemMappingTabView implements FxmlView<ItemMappingTabViewModel>, In
 
 	    int index = list_left.getSelectionModel().getSelectedIndex();
 	    list_left.getFocusModel().focus(index);
-	    list_left.scrollTo(index-5);
-	    list_left.scrollTo(index+5);
+	    list_left.scrollTo(index - 5);
+	    list_left.scrollTo(index + 5);
 	    list_left.scrollTo(index);
 	});
-	
+
 	viewModel.subscribe(SELECT_MAPPING_RIGHT, (key, value) -> {
 	    TreeItem node = (TreeItem) value[0];
 	    list_right.getSelectionModel().select(node);
 
 	    int index = list_right.getSelectionModel().getSelectedIndex();
 	    list_right.getFocusModel().focus(index);
-	    list_right.scrollTo(index-5);
-	    list_right.scrollTo(index+5);
+	    list_right.scrollTo(index - 5);
+	    list_right.scrollTo(index + 5);
 	    list_right.scrollTo(index);
 	});
-	
+
 	viewModel.subscribe(SELECT_MAPPING_LIST, (key, value) -> {
 	    ItemMapping mapping = (ItemMapping) value[0];
 	    mapping_list.scrollTo(mapping);
 	    mapping_list.getSelectionModel().select(mapping);
 	});
-	
+
 	viewModel.subscribe(UPDATE_MAPPING, (key, value) -> {
 	    mapping_list.refresh();
 	});

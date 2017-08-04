@@ -23,6 +23,9 @@
  */
 package thebob.ja2maptool.scopes;
 
+import thebob.ja2maptool.scopes.map.ConvertMapScope;
+import thebob.ja2maptool.scopes.mapping.ItemMappingScope;
+import thebob.ja2maptool.scopes.mapping.TilesetMappingScope;
 import de.saxsys.mvvmfx.Scope;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +36,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.scene.control.Tab;
+import thebob.ja2maptool.scopes.map.MapCompositorScope;
 
 /**
  *
@@ -46,30 +50,33 @@ public class MainScope implements Scope {
     public static final String UPDATE_SCOPES = "UPDATE_SCOPES";
 
     public enum TabTypes {
-	TAB_VFS_SETUP,	
+	TAB_VFS_SETUP,
 	TAB_MAPPING_SETUP,
-	TAB_CONVERT
+	TAB_CONVERT,
+	TAB_COMPOSITOR,
     }
 
-    ListChangeListener<Scope> listener = new ListChangeListener<Scope>(){
+    ListChangeListener<Scope> listener = new ListChangeListener<Scope>() {
 	@Override
 	public void onChanged(ListChangeListener.Change<? extends Scope> c) {
 	    publish(UPDATE_SCOPES);
 	}
     };
-    
+
     ObservableList<TilesetMappingScope> activeTilesetMappings = FXCollections.observableArrayList();
     ObservableList<ItemMappingScope> activeItemMappings = FXCollections.observableArrayList();
     ObservableList<ConvertMapScope> activeMapConversions = FXCollections.observableArrayList();
+    ObservableList<MapCompositorScope> activeMapCompositors = FXCollections.observableArrayList();
 
     ObservableMap<Scope, Tab> openedScopeTabs = FXCollections.observableHashMap();
 
-    public MainScope(){
+    public MainScope() {
 	activeTilesetMappings.addListener(listener);
 	activeItemMappings.addListener(listener);
 	activeMapConversions.addListener(listener);
+	activeMapCompositors.addListener(listener);
     }
-    
+
     public Tab getTabForScope(Scope scope) {
 	return openedScopeTabs.get(scope);
     }
@@ -98,6 +105,14 @@ public class MainScope implements Scope {
 	activeItemMappings.remove(scope);
     }
 
+    public void registerMapCompositorScope(MapCompositorScope scope) {
+	activeMapCompositors.add(scope);
+    }
+
+    public void freeMapCompositorScope(MapCompositorScope scope) {
+	activeMapCompositors.remove(scope);
+    }
+
     public void freeTilesetMappingScope(TilesetMappingScope scope) {
 	activeTilesetMappings.remove(scope);
     }
@@ -106,16 +121,20 @@ public class MainScope implements Scope {
 	activeMapConversions.remove(scope);
     }
 
-    public List<ConvertMapScope> getActiveMapConversions() {
+    public ObservableList<ConvertMapScope> getActiveMapConversions() {
 	return activeMapConversions;
     }
 
-    public List<TilesetMappingScope> getActiveTilesetMappings() {
+    public ObservableList<TilesetMappingScope> getActiveTilesetMappings() {
 	return activeTilesetMappings;
     }
 
-    public List<ItemMappingScope> getActiveItemMappings() {
+    public ObservableList<ItemMappingScope> getActiveItemMappings() {
 	return activeItemMappings;
+    }
+
+    public ObservableList<MapCompositorScope> getActiveMapCompositors() {
+	return activeMapCompositors;
     }
 
 }

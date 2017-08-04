@@ -35,12 +35,18 @@ import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
@@ -57,6 +63,7 @@ import thebob.ja2maptool.ui.dialogs.scopeselect.ScopeSelectionDialogViewModel;
 import thebob.ja2maptool.ui.tabs.convert.ConvertMapTabViewModel.PreviewMode;
 import thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabView;
 import thebob.ja2maptool.util.DialogHelper;
+import thebob.ja2maptool.util.compositor.SelectedTiles;
 
 public class ConvertMapTabView implements FxmlView<ConvertMapTabViewModel>, Initializable {
 
@@ -70,10 +77,79 @@ public class ConvertMapTabView implements FxmlView<ConvertMapTabViewModel>, Init
     private PropertySheet map_status;
 
     @FXML
-    private ToggleGroup previewMode;
+    private Button snippet_addBtn;
+
+    @FXML
+    private CheckBox remap_out;
+
+    @FXML
+    private CheckBox remap_in;
+
+    @FXML
+    private CheckBox remap_sel;
+
+    @FXML
+    private Label snippet_selectionText;
+
+    @FXML
+    private Label snippet_totalText;
+
+    @FXML
+    private Label snippet_landText;
+
+    @FXML
+    private Label snippet_objectText;
+
+    @FXML
+    private Label snippet_structText;
+
+    @FXML
+    private Label snippet_shadowsText;
+
+    @FXML
+    private Label snippet_roofText;
+
+    @FXML
+    private Label snippet_onRoofText;
+
+    @FXML
+    private CheckBox snippet_land;
+
+    @FXML
+    private CheckBox snippet_objects;
+
+    @FXML
+    private CheckBox snippet_structures;
+
+    @FXML
+    private CheckBox snippet_shadows;
+
+    @FXML
+    private CheckBox snippet_roofs;
+
+    @FXML
+    private CheckBox snippet_onRoof;
+
+    @FXML
+    private TextField snippet_name;
+
+    @FXML
+    private ListView<SelectedTiles> snippet_list;
+
+    @FXML
+    private Button snippet_loadBtn;
+
+    @FXML
+    private Button snippet_saveBtn;
+
+    @FXML
+    private Button snippet_deleteBtn;
 
     @FXML
     private RadioButton prev_original;
+
+    @FXML
+    private ToggleGroup previewMode;
 
     @FXML
     private RadioButton prev_remap;
@@ -90,6 +166,8 @@ public class ConvertMapTabView implements FxmlView<ConvertMapTabViewModel>, Init
 	FileChooser chooser = new FileChooser();
 	chooser.setTitle("Save converted map as...");
 	chooser.setInitialDirectory(new File("."));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("map files", "*.dat"));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("all files", "*.*"));
 	File selectedDirectory = chooser.showSaveDialog(prev_remap.getScene().getWindow());
 	if (selectedDirectory != null) {
 	    viewModel.saveMap(selectedDirectory.getPath());
@@ -101,6 +179,8 @@ public class ConvertMapTabView implements FxmlView<ConvertMapTabViewModel>, Init
 	FileChooser chooser = new FileChooser();
 	chooser.setTitle("Load tileset mapping");
 	chooser.setInitialDirectory(new File("."));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("tile mapping files", "*.tilemap"));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("all files", "*.*"));
 	File selectedDirectory = chooser.showOpenDialog(prev_remap.getScene().getWindow());
 	if (selectedDirectory != null) {
 	    viewModel.loadTileMapping(selectedDirectory.getPath());
@@ -129,6 +209,8 @@ public class ConvertMapTabView implements FxmlView<ConvertMapTabViewModel>, Init
 	FileChooser chooser = new FileChooser();
 	chooser.setTitle("Load item mapping");
 	chooser.setInitialDirectory(new File("."));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("item mapping files", "*.itemmap"));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("all files", "*.*"));
 	File selectedDirectory = chooser.showOpenDialog(prev_remap.getScene().getWindow());
 	if (selectedDirectory != null) {
 	    viewModel.loadItemMapping(selectedDirectory.getPath());
@@ -193,6 +275,44 @@ public class ConvertMapTabView implements FxmlView<ConvertMapTabViewModel>, Init
 	viewModel.unloadTileMapping();
     }
 
+    // button actions
+    @FXML
+    void snippet_add(ActionEvent event) {
+	viewModel.addSnippet();
+    }
+
+    @FXML
+    void snippetDelete(ActionEvent event) {
+	viewModel.deleteSnippet(snippet_list.getSelectionModel().getSelectedItem());
+    }
+
+    @FXML
+    void snippetLoad(ActionEvent event) {
+	FileChooser chooser = new FileChooser();
+	chooser.setTitle("Load snippet list");
+	chooser.setInitialDirectory(new File("."));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("map snippet files", "*.snip"));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("all files", "*.*"));
+	File selectedDirectory = chooser.showOpenDialog(prev_remap.getScene().getWindow());
+	if (selectedDirectory != null) {
+	    viewModel.loadSnippetList(selectedDirectory.getPath());
+	}
+    }
+
+    @FXML
+    void snippetSave(ActionEvent event) {
+	FileChooser chooser = new FileChooser();
+	chooser.setTitle("Save snippet list");
+	chooser.setInitialDirectory(new File("."));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("map snippet files", "*.snip"));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("all files", "*.*"));
+	File selectedDirectory = chooser.showSaveDialog(prev_remap.getScene().getWindow());
+	if (selectedDirectory != null) {
+	    viewModel.saveSnippetList(selectedDirectory.getPath());
+	}
+    }
+
+    // ---------------------------------------       
     // MVVMFX inject
     @InjectViewModel
     private ConvertMapTabViewModel viewModel;
@@ -207,7 +327,7 @@ public class ConvertMapTabView implements FxmlView<ConvertMapTabViewModel>, Init
     public void initialize(URL location, ResourceBundle resources) {
 
 	// setup renderer
-	viewModel.setPreviewModel( mapViewController.getViewModel() );
+	viewModel.setPreviewModel(mapViewController.getViewModel());
 
 	// setup radio buttons
 	prev_original.setUserData(PreviewMode.ORIGINAL);
@@ -291,6 +411,22 @@ public class ConvertMapTabView implements FxmlView<ConvertMapTabViewModel>, Init
 	    };
 	});
 
+	snippet_list.setCellFactory(list -> {
+	    return new ListCell<SelectedTiles>() {
+		@Override
+		protected void updateItem(SelectedTiles item, boolean empty) {
+		    super.updateItem(item, empty); //To change body of generated methods, choose Tools | Templates.
+		    if (item == null || empty) {
+			setText(null);
+		    } else if (item.getName() != null) {
+			setText(item.getName());
+		    } else {
+			setText(item.toString());
+		    }
+		}
+	    };
+	});
+
 	// setup events
 	viewModel.subscribe(ConvertMapTabViewModel.MAP_LOADED, (key, value) -> {
 	    viewModel.updateMapProps(map_status.getItems());
@@ -301,6 +437,35 @@ public class ConvertMapTabView implements FxmlView<ConvertMapTabViewModel>, Init
 	viewModel.subscribe(ConvertMapTabViewModel.ITEM_MAPPING_LOADED, (key, value) -> {
 	    viewModel.updateItemMappingProps(item_status.getItems());
 	});
+
+	viewModel.subscribe(ConvertMapTabViewModel.SNIPPET_LIST_INIT, (key, value) -> {
+	    snippet_list.setItems(viewModel.getSnippetList());
+	});
+
+	// setup compositor tab
+	// status texts
+	snippet_selectionText.textProperty().bind(viewModel.getSelectionTextProperty());
+	snippet_totalText.textProperty().bind(viewModel.getTotalTextProperty());
+	snippet_landText.textProperty().bind(viewModel.getLandTextProperty());
+	snippet_objectText.textProperty().bind(viewModel.getObjectTextProperty());
+	snippet_structText.textProperty().bind(viewModel.getStructTextProperty());
+	snippet_shadowsText.textProperty().bind(viewModel.getShadowsTextProperty());
+	snippet_roofText.textProperty().bind(viewModel.getRoofTextProperty());
+	snippet_onRoofText.textProperty().bind(viewModel.getOnRoofTextProperty());
+
+	// compositor checkboxes
+	snippet_land.selectedProperty().bindBidirectional(viewModel.getSnippet_land());
+	snippet_objects.selectedProperty().bindBidirectional(viewModel.getSnippet_objects());
+	snippet_structures.selectedProperty().bindBidirectional(viewModel.getSnippet_structures());
+	snippet_shadows.selectedProperty().bindBidirectional(viewModel.getSnippet_shadows());
+	snippet_roofs.selectedProperty().bindBidirectional(viewModel.getSnippet_roofs());
+	snippet_onRoof.selectedProperty().bindBidirectional(viewModel.getSnippet_onRoof());
+
+	snippet_name.textProperty().bindBidirectional(viewModel.getSnippet_name());
+
+	remap_in.selectedProperty().bindBidirectional(viewModel.getRemap_in());
+	remap_out.selectedProperty().bindBidirectional(viewModel.getRemap_out());
+	remap_sel.selectedProperty().bindBidirectional(viewModel.getRemap_sel());
     }
 
     private void updateRendererMode() {

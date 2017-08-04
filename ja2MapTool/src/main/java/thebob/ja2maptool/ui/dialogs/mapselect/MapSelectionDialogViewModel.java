@@ -35,7 +35,7 @@ import thebob.assetloader.vfs.VFSConfig;
 import thebob.assetloader.vfs.VirtualFileSystem;
 import thebob.assetmanager.AssetManager;
 import thebob.ja2maptool.components.TilesetMappingTreeItem;
-import thebob.ja2maptool.scopes.MapScope;
+import thebob.ja2maptool.scopes.map.MapScope;
 import thebob.ja2maptool.scopes.VfsAssetScope;
 import static thebob.ja2maptool.scopes.VfsAssetScope.REFRESH_CONFIGS;
 

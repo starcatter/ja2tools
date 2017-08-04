@@ -429,4 +429,10 @@ public class MapContentInfo extends MapComponent {
         }
     }
 
+    public short[] getGusWorldRoomInfo() {
+	return gusWorldRoomInfo;
+    }
+
+    
+    
 }

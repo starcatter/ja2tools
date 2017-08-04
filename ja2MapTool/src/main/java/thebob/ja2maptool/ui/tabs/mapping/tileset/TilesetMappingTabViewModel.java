@@ -24,7 +24,7 @@
 package thebob.ja2maptool.ui.tabs.mapping.tileset;
 
 import de.saxsys.mvvmfx.InjectScope;
-import thebob.ja2maptool.scopes.TilesetMappingScope;
+import thebob.ja2maptool.scopes.mapping.TilesetMappingScope;
 import de.saxsys.mvvmfx.ViewModel;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -46,7 +46,7 @@ import thebob.ja2maptool.model.TileCategoryMapping;
 import thebob.ja2maptool.model.TileMapping;
 import thebob.ja2maptool.scopes.MainScope;
 import thebob.ja2maptool.scopes.VfsAssetScope;
-import thebob.ja2maptool.util.MappingIO;
+import thebob.ja2maptool.util.mapping.MappingIO;
 import thebob.ja2maptool.util.tilesearch.TileSearchResult;
 import thebob.ja2maptool.util.tilesearch.TileSearch;
 

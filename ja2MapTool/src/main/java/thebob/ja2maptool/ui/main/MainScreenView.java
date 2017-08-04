@@ -48,17 +48,19 @@ import javax.inject.Inject;
 import thebob.assetloader.vfs.VFSConfig;
 import thebob.ja2maptool.components.ScopeActionMenu;
 import thebob.ja2maptool.components.VFSMenu;
-import thebob.ja2maptool.scopes.ConvertMapScope;
-import thebob.ja2maptool.scopes.ItemMappingScope;
+import thebob.ja2maptool.scopes.map.ConvertMapScope;
+import thebob.ja2maptool.scopes.mapping.ItemMappingScope;
 import thebob.ja2maptool.scopes.MainScope;
-import thebob.ja2maptool.scopes.MapScope;
-import thebob.ja2maptool.scopes.StiViewerScope;
-import thebob.ja2maptool.scopes.TilesetMappingScope;
+import thebob.ja2maptool.scopes.map.MapScope;
+import thebob.ja2maptool.scopes.view.StiViewerScope;
+import thebob.ja2maptool.scopes.mapping.TilesetMappingScope;
 import static thebob.ja2maptool.scopes.VfsAssetScope.BROWSE_CONFIG;
 import static thebob.ja2maptool.scopes.VfsAssetScope.REFRESH_CONFIGS;
-import thebob.ja2maptool.scopes.VfsBrowserScope;
+import thebob.ja2maptool.scopes.map.MapCompositorScope;
+import thebob.ja2maptool.scopes.view.VfsBrowserScope;
 import thebob.ja2maptool.ui.dialogs.mapselect.MapSelectionDialogView;
 import thebob.ja2maptool.ui.dialogs.mapselect.MapSelectionDialogViewModel;
+import thebob.ja2maptool.ui.tabs.compositor.CompositorTabView;
 import thebob.ja2maptool.ui.tabs.convert.ConvertMapTabView;
 import thebob.ja2maptool.ui.tabs.mapping.items.ItemMappingTabView;
 import thebob.ja2maptool.ui.tabs.mapping.setup.MappingSetupTabView;
@@ -101,6 +103,9 @@ public class MainScreenView implements FxmlView<MainScreenViewModel>, Initializa
     private Menu menu_maps;
 
     @FXML
+    private Menu menu_compositors;
+
+    @FXML
     void menu_close(ActionEvent event) {
 	Platform.exit();
     }
@@ -111,8 +116,13 @@ public class MainScreenView implements FxmlView<MainScreenViewModel>, Initializa
 	FileChooser chooser = new FileChooser();
 	chooser.setTitle("Load item mapping");
 	chooser.setInitialDirectory(new File("."));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("item mapping files", "*.itemmap"));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("all files", "*.*"));
+
 	File selectedDirectory = chooser.showOpenDialog(main_tabs.getScene().getWindow());
-	viewModel.loadItemMapping(selectedDirectory.getPath());
+	if (selectedDirectory != null) {
+	    viewModel.loadItemMapping(selectedDirectory.getPath());
+	}
     }
 
     @FXML
@@ -120,8 +130,13 @@ public class MainScreenView implements FxmlView<MainScreenViewModel>, Initializa
 	FileChooser chooser = new FileChooser();
 	chooser.setTitle("Load tileset mapping");
 	chooser.setInitialDirectory(new File("."));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("tile mapping files", "*.tilemap"));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("all files", "*.*"));
+
 	File selectedDirectory = chooser.showOpenDialog(main_tabs.getScene().getWindow());
-	viewModel.loadTilesetMapping(selectedDirectory.getPath());
+	if (selectedDirectory != null) {
+	    viewModel.loadTilesetMapping(selectedDirectory.getPath());
+	}
     }
 
     // open file viewers
@@ -155,7 +170,9 @@ public class MainScreenView implements FxmlView<MainScreenViewModel>, Initializa
 	chooser.setTitle("Load SLF file");
 	chooser.setInitialDirectory(new File("."));
 	File selectedDirectory = chooser.showOpenDialog(main_tabs.getScene().getWindow());
-	viewModel.loadSLF(selectedDirectory.getPath());
+	if (selectedDirectory != null) {
+	    viewModel.loadSLF(selectedDirectory.getPath());
+	}
     }
 
     @FXML
@@ -163,11 +180,16 @@ public class MainScreenView implements FxmlView<MainScreenViewModel>, Initializa
 	FileChooser chooser = new FileChooser();
 	chooser.setTitle("Load SLF file");
 	chooser.setInitialDirectory(new File("."));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("sti files", "*.sti"));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("all files", "*.*"));
+
 	File selectedDirectory = chooser.showOpenDialog(main_tabs.getScene().getWindow());
-	// viewModel.loadSTI(selectedDirectory.getPath()); // TODO: work this the proper MVVM way
-	StiViewerScope scope = new StiViewerScope();
-	scope.setFilePath(selectedDirectory.getPath());
-	addTab(StiViewerTabView.class, "View STI", scope);
+
+	if (selectedDirectory != null) {
+	    StiViewerScope scope = new StiViewerScope();
+	    scope.setFilePath(selectedDirectory.getPath());
+	    addTab(StiViewerTabView.class, "View STI", scope);
+	}
     }
 
     // actions that open tabs
@@ -184,6 +206,11 @@ public class MainScreenView implements FxmlView<MainScreenViewModel>, Initializa
     @FXML
     void menu_convert(ActionEvent event) {
 	gotoBasicTab(MainScope.TabTypes.TAB_CONVERT);
+    }
+
+    @FXML
+    void menu_new_compositor(ActionEvent event) {
+	gotoBasicTab(MainScope.TabTypes.TAB_COMPOSITOR);
     }
 
     // ------------------ END FXML AUTOGEN    
@@ -217,11 +244,18 @@ public class MainScreenView implements FxmlView<MainScreenViewModel>, Initializa
 		}
 		tab = tab_mapping;
 		break;
-	    case TAB_CONVERT:
+	    case TAB_CONVERT: {
 		ConvertMapScope scope = new ConvertMapScope();
 		tab = addTab(ConvertMapTabView.class, "Convert map", scope);
 		viewModel.getMainScope().registerMapConversionScope(scope);
-		break;
+	    }
+	    break;
+	    case TAB_COMPOSITOR: {
+		MapCompositorScope scope = new MapCompositorScope();
+		tab = addTab(CompositorTabView.class, "Map compositor", scope);
+		viewModel.getMainScope().registerMapCompositorScope(scope);
+	    }
+	    break;
 	    default:
 		throw new AssertionError(gotoTab.name());
 
@@ -256,10 +290,10 @@ public class MainScreenView implements FxmlView<MainScreenViewModel>, Initializa
 	    VFSConfig config = (VFSConfig) payload[0];
 	    VfsBrowserScope scope = new VfsBrowserScope();
 	    scope.setConfig(config);
-	    
+
 	    addTab(VfsViewerTabView.class, "VFS browser", scope);
 	});
-	
+
 	viewModel.getVfsScope().subscribe(REFRESH_CONFIGS, (key, payload) -> {
 	    updateVfsMenu();
 	});
@@ -294,6 +328,17 @@ public class MainScreenView implements FxmlView<MainScreenViewModel>, Initializa
 		Menu convertMapMenu = new ScopeActionMenu<ConvertMapScope>("Convert map", descStr, mapping, mainScope.getActiveMapConversions(), mainScope.getTabForScope(mapping), this, ConvertMapTabView.class);
 		menu_maps.getItems().add(convertMapMenu);
 	    }
+
+	    // compositors menu
+	    menu_compositors.getItems().clear();
+	    menu_compositors.setDisable(mainScope.getActiveMapCompositors().isEmpty());
+
+	    for (MapCompositorScope mapping : mainScope.getActiveMapCompositors()) {
+		String descStr = "";
+		Menu compositorMenu = new ScopeActionMenu<MapCompositorScope>("Compositor", descStr, mapping, mainScope.getActiveMapCompositors(), mainScope.getTabForScope(mapping), this, CompositorTabView.class);
+		menu_compositors.getItems().add(compositorMenu);
+	    }
+
 	});
 
 	viewModel.subscribe(viewModel.ADD_TAB, (key, payload) -> {

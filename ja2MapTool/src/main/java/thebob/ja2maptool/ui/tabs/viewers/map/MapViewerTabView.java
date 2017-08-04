@@ -56,27 +56,37 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
 
     @FXML
     void prev_window_click(MouseEvent event) {
-	double wx = prev_window.getWidth() / 2d;
-	double wy = prev_window.getHeight() / 2d;
 
 	double dx = event.getX();
 	double dy = event.getY();
 
-	double deltaX = (dx - wx) / wx;
-	double deltaY = (dy - wy) / wx;
-
-	double transX = deltaX / 2 + deltaY / 2;
-	double transY = deltaY - deltaX / 2;
-
-	System.out.println("thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabView.prev_window_click(): " + deltaX + " / " + deltaY);
-
-	
-	
 	if (event.isControlDown()) {
-	    viewModel.getRenderer().sendClick(dx, dy);
+	    // send cursor location to the renderer
+	    viewModel.getRenderer().sendClick(dx, dy, event.isControlDown(), event.isShiftDown(), event.isAltDown());
+	    
+	    // if shift was clicked, try to get the selection
+	    if (event.isShiftDown()) {
+		viewModel.getSelection();
+	    } else {
+		viewModel.clearSelection();
+	    }
+	    
 	    viewModel.scrollPreview(0, 0);
 	} else {
+	    // move the window toward the click location
+	    double wx = prev_window.getWidth() / 2d;
+	    double wy = prev_window.getHeight() / 2d;
+
+	    double deltaX = (dx - wx) / wx;
+	    double deltaY = (dy - wy) / wx;
+
+	    double transX = deltaX / 2 + deltaY / 2;
+	    double transY = deltaY - deltaX / 2;
+
+	    System.out.println("thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabView.prev_window_click(): " + deltaX + " / " + deltaY);
+
 	    viewModel.getRenderer().hideCursor();
+	    viewModel.clearSelection();
 	    viewModel.scrollPreview((int) (transX * 10d), (int) (transY * 10d));
 	}
     }
@@ -119,6 +129,16 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
 	prev_window.widthProperty().addListener(event -> {
 	    viewModel.getRenderer().setCanvas(prev_window);
 	    viewModel.scrollPreview(0, 0);
+	});
+
+	prev_window.setOnMouseMoved(event -> {
+	    if (event.isControlDown()) {
+		double dx = event.getX();
+		double dy = event.getY();
+
+		viewModel.getRenderer().sendCursor(dx, dy, event.isControlDown(), event.isShiftDown(), event.isAltDown());
+		viewModel.scrollPreview(0, 0);
+	    }
 	});
 
 	// setup renderer

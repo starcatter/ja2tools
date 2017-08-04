@@ -18,9 +18,9 @@
  */
 package thebob.ja2maptool.util.tilesearch.histogram.models;
 
-import com.telmomenezes.jfastemd.Feature2D;
-import com.telmomenezes.jfastemd.JFastEMD;
-import com.telmomenezes.jfastemd.Signature;
+import thebob.ja2maptool.util.tilesearch.com.telmomenezes.jfastemd.Feature2D;
+import thebob.ja2maptool.util.tilesearch.com.telmomenezes.jfastemd.JFastEMD;
+import thebob.ja2maptool.util.tilesearch.com.telmomenezes.jfastemd.Signature;
 
 /**
  * I'm fairly confident I'm doing something massively wrong here. The results are slow and terrible. This was supposed to be fast and good.

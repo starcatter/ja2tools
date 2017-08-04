@@ -19,14 +19,14 @@
 package thebob.ja2maptool.util.tilesearch.histogram;
 
 import thebob.ja2maptool.util.tilesearch.TileComparator;
-import com.telmomenezes.jfastemd.Feature2D;
-import com.telmomenezes.jfastemd.JFastEMD;
-import com.telmomenezes.jfastemd.Signature;
+import thebob.ja2maptool.util.tilesearch.com.telmomenezes.jfastemd.Feature2D;
+import thebob.ja2maptool.util.tilesearch.com.telmomenezes.jfastemd.JFastEMD;
+import thebob.ja2maptool.util.tilesearch.com.telmomenezes.jfastemd.Signature;
 import java.util.HashMap;
 import java.util.Map;
 import thebob.assetloader.tileset.Tile;
 import thebob.assetloader.tileset.Tileset;
-import thebob.ja2maptool.scopes.TilesetMappingScope;
+import thebob.ja2maptool.scopes.mapping.TilesetMappingScope;
 import thebob.ja2maptool.util.tilesearch.TileSearch;
 import thebob.ja2maptool.util.tilesearch.TileSearchResult;
 import thebob.ja2maptool.util.tilesearch.histogram.models.EMDHistogramComparator;

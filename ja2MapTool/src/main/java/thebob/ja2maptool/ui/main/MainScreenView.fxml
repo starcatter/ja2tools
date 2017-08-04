@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
 The MIT License
 
@@ -23,6 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -86,12 +88,22 @@ THE SOFTWARE.
                 </Menu>
                   <Menu mnemonicParsing="false" text="Convert">
                      <items>
-                        <MenuItem mnemonicParsing="false" onAction="#menu_convert" text="Convert map" />
+                        <MenuItem mnemonicParsing="false" onAction="#menu_convert" text="New converter" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <Menu fx:id="menu_maps" disable="true" mnemonicParsing="false" text="Maps" />
                      </items>
                   </Menu>
+                  <Menu mnemonicParsing="false" text="Compositor">
+                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#menu_new_compositor" text="New compositor" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <Menu fx:id="menu_compositors" disable="true" mnemonicParsing="false" text="Compositors" />
+                     </items>
+                  </Menu>
               </menus>
+               <BorderPane.margin>
+                  <Insets bottom="1.0" />
+               </BorderPane.margin>
             </MenuBar>
          </top>
 	</BorderPane>

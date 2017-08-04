@@ -62,7 +62,7 @@ public class MapSelectionDialogView implements FxmlView<MapSelectionDialogViewMo
 
     @FXML
     private Tab tab_file;
-    
+
     @FXML
     private Label file_name;
 
@@ -89,10 +89,16 @@ public class MapSelectionDialogView implements FxmlView<MapSelectionDialogViewMo
 	FileChooser chooser = new FileChooser();
 	chooser.setTitle("Load map file");
 	File defaultDirectory = new File(".");
+
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("map files", "*.dat"));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("all files", "*.*"));
+
 	chooser.setInitialDirectory(defaultDirectory);
 	File selectedDirectory = chooser.showOpenDialog(file_select.getScene().getWindow());
-	viewModel.selectFile(selectedDirectory.getPath());
-	// showDialog.close();
+	if (selectedDirectory != null) {
+	    viewModel.selectFile(selectedDirectory.getPath());
+	}
+
     }
 
     @FXML
@@ -133,10 +139,10 @@ public class MapSelectionDialogView implements FxmlView<MapSelectionDialogViewMo
 	map_list.setRoot(viewModel.getMapListRoot());
 
 	// if there's no VFS loaded, default to file tab
-	if( viewModel.getVfs().getManagers().isEmpty() ){
+	if (viewModel.getVfs().getManagers().isEmpty()) {
 	    tabs.getSelectionModel().select(tab_file);
 	}
-	
+
 	viewModel.subscribe(MapSelectionDialogViewModel.CLOSE_DIALOG_NOTIFICATION, (key, payload) -> {
 	    showDialog.close();
 	});
@@ -148,7 +154,7 @@ public class MapSelectionDialogView implements FxmlView<MapSelectionDialogViewMo
 	// setup workspace VFS picker
 	vfs_mode_workspace.setDisable(true);
 	vfs_picker_workspace.setDisable(true);
-	
+
 	vfs_picker_workspace.itemsProperty().addListener(event -> { // items are cloned from loaded asset manager list, so update status when list is swapped
 	    vfs_mode_workspace.setDisable(vfs_picker_workspace.getItems().isEmpty());
 	    vfs_picker_workspace.setDisable(vfs_picker_workspace.getItems().isEmpty());
@@ -156,7 +162,7 @@ public class MapSelectionDialogView implements FxmlView<MapSelectionDialogViewMo
 	});
 	vfs_picker_workspace.setItems(viewModel.getLoadedVfsList());
 
-	vfs_picker_workspace.setConverter( new StringConverter<AssetManager>() {
+	vfs_picker_workspace.setConverter(new StringConverter<AssetManager>() {
 	    @Override
 	    public String toString(AssetManager object) {
 		return object.getVfs().getPath().getFileName().toString();
@@ -167,12 +173,11 @@ public class MapSelectionDialogView implements FxmlView<MapSelectionDialogViewMo
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	    }
 	});
-	
-	
+
 	// setup map file local VFS picker
 	vfs_mode_local.setDisable(true);
 	vfs_picker_local.setDisable(true);
-	
+
 	vfs_picker_local.setItems(viewModel.getLocalVfsList());
 	vfs_picker_local.getItems().addListener((ListChangeListener.Change<? extends VFSConfig> c) -> {	// bound to an actual observable list which may change
 	    if (viewModel.getLocalVfsList().isEmpty()) {
@@ -188,11 +193,11 @@ public class MapSelectionDialogView implements FxmlView<MapSelectionDialogViewMo
 		    vfs_type.selectToggle(vfs_mode_local);
 		}
 	    }
-	    
+
 	    Platform.runLater(() -> vfs_picker_local.getSelectionModel().selectFirst());
 	});
 
-	vfs_picker_local.setConverter( new StringConverter<VFSConfig>() {
+	vfs_picker_local.setConverter(new StringConverter<VFSConfig>() {
 	    @Override
 	    public String toString(VFSConfig object) {
 		return object.getPath().getFileName().toString();
@@ -203,7 +208,7 @@ public class MapSelectionDialogView implements FxmlView<MapSelectionDialogViewMo
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	    }
 	});
-	
+
     }
 
 }

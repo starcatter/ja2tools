@@ -32,8 +32,8 @@ import javafx.stage.Stage;
 import static thebob.assetloader.common.LayerConstants.gTileSurfaceName;
 import thebob.assetloader.tileset.Tile;
 import thebob.ja2maptool.model.TileMapping;
-import thebob.ja2maptool.scopes.TilesetMappingScope;
-import static thebob.ja2maptool.scopes.TilesetMappingScope.REFRESH_MAPPING_LIST;
+import thebob.ja2maptool.scopes.mapping.TilesetMappingScope;
+import static thebob.ja2maptool.scopes.mapping.TilesetMappingScope.REFRESH_MAPPING_LIST;
 
 /**
  *

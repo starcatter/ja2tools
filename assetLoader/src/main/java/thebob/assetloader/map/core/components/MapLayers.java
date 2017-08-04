@@ -27,7 +27,6 @@ import java.nio.ByteBuffer;
 import thebob.assetloader.map.MapLoader;
 import thebob.assetloader.map.core.MapData;
 
-
 public class MapLayers extends MapComponent {
 
     // layer stats
@@ -155,6 +154,9 @@ public class MapLayers extends MapComponent {
 	    if (MapLoader.logFileIO) {
 		System.out.println("loader.core.MapLayers.loadLayers() end @" + byteBuffer.position());
 	    }
+
+	    updateLayerCounts();
+
 	    return true;
 	} catch (Exception e) {
 	    System.out.println("loadLayers(): " + e.toString());
@@ -297,11 +299,60 @@ public class MapLayers extends MapComponent {
 	return "\tLayer counts:" + "\n\t\tlandLayers:\t" + totalLandLayers + "\n\t\tobjectLayers:\t" + totalObjectLayers + "\n\t\tstructLayers:\t" + totalStructLayers + "\n\t\tshadowLayers:\t" + totalShadowLayers + "\n\t\troofLayers:\t" + totalRoofLayers + "\n\t\tonRoofLayers:\t" + totalOnRoofLayers + "\n\ttotal layer size:\t" + (totalLandLayers + totalObjectLayers + totalStructLayers + totalShadowLayers + totalRoofLayers + totalOnRoofLayers) * 2 + "B";
     }
 
+    public void updateLayerCounts() {
+
+	System.out.println("Updating layer counts, initial state:");
+	System.out.println("\ttotalLandLayers: " + totalLandLayers);
+	System.out.println("\ttotalObjectLayers: " + totalObjectLayers);
+	System.out.println("\ttotalStructLayers: " + totalStructLayers);
+	System.out.println("\ttotalShadowLayers: " + totalShadowLayers);
+	System.out.println("\ttotalRoofLayers: " + totalRoofLayers);
+	System.out.println("\ttotalOnRoofLayers: " + totalOnRoofLayers);
+
+	totalLandLayers = 0;
+	totalObjectLayers = 0;
+	totalStructLayers = 0;
+	totalShadowLayers = 0;
+	totalRoofLayers = 0;
+	totalOnRoofLayers = 0;
+
+	for (int i = 0; i < settings().iWorldSize; i++) {
+	    layerCounts[i][0] = (byte) landLayer[i].length;
+	    totalLandLayers += landLayer[i].length;
+
+	    layerCounts[i][1] = (byte) objectLayer[i].length;
+	    totalObjectLayers += objectLayer[i].length;
+
+	    layerCounts[i][2] = (byte) structLayer[i].length;
+	    totalStructLayers += structLayer[i].length;
+
+	    layerCounts[i][3] = (byte) shadowLayer[i].length;
+	    totalShadowLayers += shadowLayer[i].length;
+
+	    layerCounts[i][4] = (byte) roofLayer[i].length;
+	    totalRoofLayers += roofLayer[i].length;
+
+	    layerCounts[i][5] = (byte) onRoofLayer[i].length;
+	    totalOnRoofLayers += onRoofLayer[i].length;
+	}
+
+	System.out.println("new state:");
+	System.out.println("\ttotalLandLayers: " + totalLandLayers);
+	System.out.println("\ttotalObjectLayers: " + totalObjectLayers);
+	System.out.println("\ttotalStructLayers: " + totalStructLayers);
+	System.out.println("\ttotalShadowLayers: " + totalShadowLayers);
+	System.out.println("\ttotalRoofLayers: " + totalRoofLayers);
+	System.out.println("\ttotalOnRoofLayers: " + totalOnRoofLayers);
+
+    }
+
     public void saveLayerCounts(ByteBuffer outputBuffer) {
 	byte ubCombine;
 	if (MapLoader.logFileIO) {
 	    System.out.println("loader.core.MapLayers.saveLayerCounts() start @" + outputBuffer.position());
 	}
+	updateLayerCounts();
+
 	for (int i = 0; i < settings().iWorldSize; i++) {
 	    // Read combination of land/world flags
 	    ubCombine = (byte) (layerCounts[i][0] | (worldLevelDataFlags[i] << 4));

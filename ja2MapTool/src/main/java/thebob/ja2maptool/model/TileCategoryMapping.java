@@ -22,7 +22,7 @@ import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import static thebob.ja2maptool.model.TileCategoryMapping.RemapStatus.None;
-import thebob.ja2maptool.scopes.TilesetMappingScope;
+import thebob.ja2maptool.scopes.mapping.TilesetMappingScope;
 
 /**
  *

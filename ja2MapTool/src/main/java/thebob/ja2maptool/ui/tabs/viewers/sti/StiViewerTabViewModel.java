@@ -32,8 +32,8 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.image.Image;
 import thebob.assetloader.common.ImageAdapter;
 import thebob.assetloader.sti.StiLoader;
-import thebob.ja2maptool.scopes.StiViewerScope;
-import thebob.ja2maptool.scopes.VfsBrowserScope;
+import thebob.ja2maptool.scopes.view.StiViewerScope;
+import thebob.ja2maptool.scopes.view.VfsBrowserScope;
 
 /**
  *

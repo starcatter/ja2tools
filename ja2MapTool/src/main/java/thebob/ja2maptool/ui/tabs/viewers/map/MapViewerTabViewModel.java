@@ -28,9 +28,13 @@ import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import thebob.assetloader.tileset.Tileset;
-import thebob.ja2maptool.scopes.MapScope;
+import thebob.ja2maptool.scopes.map.MapScope;
 import static thebob.ja2maptool.ui.tabs.convert.ConvertMapTabViewModel.MAP_LOADED;
-import thebob.ja2maptool.util.MapRenderer;
+import thebob.ja2maptool.util.renderer.old.OldMapRenderer;
+import thebob.ja2maptool.util.compositor.SelectedTiles;
+import thebob.ja2maptool.util.renderer.DisplayManager;
+import thebob.ja2maptool.util.renderer.DisplayManagerBase;
+import thebob.ja2maptool.util.renderer.IMapDisplayManager;
 
 /**
  *
@@ -41,17 +45,17 @@ public class MapViewerTabViewModel implements ViewModel {
     @InjectScope
     MapScope mapScope;
 
-    MapRenderer renderer = new MapRenderer();
-    
+    IMapDisplayManager renderer = new DisplayManager();//new MapRenderer();
+
     StringProperty mapNameProperty = new SimpleStringProperty();
 
-    public void initialize() {	
+    public void initialize() {
 	mapScope.subscribe(MapScope.MAP_UPDATED, (key, values) -> {
 	    System.out.println("thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabViewModel.initialize(): MAP_UPDATED");
 	    updateRenderer(true);
 	});
     }
-    
+
     public void updateRenderer(boolean centerMap) {
 	if (mapScope == null || mapScope.getMapData() == null) {
 	    return;
@@ -69,7 +73,7 @@ public class MapViewerTabViewModel implements ViewModel {
 	int oldX = renderer.getWindowOffsetX();
 	int oldY = renderer.getWindowOffsetY();
 
-	renderer.setTileset(tileset);
+	renderer.setMapTileset(tileset);
 	renderer.loadMap(mapScope.getMapData());
 
 	if (!centerMap) {
@@ -81,7 +85,7 @@ public class MapViewerTabViewModel implements ViewModel {
 	publish(MAP_LOADED);
     }
 
-    public MapRenderer getRenderer() {
+    public IMapDisplayManager getRenderer() {
 	return renderer;
     }
 
@@ -100,6 +104,18 @@ public class MapViewerTabViewModel implements ViewModel {
     public StringProperty getMapNameProperty() {
 	return mapNameProperty;
     }
-    
-    
+
+    void clearSelection() {
+	System.out.println("thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabViewModel.clearSelection()");
+	mapScope.setSelection(null);
+    }
+
+    void getSelection() {
+	SelectedTiles selection = renderer.getSelection();
+	// store the selection in the map scope
+	if (selection != null) {
+	    mapScope.setSelection(selection);
+	}
+    }
+
 }

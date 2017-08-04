@@ -77,7 +77,7 @@ import javax.inject.Inject;
 import thebob.assetloader.tileset.Tile;
 import thebob.ja2maptool.model.TileCategoryMapping;
 import thebob.ja2maptool.model.TileMapping;
-import thebob.ja2maptool.scopes.TilesetMappingScope;
+import thebob.ja2maptool.scopes.mapping.TilesetMappingScope;
 import thebob.ja2maptool.ui.dialogs.tileselect.TileSelectionDialogView;
 import thebob.ja2maptool.ui.dialogs.tileselect.TileSelectionDialogViewModel;
 import thebob.ja2maptool.util.DialogHelper;
@@ -107,8 +107,12 @@ public class TilesetMappingTabView implements FxmlView<TilesetMappingTabViewMode
 	FileChooser chooser = new FileChooser();
 	chooser.setTitle("Load mapping");
 	chooser.setInitialDirectory(new File("."));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("tile mapping files", "*.tilemap"));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("all files", "*.*"));
 	File selectedDirectory = chooser.showOpenDialog(mapping_save.getScene().getWindow());
-	viewModel.loadMapping(selectedDirectory.getPath());
+	if (selectedDirectory != null) {
+	    viewModel.loadMapping(selectedDirectory.getPath());
+	}
     }
 
     @FXML
@@ -116,8 +120,12 @@ public class TilesetMappingTabView implements FxmlView<TilesetMappingTabViewMode
 	FileChooser chooser = new FileChooser();
 	chooser.setTitle("Save mapping as...");
 	chooser.setInitialDirectory(new File("."));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("tile mapping files", "*.tilemap"));
+	chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("all files", "*.*"));
 	File selectedDirectory = chooser.showSaveDialog(mapping_save.getScene().getWindow());
-	viewModel.saveMapping(selectedDirectory.getPath());
+	if (selectedDirectory != null) {
+	    viewModel.saveMapping(selectedDirectory.getPath());
+	}
     }
 
     @FXML

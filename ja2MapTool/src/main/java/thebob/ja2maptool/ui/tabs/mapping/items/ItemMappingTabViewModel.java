@@ -49,11 +49,11 @@ import thebob.assetmanager.managers.items.categories.ItemCategoryModel;
 import thebob.assetmanager.managers.items.categories.ItemClassEnum;
 import static thebob.assetmanager.managers.items.categories.ItemClassEnum.ItemClassMap;
 import thebob.ja2maptool.components.ItemMappingTreeItem;
-import thebob.ja2maptool.scopes.ItemMappingScope;
+import thebob.ja2maptool.scopes.mapping.ItemMappingScope;
 import thebob.ja2maptool.scopes.MainScope;
 import thebob.ja2maptool.scopes.VfsAssetScope;
-import thebob.ja2maptool.util.ItemMapping;
-import thebob.ja2maptool.util.MappingIO;
+import thebob.ja2maptool.util.mapping.ItemMapping;
+import thebob.ja2maptool.util.mapping.MappingIO;
 
 public class ItemMappingTabViewModel implements ViewModel {
 

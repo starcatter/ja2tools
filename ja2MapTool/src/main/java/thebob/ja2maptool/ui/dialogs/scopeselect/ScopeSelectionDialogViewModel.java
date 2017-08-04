@@ -27,10 +27,10 @@ import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.Scope;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.scene.control.TreeItem;
-import thebob.ja2maptool.scopes.ConvertMapScope;
-import thebob.ja2maptool.scopes.ItemMappingScope;
+import thebob.ja2maptool.scopes.map.ConvertMapScope;
+import thebob.ja2maptool.scopes.mapping.ItemMappingScope;
 import thebob.ja2maptool.scopes.MainScope;
-import thebob.ja2maptool.scopes.TilesetMappingScope;
+import thebob.ja2maptool.scopes.mapping.TilesetMappingScope;
 
 /**
  *

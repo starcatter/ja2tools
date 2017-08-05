@@ -18,7 +18,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mainClass>thebob.ja2maptoolpackage.MainApp</mainClass>
-        <netbeans.hint.license>lgpl21</netbeans.hint.license>
+        <netbeans.hint.license>mit</netbeans.hint.license>
     </properties>
 
     <organization>

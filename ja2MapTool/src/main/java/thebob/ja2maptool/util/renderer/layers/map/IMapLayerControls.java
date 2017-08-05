@@ -16,41 +16,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package thebob.ja2maptool.util.renderer.events;
+package thebob.ja2maptool.util.renderer.layers.map;
+
+import thebob.assetloader.map.core.MapData;
+import thebob.assetloader.tileset.Tileset;
 
 /**
- *
+ * Basic map layer controls, supposed to be manipulated from outside of the DisplayManager
  * @author the_bob
  */
-public class RendererEvent {
-    public enum ChangeType{
-	// MapLayer events
-	MAP_LOADED,
-	MAP_ALTERED,
-	// TileRenderer events
-	MAP_WINDOW_MOVED,
-	MAP_WINDOW_ZOOMED,
-	MAP_CANVAS_CHANGED,
-	// CursorLayer events
-	CURSOR_MOVED, 
-	PLACEMENT_CURSOR_ADDED, 
-	PLACEMENT_CURSOR_MOVED, 
-	PLACEMENT_CURSOR_REMOVED
-    }
-    
-    ChangeType type;
+public interface IMapLayerControls {
 
-    public RendererEvent(ChangeType type) {
-	this.type = type;
-    }
+    void loadMap(MapData map);
 
-    public ChangeType getType() {
-	return type;
-    }
-
-    @Override
-    public String toString() {
-	return "TileLayerGroupChange{" + "type=" + type + '}';
-    }
-    
+    void setMapTileset(Tileset tileset);
 }

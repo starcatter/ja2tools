@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
 The MIT License
 
@@ -26,21 +27,23 @@ THE SOFTWARE.
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 
-
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.111" fx:controller="thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabView">
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabView">
    <children>
-      <BorderPane layoutX="189.0" layoutY="67.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <BorderPane fx:id="preview_wrapper" layoutX="189.0" layoutY="67.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
             <Label fx:id="map_name" text="Map name" BorderPane.alignment="CENTER" />
          </top>
          <center>
             <AnchorPane BorderPane.alignment="CENTER">
                <children>
-                  <HBox alignment="CENTER" style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <StackPane style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <Canvas fx:id="prev_window" height="200.0" onMouseClicked="#prev_window_click" onScroll="#prev_window_scroll" width="200.0">
                            <cursor>
@@ -48,10 +51,23 @@ THE SOFTWARE.
                            </cursor>
                         </Canvas>
                      </children>
-                  </HBox>
+                  </StackPane>
                </children>
             </AnchorPane>
          </center>
+         <right>
+            <ToolBar fx:id="preview_controls_right" orientation="VERTICAL" BorderPane.alignment="CENTER">
+              <items>
+                  <ToggleButton fx:id="layer_land" mnemonicParsing="false" text="1" />
+                  <ToggleButton fx:id="layer_object" mnemonicParsing="false" text="2" />
+                  <ToggleButton fx:id="layer_struct" mnemonicParsing="false" text="3" />
+                  <ToggleButton fx:id="layer_shadow" mnemonicParsing="false" text="4" />
+                  <ToggleButton fx:id="layer_roof" mnemonicParsing="false" text="5" />
+                  <ToggleButton fx:id="layer_onroof" mnemonicParsing="false" text="6" />
+                  <Separator />
+              </items>
+            </ToolBar>
+         </right>
       </BorderPane>
    </children>
 </AnchorPane>

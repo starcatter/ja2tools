@@ -20,20 +20,73 @@ package thebob.ja2maptool.util.renderer.base;
 
 import thebob.ja2maptool.util.renderer.events.RendererEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
+import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.Blend;
 import javafx.scene.image.Image;
+import javafx.scene.layout.StackPane;
 import thebob.assetloader.map.core.components.IndexedElement;
 import thebob.assetloader.tileset.Tile;
 import thebob.assetloader.tileset.Tileset;
+import thebob.ja2maptool.util.renderer.OverlaySettings;
 
 /**
  *
  * @author the_bob
  */
 public class TileRenderer extends Observable implements ITileRendererManager {
+
+    class TileRendererTarget {
+
+	OverlaySettings settings;
+
+	Canvas targetCanvas = new Canvas();
+	GraphicsContext canvasGraphicsContext = targetCanvas.getGraphicsContext2D();
+
+	public void bind(Canvas parent) {
+	    System.out.println("thebob.ja2maptool.util.renderer.base.TileRenderer.TileRendererTarget.bind()");
+	    StackPane canvasParent = (StackPane) parent.getParent();	// hopefully the canvas is in a stackpane, like it should
+	    if (canvasParent.getChildren().indexOf(targetCanvas) < 0) {
+		canvasParent.getChildren().add(targetCanvas);
+	    }
+
+	    targetCanvas.setOpacity(settings.getOpacity());
+	    targetCanvas.setTranslateX(settings.getOffsetX());
+	    targetCanvas.setTranslateY(settings.getOffsetY());
+	    //canvasGraphicsContext.setEffect(settings.getEffect());
+
+	    targetCanvas.setWidth(parent.getWidth());
+	    targetCanvas.setHeight(parent.getHeight());
+
+	    parent.toFront();
+	}
+
+	TileRendererTarget(Canvas parent, OverlaySettings settings) {
+	    this.settings = settings;
+
+	    if (parent != null) {
+		System.out.println("thebob.ja2maptool.util.renderer.base.TileRenderer.TileRendererTarget.<init>() BINDING");
+		bind(parent);
+	    }
+	}
+
+	private void cleanup() {
+	    canvasGraphicsContext.clearRect(0, 0, canvasX, canvasY);
+	    targetCanvas.toBack();
+	    targetCanvas.setVisible(false);
+	    targetCanvas.setDisable(true);
+
+	    StackPane canvasParent = (StackPane) targetCanvas.getParent();	// hopefully the canvas is in a stackpane, like it should
+	    canvasParent.getChildren().remove(targetCanvas);
+	    targetCanvas = null;
+	    canvasGraphicsContext = null;
+	}
+    }
 
     // tile spacing
     final int xSpacing = 40;
@@ -51,12 +104,19 @@ public class TileRenderer extends Observable implements ITileRendererManager {
 
     List<ITileLayerGroup> renderLayers = new ArrayList<>();
 
+    Map<ITileLayerGroup, TileRendererTarget> renderTargets = new HashMap<ITileLayerGroup, TileRendererTarget>();
+
     // bound canvas
     Canvas canvas = null;
     GraphicsContext canvasGraphicsContext = null;
+    TileRendererTarget defaultTarget = new TileRendererTarget(null, new OverlaySettings(1.0d, 0, 0, null));
 
     int canvasX = 1280;
     int canvasY = 800;
+
+    {
+	System.out.println("thebob.ja2maptool.util.renderer.base.TileRenderer(): init");
+    }
 
     public int mapRowColToPos(int r, int c) {
 	return ((r) * mapCols + (c));
@@ -72,6 +132,11 @@ public class TileRenderer extends Observable implements ITileRendererManager {
 
 	canvasX = (int) canvas.getWidth();
 	canvasY = (int) canvas.getHeight();
+
+	defaultTarget.bind(canvas);
+	for (TileRendererTarget target : renderTargets.values()) {
+	    target.bind(canvas);
+	}
 
 	setChanged();
 	notifyObservers(new RendererEvent(RendererEvent.ChangeType.MAP_CANVAS_CHANGED));
@@ -91,7 +156,12 @@ public class TileRenderer extends Observable implements ITileRendererManager {
     // Main render functions
     // ----------------------------------------
     protected void renderMap() {
-	canvasGraphicsContext.clearRect(0, 0, canvasX, canvasY);
+	//canvasGraphicsContext.clearRect(0, 0, canvasX, canvasY);
+
+	defaultTarget.canvasGraphicsContext.clearRect(0, 0, canvasX, canvasY);
+	for (TileRendererTarget target : renderTargets.values()) {
+	    target.canvasGraphicsContext.clearRect(0, 0, canvasX, canvasY);
+	}
 
 	int cell = 0;
 
@@ -123,9 +193,10 @@ public class TileRenderer extends Observable implements ITileRendererManager {
 		if (cell >= 0 && cell < mapSize) {
 
 		    for (ITileLayerGroup layerGroup : renderLayers) {
+			GraphicsContext layerGC = renderTargets.get(layerGroup).canvasGraphicsContext;
 			for (TileLayer layer : layerGroup) {
 			    if (layer.isEnabled()) {
-				displayCellLayers(layer.getTiles()[cell], displayX, displayY, layer.getDisplayOffsetX(), layer.getDisplayOffsetY(), layerGroup.getTileset());
+				displayCellLayers(layer.getTiles()[cell], displayX, displayY, layer.getDisplayOffsetX(), layer.getDisplayOffsetY(), layerGroup.getTileset(), layerGC);
 			    }
 			}
 		    }
@@ -150,9 +221,13 @@ public class TileRenderer extends Observable implements ITileRendererManager {
 
 	} while (displayY * scale < canvasY);
 
+	for (TileRendererTarget target : renderTargets.values()) {
+	    target.canvasGraphicsContext.applyEffect(target.settings.getEffect());
+	}
+
     }
 
-    protected void displayCellLayers(IndexedElement[] layers, int canvasX, int canvasY, int drawOffsetX, int drawOffsetY, Tileset tileset) {
+    protected void displayCellLayers(IndexedElement[] layers, int canvasX, int canvasY, int drawOffsetX, int drawOffsetY, Tileset tileset, GraphicsContext canvasGraphicsContext) {
 	for (IndexedElement layer : layers) {
 	    Tile tile = tileset.getTile(layer);
 
@@ -194,7 +269,7 @@ public class TileRenderer extends Observable implements ITileRendererManager {
 	windowOffsetX += x;
 	windowOffsetY += y;
 
-	if (canvas != null && canvasGraphicsContext != null) {
+	if (canvas != null) {
 	    renderMap();
 	}
 
@@ -262,7 +337,18 @@ public class TileRenderer extends Observable implements ITileRendererManager {
     // ----------------------------------------
     @Override
     public void addRenderLayer(ITileLayerGroup layer) {
+	renderTargets.put(layer, defaultTarget);
 	renderLayers.add(layer);
+
+	layer.subscribe(this);
+	updateLayerGroups();
+    }
+
+    @Override
+    public void addRenderOverlay(ITileLayerGroup layer, OverlaySettings settings) {
+	renderTargets.put(layer, new TileRendererTarget(canvas, settings));
+	renderLayers.add(layer);
+
 	layer.subscribe(this);
 	updateLayerGroups();
     }
@@ -270,14 +356,19 @@ public class TileRenderer extends Observable implements ITileRendererManager {
     @Override
     public void removeRenderLayer(ITileLayerGroup layer) {
 	renderLayers.remove(layer);
+	
+	TileRendererTarget target = renderTargets.get(layer);
+	if (target != null && target != defaultTarget) {	    
+	    target.cleanup();
+	    renderTargets.remove(layer);
+	}
+
 	updateLayerGroups();
     }
 
     @Override
     public void removeRenderLayer(int index) {
-	renderLayers.get(index).unsubscribe(this);
-	renderLayers.remove(index);
-	updateLayerGroups();
+	removeRenderLayer(renderLayers.get(index));
     }
 
     @Override
@@ -326,9 +417,6 @@ public class TileRenderer extends Observable implements ITileRendererManager {
 		case CURSOR_MOVED:
 		    moveWindow(0, 0);
 		    break;
-		default:
-		    throw new AssertionError(message.getType().name());
-
 	    }
 	}
 

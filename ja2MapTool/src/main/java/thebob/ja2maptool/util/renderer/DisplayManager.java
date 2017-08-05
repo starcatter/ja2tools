@@ -19,10 +19,15 @@
 package thebob.ja2maptool.util.renderer;
 
 import java.util.Observable;
+import javafx.beans.property.BooleanProperty;
+import javafx.scene.effect.Glow;
+import javafx.scene.effect.Shadow;
+import javafx.scene.paint.Color;
 import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
-import thebob.ja2maptool.util.renderer.cursor.MapCursor;
+import thebob.ja2maptool.util.renderer.layers.cursor.MapCursor;
 import thebob.ja2maptool.util.renderer.events.RendererEvent;
+import thebob.ja2maptool.util.renderer.layers.preview.PreviewLayer;
 
 /**
  * DisplayManager is the replacement for OldMapRenderer, intended to structure its functionality a bit better.
@@ -37,12 +42,14 @@ public class DisplayManager extends DisplayManagerBase {
     int mapCols = -1;
     int mapSize = -1;
 
+    SelectedTiles previewTiles = null;
+    PreviewLayer previewLayer = null;
+
     // -------------------
     @Override
     public void update(Observable o, Object arg) {
 
 	RendererEvent message = (RendererEvent) arg;
-	//System.out.println("thebob.ja2maptool.util.renderer.DisplayManager.update(): " + o + " / " + message);
 
 	if (message != null) {
 	    switch (message.getType()) {
@@ -57,7 +64,22 @@ public class DisplayManager extends DisplayManagerBase {
 		    break;
 		case CURSOR_MOVED:
 		    break;
+		// --------------    
+		case PLACEMENT_CURSOR_ADDED:
+		    previewLayer = new PreviewLayer(previewTiles, map.getMapRows(), map.getMapCols());
+		    previewLayer.setTileset(map.getTileset());
+		    renderer.addRenderOverlay(previewLayer, new OverlaySettings(0.5, 0, 0, null) ); // new Glow(1d)) /// new Shadow(2d, Color.BLACK)
+		    break;
+		case PLACEMENT_CURSOR_REMOVED:
+		    renderer.removeRenderLayer(previewLayer);
+		    previewLayer = null;
+		    break;
+		case PLACEMENT_CURSOR_MOVED:
+		    MapCursor placement = cursors.getPlacementCursor();
+		    previewLayer.placePreview(placement);
+		    break;
 
+		// --------------
 		case MAP_WINDOW_MOVED:
 		    cursors.setWindow(renderer.getWindowOffsetX(), renderer.getWindowOffsetY(), renderer.getScale());
 		    break;
@@ -79,11 +101,7 @@ public class DisplayManager extends DisplayManagerBase {
     public SelectedTiles getSelection() {
 	SelectedTiles selection = cursors.getSelection();
 	if (selection != null) {
-	    System.out.println("thebob.ja2maptool.util.renderer.DisplayManager.getSelection() BEFORE :" + selection);
-
 	    map.getTilesForSelection(selection);
-
-	    System.out.println("thebob.ja2maptool.util.renderer.DisplayManager.getSelection() AFTER :" + selection);
 	}
 	return selection;
     }
@@ -91,14 +109,22 @@ public class DisplayManager extends DisplayManagerBase {
     @Override
     public void placeSelection(SelectedTiles selection, SelectionPlacementOptions options) {
 	MapCursor placement = cursors.getPlacementCursor();
+	if( previewLayer != null ){
+	    previewLayer.hidePreview();
+	}
 	if (placement != null) {
 	    map.appendTiles(placement, selection, options);
 	}
+	renderer.moveWindow(0, 0);
     }
 
     @Override
     public void setPlacementPreview(SelectedTiles selection) {
+	previewTiles = selection;
 	cursors.setPlacementPreview(selection);
+	if( previewLayer != null ){
+	    previewLayer.setPreviewTiles(previewTiles);
+	}
     }
 
     @Override
@@ -116,6 +142,11 @@ public class DisplayManager extends DisplayManagerBase {
 	cursors.setWindow(renderer.getWindowOffsetX(), renderer.getWindowOffsetY(), renderer.getScale());
 	cursors.setCanvasSize(renderer.getCanvasX(), renderer.getCanvasY());
 	cursors.setTileset(map.getTileset());
+    }
+
+    @Override
+    public void setLayerButtons(BooleanProperty[] viewerButtons) {
+	map.setLayerButtons(viewerButtons);
     }
 
 }

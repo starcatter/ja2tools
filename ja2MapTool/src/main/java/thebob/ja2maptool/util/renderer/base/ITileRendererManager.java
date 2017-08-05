@@ -20,6 +20,7 @@ package thebob.ja2maptool.util.renderer.base;
 
 import java.util.List;
 import java.util.Observer;
+import thebob.ja2maptool.util.renderer.OverlaySettings;
 
 /**
  * Extended tile renderer interface including methods for managing its state
@@ -35,6 +36,7 @@ public interface ITileRendererManager extends ITileRendererControls, Observer {
     List<ITileLayerGroup> getRenderLayers();
 
     void addRenderLayer(ITileLayerGroup layer);
+    void addRenderOverlay(ITileLayerGroup layer, OverlaySettings settings);
 
     void removeRenderLayer(ITileLayerGroup layer);
 

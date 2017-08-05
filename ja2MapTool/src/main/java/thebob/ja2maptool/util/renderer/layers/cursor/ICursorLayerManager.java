@@ -16,21 +16,33 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package thebob.ja2maptool.util.renderer.map;
+package thebob.ja2maptool.util.renderer.layers.cursor;
 
-import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
+import thebob.assetloader.tileset.Tileset;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.renderer.base.ITileLayerGroup;
-import thebob.ja2maptool.util.renderer.cursor.MapCursor;
 
 /**
- * Extended MapLayer interface including ITileLayerGroup access
+ * Extended CursorLayer interface including ITileLayerGroup access
+ *
  * @author the_bob
  */
-public interface IMapLayerManager extends IMapLayerControls, ITileLayerGroup{
+public interface ICursorLayerManager extends ICursorLayerControls, ITileLayerGroup {
 
-    public SelectedTiles getTilesForSelection(SelectedTiles selection);
+    public void init(int mapRows, int mapCols, Tileset tileset);
 
-    public void appendTiles(MapCursor placement, SelectedTiles selection, SelectionPlacementOptions options);
-    
+    void sendCursor(double dx, double dy, boolean controlDown, boolean shiftDown, boolean altDown);
+
+    void sendClick(double dx, double dy, boolean controlDown, boolean shiftDown, boolean altDown);
+
+    public void setWindow(int windowOffsetX, int windowOffsetY, double scale);
+
+    public void setCanvasSize(int canvasX, int canvasY);
+
+    public SelectedTiles getSelection();
+
+    public void setPlacementPreview(SelectedTiles selection);
+
+    public MapCursor getPlacementCursor();
+
 }

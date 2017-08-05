@@ -19,6 +19,8 @@
 package thebob.ja2maptool.util.renderer.base;
 
 import java.util.Iterator;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import thebob.assetloader.map.core.components.IndexedElement;
 
 /**
@@ -27,25 +29,30 @@ import thebob.assetloader.map.core.components.IndexedElement;
  */
 public class TileLayer {
 
-    boolean enabled;
+    BooleanProperty enabled = new SimpleBooleanProperty(true);
     int displayOffsetX;
     int displayOffsetY;
     
     IndexedElement tiles[][];
 
     public TileLayer(boolean displayLayer, int displayOffsetX, int displayOffsetY, IndexedElement[][] tiles) {
-	this.enabled = displayLayer;
+	this.enabled.set(displayLayer);
 	this.displayOffsetX = displayOffsetX;
 	this.displayOffsetY = displayOffsetY;
 	this.tiles = tiles;
     }
 
-    public boolean isEnabled() {
+    public BooleanProperty getEnabledProperty() {
 	return enabled;
+    }
+    
+    
+    public boolean isEnabled() {
+	return enabled.get();
     }
 
     public void setEnabled(boolean enabled) {
-	this.enabled = enabled;
+	this.enabled.set(enabled);
     }
 
     public int getDisplayOffsetX() {

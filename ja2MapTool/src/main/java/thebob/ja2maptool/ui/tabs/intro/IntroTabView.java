@@ -23,17 +23,30 @@
  */
 package thebob.ja2maptool.ui.tabs.intro;
 
+import de.saxsys.mvvmfx.Context;
+import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
+import de.saxsys.mvvmfx.InjectContext;
 import de.saxsys.mvvmfx.InjectViewModel;
+import de.saxsys.mvvmfx.ViewTuple;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import javax.inject.Inject;
+import thebob.ja2maptool.scopes.view.StiViewerScope;
 import thebob.ja2maptool.ui.tabs.convert.IntroTabViewModel;
+import thebob.ja2maptool.ui.tabs.viewers.sti.StiViewerTabView;
+import thebob.ja2maptool.ui.tabs.viewers.sti.StiViewerTabViewModel;
 
 public class IntroTabView implements FxmlView<IntroTabViewModel>, Initializable {
+
+    @FXML
+    private AnchorPane intro_pane;
 
     @FXML
     private Text intro_config;
@@ -58,14 +71,36 @@ public class IntroTabView implements FxmlView<IntroTabViewModel>, Initializable 
     void intro_map_click(MouseEvent event) {
 	viewModel.goToMapSetupTab();
     }
-    
+
+    private void showLogo() {
+	intro_pane.getChildren().clear();
+
+	StiViewerScope scope = new StiViewerScope();
+	scope.setFilePath("..\\..\\JA113.data\\gameData\\Data\\Interface\\SIRTECHSPLASH.STI");
+
+	ViewTuple<StiViewerTabView, StiViewerTabViewModel> selectorTouple = FluentViewLoader.fxmlView(StiViewerTabView.class)
+		.context(context)
+		.providedScopes(scope)
+		.load();
+
+	intro_pane.getChildren().add(
+		selectorTouple.getView()
+	);
+    }
+
     // MVVMFX inject
     @InjectViewModel
     private IntroTabViewModel viewModel;
-    
+
+    @Inject
+    private Stage primaryStage;
+
+    @InjectContext
+    private Context context;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-	
+	//showLogo();
     }
 
 }

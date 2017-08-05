@@ -18,12 +18,13 @@
  */
 package thebob.ja2maptool.util.renderer;
 
+import javafx.beans.property.BooleanProperty;
 import thebob.assetloader.tileset.Tileset;
 import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.renderer.base.ITileRendererControls;
-import thebob.ja2maptool.util.renderer.cursor.ICursorLayerControls;
-import thebob.ja2maptool.util.renderer.map.IMapLayerControls;
+import thebob.ja2maptool.util.renderer.layers.cursor.ICursorLayerControls;
+import thebob.ja2maptool.util.renderer.layers.map.IMapLayerControls;
 
 /**
  * The interface that combines all of the map display functionality.
@@ -44,5 +45,7 @@ public interface IMapDisplayManager extends ITileRendererControls, IMapLayerCont
     void sendClick(double dx, double dy, boolean controlDown, boolean shiftDown, boolean altDown);
 
     void sendCursor(double dx, double dy, boolean controlDown, boolean shiftDown, boolean altDown);
+
+    public void setLayerButtons(BooleanProperty[] viewerButtons);
 
 }

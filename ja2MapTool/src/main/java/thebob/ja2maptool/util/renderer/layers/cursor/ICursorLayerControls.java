@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package thebob.ja2maptool.util.renderer.cursor;
+package thebob.ja2maptool.util.renderer.layers.cursor;
 
 /**
  * Basic cursor layer controls, supposed to be manipulated from outside of the DisplayManager

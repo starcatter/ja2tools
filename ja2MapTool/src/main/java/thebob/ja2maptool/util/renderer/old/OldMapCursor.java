@@ -18,7 +18,6 @@
  */
 package thebob.ja2maptool.util.renderer.old;
 
-import thebob.ja2maptool.util.renderer.cursor.*;
 import thebob.assetloader.map.core.components.IndexedElement;
 import thebob.ja2maptool.util.renderer.base.TileLayerGroup;
 import thebob.ja2maptool.util.renderer.old.OldMapRenderer;

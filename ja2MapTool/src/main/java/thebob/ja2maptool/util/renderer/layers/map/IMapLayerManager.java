@@ -16,18 +16,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package thebob.ja2maptool.util.renderer.map;
+package thebob.ja2maptool.util.renderer.layers.map;
 
-import thebob.assetloader.map.core.MapData;
-import thebob.assetloader.tileset.Tileset;
+import javafx.beans.property.BooleanProperty;
+import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
+import thebob.ja2maptool.util.compositor.SelectedTiles;
+import thebob.ja2maptool.util.renderer.base.ITileLayerGroup;
+import thebob.ja2maptool.util.renderer.layers.cursor.MapCursor;
 
 /**
- * Basic map layer controls, supposed to be manipulated from outside of the DisplayManager
+ * Extended MapLayer interface including ITileLayerGroup access
  * @author the_bob
  */
-public interface IMapLayerControls {
+public interface IMapLayerManager extends IMapLayerControls, ITileLayerGroup{
 
-    void loadMap(MapData map);
+    public SelectedTiles getTilesForSelection(SelectedTiles selection);
 
-    void setMapTileset(Tileset tileset);
+    public void appendTiles(MapCursor placement, SelectedTiles selection, SelectionPlacementOptions options);
+
+    public void setLayerButtons(BooleanProperty[] viewerButtons);
+    
 }

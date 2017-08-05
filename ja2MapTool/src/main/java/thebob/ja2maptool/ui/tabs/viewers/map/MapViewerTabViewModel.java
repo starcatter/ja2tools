@@ -25,15 +25,14 @@ package thebob.ja2maptool.ui.tabs.viewers.map;
 
 import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ViewModel;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import thebob.assetloader.tileset.Tileset;
 import thebob.ja2maptool.scopes.map.MapScope;
 import static thebob.ja2maptool.ui.tabs.convert.ConvertMapTabViewModel.MAP_LOADED;
-import thebob.ja2maptool.util.renderer.old.OldMapRenderer;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.renderer.DisplayManager;
-import thebob.ja2maptool.util.renderer.DisplayManagerBase;
 import thebob.ja2maptool.util.renderer.IMapDisplayManager;
 
 /**
@@ -51,7 +50,6 @@ public class MapViewerTabViewModel implements ViewModel {
 
     public void initialize() {
 	mapScope.subscribe(MapScope.MAP_UPDATED, (key, values) -> {
-	    System.out.println("thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabViewModel.initialize(): MAP_UPDATED");
 	    updateRenderer(true);
 	});
     }
@@ -106,7 +104,6 @@ public class MapViewerTabViewModel implements ViewModel {
     }
 
     void clearSelection() {
-	System.out.println("thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabViewModel.clearSelection()");
 	mapScope.setSelection(null);
     }
 
@@ -116,6 +113,10 @@ public class MapViewerTabViewModel implements ViewModel {
 	if (selection != null) {
 	    mapScope.setSelection(selection);
 	}
+    }
+
+    void setLayerButtons(BooleanProperty[] viewerButtons) {
+	renderer.setLayerButtons(viewerButtons);
     }
 
 }

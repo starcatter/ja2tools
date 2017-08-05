@@ -89,6 +89,9 @@ public abstract class TileLayerGroup extends Observable implements ITileLayerGro
 	addObserver(o);
     }
 
-    
+    @Override
+    public String toString() {
+	return "TileLayerGroup{" + "mapCols=" + mapCols + ", mapRows=" + mapRows + ", tileset=" + tileset + '}';
+    }    
     
 }

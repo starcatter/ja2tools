@@ -27,13 +27,19 @@ import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToolBar;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 
 /**
@@ -43,6 +49,32 @@ import javafx.scene.layout.StackPane;
  */
 public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initializable {
 
+    // viewer controls
+    @FXML
+    private BorderPane preview_wrapper;
+
+    @FXML
+    private ToolBar preview_controls_right;
+
+    @FXML
+    private ToggleButton layer_land;
+
+    @FXML
+    private ToggleButton layer_object;
+
+    @FXML
+    private ToggleButton layer_struct;
+
+    @FXML
+    private ToggleButton layer_shadow;
+
+    @FXML
+    private ToggleButton layer_roof;
+
+    @FXML
+    private ToggleButton layer_onroof;
+
+    // -------------
     double zoomFactor = 0.05;
 
     double minZoom = 0.25d;
@@ -54,40 +86,53 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
     @FXML
     private Canvas prev_window;
 
+    boolean toolbarVisible = false;
+
     @FXML
     void prev_window_click(MouseEvent event) {
 
 	double dx = event.getX();
 	double dy = event.getY();
 
-	if (event.isControlDown()) {
-	    // send cursor location to the renderer
-	    viewModel.getRenderer().sendClick(dx, dy, event.isControlDown(), event.isShiftDown(), event.isAltDown());
-	    
-	    // if shift was clicked, try to get the selection
-	    if (event.isShiftDown()) {
-		viewModel.getSelection();
+	if (event.getButton() == MouseButton.MIDDLE) {
+	    if (toolbarVisible == false) {
+		preview_wrapper.setRight(preview_controls_right);
+		toolbarVisible = true;
 	    } else {
-		viewModel.clearSelection();
+		preview_wrapper.setRight(null);
+		toolbarVisible = false;
 	    }
-	    
-	    viewModel.scrollPreview(0, 0);
-	} else {
-	    // move the window toward the click location
-	    double wx = prev_window.getWidth() / 2d;
-	    double wy = prev_window.getHeight() / 2d;
+	} else if (event.getButton() == MouseButton.SECONDARY) {
+	    // TODO tile mapping aid
+	} else if (event.getButton() == MouseButton.PRIMARY) {
 
-	    double deltaX = (dx - wx) / wx;
-	    double deltaY = (dy - wy) / wx;
+	    if (event.isControlDown()) {
+		// send cursor location to the renderer
+		viewModel.getRenderer().sendClick(dx, dy, event.isControlDown(), event.isShiftDown(), event.isAltDown());
 
-	    double transX = deltaX / 2 + deltaY / 2;
-	    double transY = deltaY - deltaX / 2;
+		// if shift was clicked, try to get the selection
+		if (event.isShiftDown()) {
+		    viewModel.getSelection();
+		} else {
+		    viewModel.clearSelection();
+		}
 
-	    System.out.println("thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabView.prev_window_click(): " + deltaX + " / " + deltaY);
+		viewModel.scrollPreview(0, 0);
+	    } else {
+		// move the window toward the click location
+		double wx = prev_window.getWidth() / 2d;
+		double wy = prev_window.getHeight() / 2d;
 
-	    viewModel.getRenderer().hideCursor();
-	    viewModel.clearSelection();
-	    viewModel.scrollPreview((int) (transX * 10d), (int) (transY * 10d));
+		double deltaX = (dx - wx) / wx;
+		double deltaY = (dy - wy) / wx;
+
+		double transX = deltaX / 2 + deltaY / 2;
+		double transY = deltaY - deltaX / 2;
+
+		viewModel.getRenderer().hideCursor();
+		viewModel.clearSelection();
+		viewModel.scrollPreview((int) (transX * 10d), (int) (transY * 10d));
+	    }
 	}
     }
 
@@ -114,10 +159,12 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
     @InjectViewModel
     private MapViewerTabViewModel viewModel;
 
+    boolean cursorInViewer = false;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 	// setup canvas autosize
-	HBox parent = (HBox) prev_window.getParent();
+	StackPane parent = (StackPane) prev_window.getParent();
 	prev_window.heightProperty().bind(parent.heightProperty().subtract(5));
 	prev_window.widthProperty().bind(parent.widthProperty().subtract(5));
 
@@ -131,20 +178,59 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
 	    viewModel.scrollPreview(0, 0);
 	});
 
+	// mouse movement handler TODO: move to FXML event
 	prev_window.setOnMouseMoved(event -> {
 	    if (event.isControlDown()) {
+		if (!cursorInViewer) {
+		    prev_window.setCursor(Cursor.NONE);
+		    cursorInViewer = true;
+		}
+
 		double dx = event.getX();
 		double dy = event.getY();
 
 		viewModel.getRenderer().sendCursor(dx, dy, event.isControlDown(), event.isShiftDown(), event.isAltDown());
 		viewModel.scrollPreview(0, 0);
+	    } else if (cursorInViewer) {
+		prev_window.setCursor(Cursor.MOVE);
+		viewModel.getRenderer().hideCursor();
+		viewModel.scrollPreview(0, 0);
+
+		cursorInViewer = false;
 	    }
 	});
 
+	// hide right toolbar
+	preview_wrapper.setRight(null);
+	
 	// setup renderer
 	viewModel.getRenderer().setCanvas(prev_window);
 
+	// bind map name
 	map_name.textProperty().bind(viewModel.getMapNameProperty());
+	
+	// layer buttons
+	BooleanProperty[] viewerButtons = new BooleanProperty[]{
+	    layer_land.selectedProperty(),
+	    layer_object.selectedProperty(),
+	    layer_struct.selectedProperty(),
+	    layer_shadow.selectedProperty(),
+	    layer_roof.selectedProperty(),
+	    layer_onroof.selectedProperty()
+	};
+
+	for (BooleanProperty button : viewerButtons) {
+	    button.addListener(event -> {
+		Platform.runLater(() -> {
+		    viewModel.scrollPreview(0, 0);
+		});
+
+	    });
+	}
+
+	viewModel.setLayerButtons(viewerButtons);
+	
+	// ready to go!
 	viewModel.updateRenderer(true);
     }
 

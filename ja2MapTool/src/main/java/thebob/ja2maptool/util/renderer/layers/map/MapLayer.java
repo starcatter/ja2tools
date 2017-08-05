@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package thebob.ja2maptool.util.renderer.map;
+package thebob.ja2maptool.util.renderer.layers.map;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javafx.beans.property.BooleanProperty;
 import thebob.assetloader.map.core.MapData;
 import thebob.assetloader.map.core.components.IndexedElement;
 import thebob.assetloader.tileset.Tileset;
@@ -31,7 +32,7 @@ import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.renderer.base.TileLayer;
 import thebob.ja2maptool.util.renderer.base.TileLayerGroup;
-import thebob.ja2maptool.util.renderer.cursor.MapCursor;
+import thebob.ja2maptool.util.renderer.layers.cursor.MapCursor;
 import thebob.ja2maptool.util.renderer.events.RendererEvent;
 
 /**
@@ -65,6 +66,8 @@ public class MapLayer extends TileLayerGroup implements IMapLayerManager {
 	layers.add(new TileLayer(true, 0, 0, map.getLayers().shadowLayer));
 	layers.add(new TileLayer(false, 0, -50, map.getLayers().roofLayer));
 	layers.add(new TileLayer(false, 0, -50, map.getLayers().onRoofLayer));
+	
+	bindLayerButtons();
     }
 
     @Override
@@ -129,7 +132,7 @@ public class MapLayer extends TileLayerGroup implements IMapLayerManager {
 
 	if (L == LAND_LAYER && options.isPlace_land_floors()) {
 	    System.out.println("thebob.ja2maptool.util.renderer.map.MapLayer.checkContentFilters() - leaving floors");
-	    
+
 	    IndexedElement[][] remappedLayer = selection.getLayers()[L];
 
 	    for (int j = 0; j < remappedLayer.length; j++) {
@@ -154,7 +157,7 @@ public class MapLayer extends TileLayerGroup implements IMapLayerManager {
 	    return true;
 	} else if (L == STRUCT_LAYER && options.isPlace_structures_walls()) {
 	    System.out.println("thebob.ja2maptool.util.renderer.map.MapLayer.checkContentFilters() - leaving walls");
-	    
+
 	    IndexedElement[][] remappedLayer = selection.getLayers()[L];
 
 	    for (int j = 0; j < remappedLayer.length; j++) {
@@ -248,5 +251,23 @@ public class MapLayer extends TileLayerGroup implements IMapLayerManager {
 	}
 
     }
+
+    BooleanProperty[] viewerButtons = null;
+
+    @Override
+    public void setLayerButtons(BooleanProperty[] viewerButtons) {
+	this.viewerButtons = viewerButtons;
+	bindLayerButtons();
+    }
+
+    void bindLayerButtons() {
+	if (viewerButtons != null) {
+	    for (int i = 0; i < layers.size(); i++) {
+		viewerButtons[i].set( layers.get(i).isEnabled() );
+		layers.get(i).getEnabledProperty().bindBidirectional(viewerButtons[i]);
+	    }
+	}
+    }
+;
 
 }

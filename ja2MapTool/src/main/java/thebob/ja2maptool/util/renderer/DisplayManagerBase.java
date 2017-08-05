@@ -26,15 +26,15 @@ import javafx.scene.canvas.Canvas;
 import thebob.assetloader.map.core.MapData;
 import thebob.assetloader.tileset.Tileset;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
-import thebob.ja2maptool.util.renderer.cursor.CursorLayer;
-import thebob.ja2maptool.util.renderer.map.MapLayer;
+import thebob.ja2maptool.util.renderer.layers.cursor.CursorLayer;
+import thebob.ja2maptool.util.renderer.layers.map.MapLayer;
 import thebob.ja2maptool.util.renderer.base.ITileLayerGroup;
 import thebob.ja2maptool.util.renderer.base.ITileRendererControls;
 import thebob.ja2maptool.util.renderer.base.ITileRendererManager;
-import thebob.ja2maptool.util.renderer.cursor.ICursorLayerControls;
-import thebob.ja2maptool.util.renderer.cursor.ICursorLayerManager;
-import thebob.ja2maptool.util.renderer.map.IMapLayerControls;
-import thebob.ja2maptool.util.renderer.map.IMapLayerManager;
+import thebob.ja2maptool.util.renderer.layers.cursor.ICursorLayerControls;
+import thebob.ja2maptool.util.renderer.layers.cursor.ICursorLayerManager;
+import thebob.ja2maptool.util.renderer.layers.map.IMapLayerControls;
+import thebob.ja2maptool.util.renderer.layers.map.IMapLayerManager;
 
 /**
  * Base class for DisplayManager, intended to patch through (delegate) access to all of its major components.

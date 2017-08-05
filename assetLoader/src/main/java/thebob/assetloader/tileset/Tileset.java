@@ -138,7 +138,10 @@ public class Tileset {
     public int getIndex() {
 	return index;
     }
-    
-    
+
+    @Override
+    public String toString() {
+	return "Tileset{" + "index=" + index + ", fileCount=" + fileCount + ", name=" + name + '}';
+    }        
 
 }

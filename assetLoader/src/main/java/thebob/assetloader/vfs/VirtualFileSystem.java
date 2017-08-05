@@ -81,7 +81,8 @@ public class VirtualFileSystem {
     public static final List<String> extraDataDirs = ImmutableList.<String>builder()
             .add("TABLEDATA")
             .add("SCRIPTS")
-            .add("MAPS")
+            .add("MAPS")    // needed to support VFS mods not based on maps.slf
+            .add("EDITOR")
             .add("INTERFACE")	// TODO: check if this extra dir is needed after enabling Interface.slf. And check if that's a good idea. WTF was I thinking?
             .build();
 

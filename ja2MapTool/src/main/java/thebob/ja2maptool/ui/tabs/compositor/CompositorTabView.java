@@ -38,6 +38,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TreeView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -54,12 +56,13 @@ import thebob.ja2maptool.util.DialogHelper;
  */
 public class CompositorTabView implements FxmlView<CompositorTabViewModel>, Initializable {
 
-    @FXML
-    private Button load_map_btn;
 
     @FXML
     private TreeView<String> snippet_list;
 
+    @FXML
+    private Button load_map_btn;
+    
     @FXML
     private Button load_snippet_btn;
 
@@ -88,6 +91,7 @@ public class CompositorTabView implements FxmlView<CompositorTabViewModel>, Init
 	MapSelectionDialogViewModel selectorViewModel = selectorTouple.getViewModel();
     }
 
+    // unused?
     @FXML
     void load_snippet(ActionEvent event) {
 
@@ -140,8 +144,79 @@ public class CompositorTabView implements FxmlView<CompositorTabViewModel>, Init
     private CheckBox snippet_structures_walls;
 
     @FXML
-    private CheckBox snippet_land_floors;
+    private CheckBox snippet_land_floors;    
+    
+    // ---------------------------------------       
+    // Placement tab
+    
 
+	// selected placement options
+	
+    @FXML
+    private CheckBox placements_land;
+
+    @FXML
+    private CheckBox placement_objects;
+
+    @FXML
+    private CheckBox placement_structures;
+
+    @FXML
+    private CheckBox placement_shadows;
+
+    @FXML
+    private CheckBox placement_roofs;
+
+    @FXML
+    private CheckBox placement_onRoof;
+
+    @FXML
+    private CheckBox placement_land_floors;
+
+    @FXML
+    private CheckBox placement_structures_walls;
+
+	// selected placement desc
+	
+    @FXML
+    private Label placement_name;
+
+    @FXML
+    private Label placement_size;
+
+    @FXML
+    private Label placement_location;
+
+	// placement list mgmt
+
+    @FXML
+    private ListView<?> placement_list;
+	
+    @FXML
+    private Button load_placements_btn;
+
+    @FXML
+    private Button save_placements_btn;
+
+    @FXML
+    private Button paste_placements_btn;
+	
+    @FXML
+    void load_placements(ActionEvent event) {
+
+    }
+
+    @FXML
+    void paste_placements(ActionEvent event) {
+
+    }
+
+
+    @FXML
+    void save_placements(ActionEvent event) {
+
+    }
+    
     // ---------------------------------------       
     // MVVMFX inject
     @InjectViewModel

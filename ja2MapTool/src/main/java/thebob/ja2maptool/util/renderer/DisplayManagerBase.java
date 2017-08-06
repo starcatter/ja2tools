@@ -27,6 +27,7 @@ import thebob.ja2maptool.util.renderer.base.TileRenderer;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observer;
+import javafx.beans.property.BooleanProperty;
 import javafx.scene.canvas.Canvas;
 import thebob.assetloader.map.core.MapData;
 import thebob.assetloader.tileset.Tileset;
@@ -79,11 +80,6 @@ public abstract class DisplayManagerBase implements IMapDisplayManager, Observer
     }
 
     @Override
-    public void updateAuxCursorDisplay() {
-	cursors.updateAuxCursorDisplay();
-    }
-
-    @Override
     public void hideCursor() {
 	cursors.hideCursor();
     }
@@ -93,10 +89,7 @@ public abstract class DisplayManagerBase implements IMapDisplayManager, Observer
 	cursors.resetCursorSize();
     }
 
-    @Override
-    public double getScale() {
-	return renderer.getScale();
-    }
+    //
 
     @Override
     public void moveWindow(int x, int y) {
@@ -108,6 +101,11 @@ public abstract class DisplayManagerBase implements IMapDisplayManager, Observer
 	renderer.setCanvas(canvas);
     }
 
+    @Override
+    public double getScale() {
+	return renderer.getScale();
+    }
+    
     @Override
     public void setScale(double scale) {
 	renderer.setScale(scale);
@@ -133,8 +131,16 @@ public abstract class DisplayManagerBase implements IMapDisplayManager, Observer
 	return renderer.getWindowOffsetX();
     }
 
+    // map
+    
     @Override
     public void setMapTileset(Tileset tileset) {
 	map.setMapTileset(tileset);
     }
+    
+    @Override
+    public void setMapLayerButtons(BooleanProperty[] viewerButtons) {
+	map.setMapLayerButtons(viewerButtons);
+    }
+    
 }

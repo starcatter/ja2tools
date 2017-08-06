@@ -202,10 +202,7 @@ public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
 	}
 
 	if (shiftDown) {
-	    if (placementLocation != null) {
-		notifySubscribers(new RendererEvent(RendererEvent.ChangeType.PLACEMENT_CURSOR_REMOVED));
-	    }
-	    placementLocation = null;
+	    clearPlacementCursor();
 
 	    if (selStart == null) {
 		selStart = new MapCursor(cursors[0], SELECTION_START_CURSOR);
@@ -214,34 +211,53 @@ public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
 
 		selectTiles(selStart, selEnd);
 	    }
+
 	} else {
-	    selStart = null;
-	    selEnd = null;
-	    selectionCursors = null;
+	    clearSelection();
 
 	    if (preview != null) {
-		if (placementLocation == null) {
-		    notifySubscribers(new RendererEvent(RendererEvent.ChangeType.PLACEMENT_CURSOR_ADDED));
-		}
-		placementLocation = new MapCursor(cursors[0], PLACEMENT_CURSOR);
-		notifySubscribers(new RendererEvent(RendererEvent.ChangeType.PLACEMENT_CURSOR_MOVED));
-		if (button == MouseButton.SECONDARY) {
+		if (button == MouseButton.PRIMARY) {
 		    notifySubscribers(new RendererEvent(RendererEvent.ChangeType.PLACEMENT_TOGGLE));
 		}
-	    } else {
-		if (placementLocation != null) {
-		    notifySubscribers(new RendererEvent(RendererEvent.ChangeType.PLACEMENT_CURSOR_REMOVED));
-		}
-
 		if (button == MouseButton.SECONDARY) {
+		    movePlacementCursor();
+		}
+	    } else {
+		clearPlacementCursor();
+
+		if (button == MouseButton.PRIMARY) {
 		    notifySubscribers(new RendererEvent(RendererEvent.ChangeType.PLACEMENT_PICK));
 		}
+		if (button == MouseButton.SECONDARY) {
+		    notifySubscribers(new RendererEvent(RendererEvent.ChangeType.PLACEMENT_DELETE));
+		}
 
-		placementLocation = null;
 	    }
 	}
 
 	bakeCursorLayer();
+    }
+
+    private void movePlacementCursor() {
+	if (placementLocation == null) {
+	    notifySubscribers(new RendererEvent(RendererEvent.ChangeType.PLACEMENT_CURSOR_ADDED));
+	}
+	placementLocation = new MapCursor(cursors[0], PLACEMENT_CURSOR);
+	notifySubscribers(new RendererEvent(RendererEvent.ChangeType.PLACEMENT_CURSOR_MOVED));
+
+    }
+
+    private void clearSelection() {
+	selStart = null;
+	selEnd = null;
+	selectionCursors = null;
+    }
+
+    private void clearPlacementCursor() {
+	if (placementLocation != null) {
+	    notifySubscribers(new RendererEvent(RendererEvent.ChangeType.PLACEMENT_CURSOR_REMOVED));
+	}
+	placementLocation = null;
     }
 
     // ----------------------------------------
@@ -295,13 +311,18 @@ public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
 
     public void setPlacementPreview(SelectedTiles selection) {
 	preview = selection;
+	if (preview != null) {
+	    setCursorSize(preview.getWidth(), preview.getHeight());
+	} else {
+	    resetCursorSize();
+	}
+	bakeCursorLayer();
     }
 
     // ----------------------------------------
     // Stuff for drawing fancy cursors
     // ----------------------------------------
-    @Override
-    public void updateAuxCursorDisplay() {
+    private void updateAuxCursorDisplay() {
 	if (cursors == null) {
 	    return;
 	}
@@ -377,49 +398,19 @@ public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
 	    cursorLayer[selEnd.getCell()] = selEnd.getCursor();
 	}
 
-	/* to be deleted
-	// TODO: make a proper preview layer
-	// place the previewed selection in the cursor layer
-	if (preview != null && placementLocation != null && cursorWidth != null && cursorHeight != null) {
-
-	    int startX = placementLocation.getCellX() - cursorWidth / 2;
-	    int startY = placementLocation.getCellY() - cursorHeight / 2;
-
-	    int i = 0;
-	    for (int x = startX; x < startX + cursorWidth; x++) {
-		for (int y = startY; y < startY + cursorHeight; y++) {
-		    // cell in the cursor layer
-		    int targetCell = rowColToPos(y, x);
-
-		    // count how many tiles are to be copied over
-		    int layerCount = 0;
-		    for (int n = 0; n < preview.getLayers().length; n++) {
-			if (preview.getLayers()[n] != null) {
-			    layerCount += preview.getLayers()[n][i].length;
-			}
-		    }
-
-		    cursorLayer[targetCell] = new IndexedElement[layerCount];
-
-		    // place the tiles in the cursor layer
-		    int placementCount = 0;
-		    for (int n = 0; n < preview.getLayers().length; n++) {
-			if (preview.getLayers()[n] != null) {
-			    for (IndexedElement tile : preview.getLayers()[n][i]) {
-				cursorLayer[targetCell][placementCount++] = tile;
-			    }
-			}
-		    }
-
-		    i++;
-		}
-	    }
-	}
-	 */
 	if (cursors != null) {
 	    for (MapCursor cursor : cursors) {
 		if (cursor != null && cursor.getCell() < mapSize) {
 		    cursorLayer[cursor.getCell()] = cursor.getCursor();
+		}
+	    }
+	    // place the main cursor again in case it got obscured by some fancy placement cursor
+	    if (cursorLayer[cursors[0].getCell()].length > 0 && cursorLayer[cursors[0].getCell()] != cursors[0].getCursor()) {
+		IndexedElement oldCursor = cursorLayer[cursors[0].getCell()][0];
+		if (oldCursor.index < 20) {
+		    cursorLayer[cursors[0].getCell()][0] = new IndexedElement(oldCursor.type, oldCursor.index + 1);
+		} else {
+		    cursorLayer[cursors[0].getCell()] = cursors[0].getCursor();
 		}
 	    }
 	}

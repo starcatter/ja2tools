@@ -26,6 +26,8 @@ package thebob.ja2maptool.util.renderer;
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.input.MouseButton;
 import thebob.assetloader.tileset.Tileset;
+import thebob.ja2maptool.scopes.map.ConvertMapScope;
+import thebob.ja2maptool.scopes.map.MapCompositorScope;
 import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.renderer.base.ITileRendererControls;
@@ -39,6 +41,8 @@ import thebob.ja2maptool.util.renderer.layers.map.IMapLayerControls;
  */
 public interface IMapDisplayManager extends ITileRendererControls, IMapLayerControls, ICursorLayerControls {
 
+    void connectCompositor(MapCompositorScope compositor);
+    void connectConverter(ConvertMapScope converter);
     // returns currently selected tiles
     SelectedTiles getSelection();
 
@@ -52,6 +56,7 @@ public interface IMapDisplayManager extends ITileRendererControls, IMapLayerCont
 
     void sendCursor(double dx, double dy, boolean controlDown, boolean shiftDown, boolean altDown);
 
-    public void setLayerButtons(BooleanProperty[] viewerButtons);
+    // connects viewer buttons to the map layers
+    public void setMapLayerButtons(BooleanProperty[] viewerButtons);
 
 }

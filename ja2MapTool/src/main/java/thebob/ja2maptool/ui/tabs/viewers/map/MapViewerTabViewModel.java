@@ -116,7 +116,7 @@ public class MapViewerTabViewModel implements ViewModel {
     }
 
     void setLayerButtons(BooleanProperty[] viewerButtons) {
-	renderer.setLayerButtons(viewerButtons);
+	renderer.setMapLayerButtons(viewerButtons);
     }
 
 }

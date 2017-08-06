@@ -31,8 +31,6 @@ public interface ICursorLayerControls {
 
     void setCursorSize(int x, int y);
 
-    void updateAuxCursorDisplay();
-
     public void hideCursor();
 
     public void resetCursorSize();

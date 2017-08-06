@@ -39,6 +39,6 @@ public interface IMapLayerManager extends IMapLayerControls, ITileLayerGroup{
 
     public void appendTiles(MapCursor placement, SelectedTiles selection, SelectionPlacementOptions options);
 
-    public void setLayerButtons(BooleanProperty[] viewerButtons);
+    public void setMapLayerButtons(BooleanProperty[] viewerButtons);
     
 }

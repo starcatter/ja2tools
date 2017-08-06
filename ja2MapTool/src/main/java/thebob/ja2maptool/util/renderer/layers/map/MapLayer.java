@@ -260,7 +260,7 @@ public class MapLayer extends TileLayerGroup implements IMapLayerManager {
     BooleanProperty[] viewerButtons = null;
 
     @Override
-    public void setLayerButtons(BooleanProperty[] viewerButtons) {
+    public void setMapLayerButtons(BooleanProperty[] viewerButtons) {
 	this.viewerButtons = viewerButtons;
 	bindLayerButtons();
     }

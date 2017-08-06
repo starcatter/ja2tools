@@ -42,8 +42,10 @@ public class RendererEvent {
 	PLACEMENT_CURSOR_ADDED, 
 	PLACEMENT_CURSOR_MOVED, 
 	PLACEMENT_CURSOR_REMOVED,
+	// placement management
 	PLACEMENT_TOGGLE,
-	PLACEMENT_PICK
+	PLACEMENT_PICK, 
+	PLACEMENT_DELETE
     }
     
     ChangeType type;

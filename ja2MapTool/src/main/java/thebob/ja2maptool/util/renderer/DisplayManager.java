@@ -29,6 +29,8 @@ import javafx.scene.effect.Glow;
 import javafx.scene.effect.Shadow;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
+import thebob.ja2maptool.scopes.map.ConvertMapScope;
+import thebob.ja2maptool.scopes.map.MapCompositorScope;
 import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.renderer.layers.cursor.MapCursor;
@@ -67,8 +69,7 @@ public class DisplayManager extends DisplayManagerBase {
 
     // -------------------
     @Override
-    public void update(Observable o, Object arg
-    ) {
+    public void update(Observable o, Object arg) {
 
 	RendererEvent message = (RendererEvent) arg;
 
@@ -105,6 +106,10 @@ public class DisplayManager extends DisplayManagerBase {
 
 		case PLACEMENT_TOGGLE:
 		    pinPlacement();
+		    break;
+
+		case PLACEMENT_DELETE:
+		    deletePlacement();
 		    break;
 
 		// --------------
@@ -148,9 +153,9 @@ public class DisplayManager extends DisplayManagerBase {
     public void setPlacementPreview(SelectedTiles selection) {
 	previewTiles = selection;
 	cursors.setPlacementPreview(selection);
-	if (previewLayer != null) {
-	    previewLayer.setPreview(previewTiles);
-	}
+	previewLayer.setPreview(previewTiles);
+
+	placementPicked = false; // reset this here in case the picked placement was switched
     }
 
     @Override
@@ -169,15 +174,15 @@ public class DisplayManager extends DisplayManagerBase {
 	cursors.setCanvasSize(renderer.getCanvasX(), renderer.getCanvasY());
     }
 
-    @Override
-    public void setLayerButtons(BooleanProperty[] viewerButtons) {
-	map.setLayerButtons(viewerButtons);
-    }
+    boolean placementPicked = false;
 
     private void pinPlacement() {
-	MapCursor placement = cursors.getPlacementCursor();
+	MapCursor placement = cursors.getMainCursor();
 	if (placementLayer.togglePlacement(placement, previewTiles)) {
 	    previewLayer.addPlacement(placement.getCell(), previewTiles);
+	    if (placementPicked) {
+		setPlacementPreview(null);
+	    }
 	} else {
 	    previewLayer.removePlacement(placement.getCell());
 	}
@@ -186,10 +191,35 @@ public class DisplayManager extends DisplayManagerBase {
     private void pickPlacement() {
 	MapCursor cursor = cursors.getMainCursor();
 	if (cursor != null) {
-	    if (placementLayer.pickPlacement(cursor)) {
+	    SelectedTiles placement = placementLayer.pickPlacement(cursor);
+	    if (placement != null) {
+		previewLayer.removePlacement(cursor.getCell());
+		setPlacementPreview(placement);
+		placementPicked = true;
+	    }
+	}
+    }
+
+    private void deletePlacement() {
+	MapCursor cursor = cursors.getMainCursor();
+	if (cursor != null) {
+	    if (placementLayer.pickPlacement(cursor) != null) {
 		previewLayer.removePlacement(cursor.getCell());
 	    }
 	}
+    }
+
+    MapCompositorScope compositor = null;
+    ConvertMapScope converter = null;
+
+    @Override
+    public void connectCompositor(MapCompositorScope compositor) {
+	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void connectConverter(ConvertMapScope converter) {
+	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

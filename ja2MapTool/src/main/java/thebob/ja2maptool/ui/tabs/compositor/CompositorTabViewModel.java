@@ -186,9 +186,7 @@ public class CompositorTabViewModel implements ViewModel {
 
 	System.out.println("thebob.ja2maptool.ui.tabs.compositor.CompositorTabViewModel.updateSnippetSelection(): deselected");
 
-	mapViewer.getRenderer().resetCursorSize();
 	mapViewer.getRenderer().setPlacementPreview(null);
-	mapViewer.getRenderer().updateAuxCursorDisplay();
 	mapViewer.getRenderer().moveWindow(0, 0);
 
 	publish(TREE_UPDATED);
@@ -211,12 +209,7 @@ public class CompositorTabViewModel implements ViewModel {
 		placedSelection = selectedSnippet;
 	    }
 
-	    int width = placedSelection.getWidth();
-	    int height = placedSelection.getHeight();
-
-	    mapViewer.getRenderer().setCursorSize(width, height);
 	    mapViewer.getRenderer().setPlacementPreview(placedSelection);
-	    mapViewer.getRenderer().updateAuxCursorDisplay();
 	    mapViewer.getRenderer().moveWindow(0, 0);
 	} else {
 	    selectedItem = null;
@@ -224,9 +217,7 @@ public class CompositorTabViewModel implements ViewModel {
 
 	    System.out.println("thebob.ja2maptool.ui.tabs.compositor.CompositorTabViewModel.updateSnippetSelection(): deselected");
 
-	    mapViewer.getRenderer().resetCursorSize();
 	    mapViewer.getRenderer().setPlacementPreview(null);
-	    mapViewer.getRenderer().updateAuxCursorDisplay();
 	    mapViewer.getRenderer().moveWindow(0, 0);
 	}
     }

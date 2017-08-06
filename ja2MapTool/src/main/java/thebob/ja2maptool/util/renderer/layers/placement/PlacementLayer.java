@@ -43,6 +43,7 @@ public class PlacementLayer extends TileLayerGroup {
 
     Map<Integer, SelectedTiles> placementContents = new HashMap<Integer, SelectedTiles>();
     Map<Integer, MapCursor> placements = new HashMap<Integer, MapCursor>();
+    Map<Integer, Integer> placementRadius = new HashMap<Integer, Integer>();
 
     private List<TileLayer> layers = new ArrayList<>();
     private IndexedElement[][] placementLayer = null;
@@ -81,15 +82,30 @@ public class PlacementLayer extends TileLayerGroup {
 	}
 
     }
+    
+    public SelectedTiles pickPlacement(MapCursor cursor) {
+	if (placements.containsKey(cursor.getCell())) {
+	    System.out.println("thebob.ja2maptool.util.renderer.layers.placement.PlacementLayer.pinPlacement(): unpin");
+	    
+	    placements.remove(cursor.getCell());
+	    SelectedTiles placement = placementContents.remove(cursor.getCell());
+	    
+	    bakePlacementLayer();
+	    return placement;
+	}
+	return null;
+    }
+    
+    //
 
-    protected void initPlacementLayer() {
+    private void initPlacementLayer() {
 	for (int i = 0; i < mapSize; i++) {
 	    placementLayer[i] = new IndexedElement[0];
 	}
 	placementLayerWrapper.setTiles(placementLayer);
     }
 
-    void bakePlacementLayer() {
+    private void bakePlacementLayer() {
 	initPlacementLayer();
 
 	if (placements.size() > 0) {
@@ -97,17 +113,6 @@ public class PlacementLayer extends TileLayerGroup {
 		placementLayer[cursor.getCell()] = cursor.getCursor();
 	    }
 	}
-    }
-
-    public boolean pickPlacement(MapCursor cursor) {
-	if (placements.containsKey(cursor.getCell())) {
-	    System.out.println("thebob.ja2maptool.util.renderer.layers.placement.PlacementLayer.pinPlacement(): unpin");
-	    placements.remove(cursor.getCell());
-	    placementContents.remove(cursor.getCell());
-	    bakePlacementLayer();
-	    return true;
-	}
-	return false;
     }
 
 }

@@ -64,9 +64,7 @@ public abstract class DisplayManagerBase implements IMapDisplayManager, Observer
 	this.renderer = renderer;
 	this.map = map;
 	this.cursors = cursors;
-
-	renderer.addRenderLayer(map);
-	renderer.addRenderLayer(cursors);
+	
     }
 
     // -------------------

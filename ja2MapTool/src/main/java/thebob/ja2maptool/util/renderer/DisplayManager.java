@@ -27,11 +27,13 @@ import java.util.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.effect.Glow;
 import javafx.scene.effect.Shadow;
+import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.renderer.layers.cursor.MapCursor;
 import thebob.ja2maptool.util.renderer.events.RendererEvent;
+import thebob.ja2maptool.util.renderer.layers.placement.PlacementLayer;
 import thebob.ja2maptool.util.renderer.layers.preview.PreviewLayer;
 
 /**
@@ -49,10 +51,24 @@ public class DisplayManager extends DisplayManagerBase {
 
     SelectedTiles previewTiles = null;
     PreviewLayer previewLayer = null;
+    PlacementLayer placementLayer = null;
+
+    public DisplayManager() {
+	super();
+
+	previewLayer = new PreviewLayer();
+	placementLayer = new PlacementLayer();
+
+	renderer.addRenderLayer(map);
+	renderer.addRenderOverlay(previewLayer, new OverlaySettings(0.65, 0, 0, null)); // new Glow(1d)) /// new Shadow(2d, Color.BLACK)
+	renderer.addRenderOverlay(placementLayer, new OverlaySettings(1.0d, 0, 0, new Glow(1d))); // new Glow(1d)) /// new Shadow(2d, Color.BLACK)
+	renderer.addRenderOverlay(cursors, new OverlaySettings(0.85, 0, 0, null)); // new Glow(1d) /// new Shadow(2d, Color.BLACK)
+    }
 
     // -------------------
     @Override
-    public void update(Observable o, Object arg) {
+    public void update(Observable o, Object arg
+    ) {
 
 	RendererEvent message = (RendererEvent) arg;
 
@@ -63,6 +79,8 @@ public class DisplayManager extends DisplayManagerBase {
 		    mapCols = map.getMapCols();
 		    mapSize = map.getMapSize();
 
+		    previewLayer.init(mapRows, mapCols, map.getTileset());
+		    placementLayer.init(mapRows, mapCols, map.getTileset());
 		    initCursorLayer();
 		    break;
 		case MAP_ALTERED:
@@ -71,17 +89,22 @@ public class DisplayManager extends DisplayManagerBase {
 		    break;
 		// --------------    
 		case PLACEMENT_CURSOR_ADDED:
-		    previewLayer = new PreviewLayer(previewTiles, map.getMapRows(), map.getMapCols());
-		    previewLayer.setTileset(map.getTileset());
-		    renderer.addRenderOverlay(previewLayer, new OverlaySettings(0.5, 0, 0, null) ); // new Glow(1d)) /// new Shadow(2d, Color.BLACK)
+		    previewLayer.setPreview(previewTiles);
 		    break;
 		case PLACEMENT_CURSOR_REMOVED:
-		    renderer.removeRenderLayer(previewLayer);
-		    previewLayer = null;
+		    previewLayer.hidePreview();
 		    break;
 		case PLACEMENT_CURSOR_MOVED:
 		    MapCursor placement = cursors.getPlacementCursor();
 		    previewLayer.placePreview(placement);
+		    break;
+
+		case PLACEMENT_PICK:
+		    pickPlacement();
+		    break;
+
+		case PLACEMENT_TOGGLE:
+		    pinPlacement();
 		    break;
 
 		// --------------
@@ -95,8 +118,6 @@ public class DisplayManager extends DisplayManagerBase {
 		    cursors.setWindow(renderer.getWindowOffsetX(), renderer.getWindowOffsetY(), renderer.getScale());
 		    cursors.setCanvasSize(renderer.getCanvasX(), renderer.getCanvasY());
 		    break;
-		default:
-		    throw new AssertionError(message.getType().name());
 
 	    }
 	}
@@ -114,7 +135,7 @@ public class DisplayManager extends DisplayManagerBase {
     @Override
     public void placeSelection(SelectedTiles selection, SelectionPlacementOptions options) {
 	MapCursor placement = cursors.getPlacementCursor();
-	if( previewLayer != null ){
+	if (previewLayer != null) {
 	    previewLayer.hidePreview();
 	}
 	if (placement != null) {
@@ -127,14 +148,14 @@ public class DisplayManager extends DisplayManagerBase {
     public void setPlacementPreview(SelectedTiles selection) {
 	previewTiles = selection;
 	cursors.setPlacementPreview(selection);
-	if( previewLayer != null ){
-	    previewLayer.setPreviewTiles(previewTiles);
+	if (previewLayer != null) {
+	    previewLayer.setPreview(previewTiles);
 	}
     }
 
     @Override
-    public void sendClick(double dx, double dy, boolean controlDown, boolean shiftDown, boolean altDown) {
-	cursors.sendClick(dx, dy, controlDown, shiftDown, altDown);
+    public void sendClick(double dx, double dy, MouseButton button, boolean controlDown, boolean shiftDown, boolean altDown) {
+	cursors.sendClick(dx, dy, button, controlDown, shiftDown, altDown);
     }
 
     @Override
@@ -146,12 +167,29 @@ public class DisplayManager extends DisplayManagerBase {
 	cursors.init(mapRows, mapCols, map.getTileset());
 	cursors.setWindow(renderer.getWindowOffsetX(), renderer.getWindowOffsetY(), renderer.getScale());
 	cursors.setCanvasSize(renderer.getCanvasX(), renderer.getCanvasY());
-	cursors.setTileset(map.getTileset());
     }
 
     @Override
     public void setLayerButtons(BooleanProperty[] viewerButtons) {
 	map.setLayerButtons(viewerButtons);
+    }
+
+    private void pinPlacement() {
+	MapCursor placement = cursors.getPlacementCursor();
+	if (placementLayer.togglePlacement(placement, previewTiles)) {
+	    previewLayer.addPlacement(placement.getCell(), previewTiles);
+	} else {
+	    previewLayer.removePlacement(placement.getCell());
+	}
+    }
+
+    private void pickPlacement() {
+	MapCursor cursor = cursors.getMainCursor();
+	if (cursor != null) {
+	    if (placementLayer.pickPlacement(cursor)) {
+		previewLayer.removePlacement(cursor.getCell());
+	    }
+	}
     }
 
 }

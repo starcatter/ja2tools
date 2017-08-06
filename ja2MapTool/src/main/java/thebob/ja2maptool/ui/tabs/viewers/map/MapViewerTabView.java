@@ -102,13 +102,11 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
 		preview_wrapper.setRight(null);
 		toolbarVisible = false;
 	    }
-	} else if (event.getButton() == MouseButton.SECONDARY) {
-	    // TODO tile mapping aid
-	} else if (event.getButton() == MouseButton.PRIMARY) {
+	} else if (event.getButton() == MouseButton.PRIMARY || event.getButton() == MouseButton.SECONDARY) {
 
 	    if (event.isControlDown()) {
 		// send cursor location to the renderer
-		viewModel.getRenderer().sendClick(dx, dy, event.isControlDown(), event.isShiftDown(), event.isAltDown());
+		viewModel.getRenderer().sendClick(dx, dy, event.getButton(), event.isControlDown(), event.isShiftDown(), event.isAltDown());
 
 		// if shift was clicked, try to get the selection
 		if (event.isShiftDown()) {
@@ -202,13 +200,13 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
 
 	// hide right toolbar
 	preview_wrapper.setRight(null);
-	
+
 	// setup renderer
 	viewModel.getRenderer().setCanvas(prev_window);
 
 	// bind map name
 	map_name.textProperty().bind(viewModel.getMapNameProperty());
-	
+
 	// layer buttons
 	BooleanProperty[] viewerButtons = new BooleanProperty[]{
 	    layer_land.selectedProperty(),
@@ -229,7 +227,7 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
 	}
 
 	viewModel.setLayerButtons(viewerButtons);
-	
+
 	// ready to go!
 	viewModel.updateRenderer(true);
     }

@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import thebob.assetloader.map.core.components.IndexedElement;
+import thebob.assetloader.tileset.Tileset;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
 import thebob.ja2maptool.util.renderer.base.TileLayer;
@@ -46,28 +47,22 @@ public class PreviewLayer extends TileLayerGroup {
 
     SelectedTiles previewTiles = null;
     MapCursor lastPlacement = null;
+
     List<TileLayer> layers = new ArrayList<>();
+    Map<Integer, SelectedTiles> placements = new HashMap<Integer, SelectedTiles>();
 
     @Override
     public Iterator<TileLayer> iterator() {
 	return layers.iterator();
     }
 
-    public SelectedTiles getPreviewTiles() {
-	return previewTiles;
-    }
-
-    public void setPreviewTiles(SelectedTiles previewTiles) {
-	this.previewTiles = previewTiles;
-	if (lastPlacement != null && previewTiles != null) {
-	    placePreview(lastPlacement);
-	}
-    }
-
-    public PreviewLayer(SelectedTiles source, int mapCols, int mapRows) {
-	this.previewTiles = source;
+    public PreviewLayer() {}
+    
+    public void init(int mapRows, int mapCols, Tileset tileset) {
 	setLayerSize(mapCols, mapRows);
-
+	setTileset(tileset);
+	
+	layers.clear();
 	// create empty space	
 	layers.add(new TileLayer(true, 0, 0, new IndexedElement[mapSize][0]));
 	layers.add(new TileLayer(true, 0, 0, new IndexedElement[mapSize][0]));
@@ -78,28 +73,91 @@ public class PreviewLayer extends TileLayerGroup {
     }
 
     public void hidePreview() {
+	/*
 	for (TileLayer layer : layers) {
 	    layer.setTiles(new IndexedElement[mapSize][0]);
+	}*/
+
+	previewTiles = null;
+	lastPlacement = null;
+    }
+
+    // manipulation methods
+    /**
+     * Adds a persistent placement
+     *
+     * @param cell
+     * @param tiles
+     */
+    public void addPlacement(int cell, SelectedTiles tiles) {
+	placements.put(cell, tiles);
+	bakePreviewLayer();
+    }
+
+    public void removePlacement(int cell) {
+	placements.remove(cell);
+	bakePreviewLayer();
+    }
+
+    /**
+     * sets the preview contents
+     *
+     * @param previewTiles
+     */
+    public void setPreview(SelectedTiles previewTiles) {
+	this.previewTiles = previewTiles;
+
+	bakePreviewLayer();
+    }
+
+    /**
+     * sets the preview location
+     *
+     * @param placement
+     */
+    public void placePreview(MapCursor placement) {
+	lastPlacement = placement;
+	bakePreviewLayer();
+    }
+
+    // -----------------
+    // "rendering" methods
+    private void bakePlacements() {
+	for (int cell : placements.keySet()) {
+	    addPreviewToLayers(placements.get(cell), cell);
 	}
     }
 
-    public void placePreview(MapCursor placement) {
-	lastPlacement = placement;
-	// clear previous preview stuff
+    private void bakePreview() {
+	addPreviewToLayers(previewTiles, lastPlacement.getCell());
+    }
 
+    private void bakePreviewLayer() {
 	for (TileLayer layer : layers) {
 	    layer.setTiles(new IndexedElement[mapSize][0]);
 	}
 
-	short[] selectedRoomNumbers = previewTiles.getRoomNumbers();
-	int selectionSize = selectedRoomNumbers.length;
-	int[] targetCells = new int[selectionSize];
+	if (lastPlacement != null && previewTiles != null) {
+	    bakePreview();
+	}
+
+	if (placements.size() > 0) {
+	    bakePlacements();
+	}
+    }
+
+    private void addPreviewToLayers(SelectedTiles previewTiles, int cell) {
+	int cellX = GridNoToCellX(cell);
+	int cellY = GridNoToCellY(cell);
 
 	int cursorWidth = previewTiles.getWidth();
 	int cursorHeight = previewTiles.getHeight();
 
-	int startX = placement.getCellX() - cursorWidth / 2;
-	int startY = placement.getCellY() - cursorHeight / 2;
+	int selectionSize = cursorWidth * cursorHeight;
+	int[] targetCells = new int[selectionSize];
+
+	int startX = cellX - cursorWidth / 2;
+	int startY = cellY - cursorHeight / 2;
 
 	for (int L = 0; L < layers.size(); L++) {
 
@@ -118,6 +176,19 @@ public class PreviewLayer extends TileLayerGroup {
 	    }
 	}
 
+    }
+
+    public int GridNoToCellX(int sGridNo) {
+	int sYPos = (sGridNo / mapCols);
+	int sXPos = sGridNo - (sYPos * mapCols);
+
+	return sXPos;
+    }
+
+    public int GridNoToCellY(int sGridNo) {
+	int sYPos = (sGridNo / mapCols);
+
+	return sYPos;
     }
 
 }

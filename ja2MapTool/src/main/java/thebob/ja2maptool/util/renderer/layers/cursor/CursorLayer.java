@@ -26,6 +26,7 @@ package thebob.ja2maptool.util.renderer.layers.cursor;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javafx.scene.input.MouseButton;
 import thebob.assetloader.map.core.components.IndexedElement;
 import thebob.assetloader.tileset.Tileset;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
@@ -93,10 +94,17 @@ public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
     @Override
     public void init(int mapRows, int mapCols, Tileset tileset) {
 	setLayerSize(mapCols, mapRows);
+	setTileset(tileset);
+
 	cursorLayer = new IndexedElement[mapSize][];
 	cursorLayerWrapper = new TileLayer(true, 0, 0, cursorLayer);
 	layers.clear();
 	layers.add(cursorLayerWrapper);
+
+	placementLocation = null;
+	selectionCursors = null;
+	selStart = null;
+	selEnd = null;
 
 	System.out.println("thebob.ja2maptool.util.renderer.cursor.CursorLayer.init()");
 
@@ -129,10 +137,6 @@ public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
 	//cursorLayerWrapper.setEnabled(false);
 	//cursorLayer = null;
 
-	//placementLocation = null;
-	//selectionCursors = null;
-	//selStart = null;
-	//selEnd = null;
 	cursors = null;
 	bakeCursorLayer();
     }
@@ -192,7 +196,7 @@ public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
     // Mouse click handler
     // ----------------------------------------
     @Override
-    public void sendClick(double dx, double dy, boolean controlDown, boolean shiftDown, boolean altDown) {
+    public void sendClick(double dx, double dy, MouseButton button, boolean controlDown, boolean shiftDown, boolean altDown) {
 	if (cursors == null) {
 	    return;
 	}
@@ -219,13 +223,20 @@ public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
 		if (placementLocation == null) {
 		    notifySubscribers(new RendererEvent(RendererEvent.ChangeType.PLACEMENT_CURSOR_ADDED));
 		}
-		placementLocation = new MapCursor(cursors[0], SELECTION_START_CURSOR);
+		placementLocation = new MapCursor(cursors[0], PLACEMENT_CURSOR);
 		notifySubscribers(new RendererEvent(RendererEvent.ChangeType.PLACEMENT_CURSOR_MOVED));
-
+		if (button == MouseButton.SECONDARY) {
+		    notifySubscribers(new RendererEvent(RendererEvent.ChangeType.PLACEMENT_TOGGLE));
+		}
 	    } else {
 		if (placementLocation != null) {
 		    notifySubscribers(new RendererEvent(RendererEvent.ChangeType.PLACEMENT_CURSOR_REMOVED));
 		}
+
+		if (button == MouseButton.SECONDARY) {
+		    notifySubscribers(new RendererEvent(RendererEvent.ChangeType.PLACEMENT_PICK));
+		}
+
 		placementLocation = null;
 	    }
 	}
@@ -441,4 +452,10 @@ public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
     public MapCursor getPlacementCursor() {
 	return placementLocation;
     }
+
+    @Override
+    public MapCursor getMainCursor() {
+	return cursors != null ? cursors[0] : null;
+    }
+
 }

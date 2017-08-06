@@ -23,6 +23,7 @@
  */
 package thebob.ja2maptool.util.renderer.layers.cursor;
 
+import javafx.scene.input.MouseButton;
 import thebob.assetloader.tileset.Tileset;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.renderer.base.ITileLayerGroup;
@@ -38,7 +39,7 @@ public interface ICursorLayerManager extends ICursorLayerControls, ITileLayerGro
 
     void sendCursor(double dx, double dy, boolean controlDown, boolean shiftDown, boolean altDown);
 
-    void sendClick(double dx, double dy, boolean controlDown, boolean shiftDown, boolean altDown);
+    void sendClick(double dx, double dy, MouseButton button, boolean controlDown, boolean shiftDown, boolean altDown);
 
     public void setWindow(int windowOffsetX, int windowOffsetY, double scale);
 
@@ -49,5 +50,6 @@ public interface ICursorLayerManager extends ICursorLayerControls, ITileLayerGro
     public void setPlacementPreview(SelectedTiles selection);
 
     public MapCursor getPlacementCursor();
+    public MapCursor getMainCursor();
 
 }

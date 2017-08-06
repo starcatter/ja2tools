@@ -28,12 +28,12 @@ package thebob.ja2maptool.util.renderer;
  * @author the_bob
  */
 public class MapUtils {
-    
-    public static int screenXYtoCellX(double screenX, double screenY){
+
+    public static int screenXYtoCellX(double screenX, double screenY) {
 	return (int) ((screenX + (2 * screenY) + 2) / 4);
     }
-    
-    public static int screenXYtoCellY(double screenX, double screenY){
+
+    public static int screenXYtoCellY(double screenX, double screenY) {
 	return (int) (((2 * screenY) - screenX + 2) / 4);
     }
 

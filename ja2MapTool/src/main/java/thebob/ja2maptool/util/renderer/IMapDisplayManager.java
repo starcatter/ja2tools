@@ -24,6 +24,7 @@
 package thebob.ja2maptool.util.renderer;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.scene.input.MouseButton;
 import thebob.assetloader.tileset.Tileset;
 import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
@@ -47,7 +48,7 @@ public interface IMapDisplayManager extends ITileRendererControls, IMapLayerCont
     // sets placement preview tiles
     public void setPlacementPreview(SelectedTiles selection);
 
-    void sendClick(double dx, double dy, boolean controlDown, boolean shiftDown, boolean altDown);
+    void sendClick(double dx, double dy, MouseButton button, boolean controlDown, boolean shiftDown, boolean altDown);
 
     void sendCursor(double dx, double dy, boolean controlDown, boolean shiftDown, boolean altDown);
 

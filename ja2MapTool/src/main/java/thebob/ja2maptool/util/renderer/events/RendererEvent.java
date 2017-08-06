@@ -30,6 +30,7 @@ package thebob.ja2maptool.util.renderer.events;
 public class RendererEvent {
     public enum ChangeType{
 	// MapLayer events
+// MapLayer events
 	MAP_LOADED,
 	MAP_ALTERED,
 	// TileRenderer events
@@ -40,7 +41,9 @@ public class RendererEvent {
 	CURSOR_MOVED, 
 	PLACEMENT_CURSOR_ADDED, 
 	PLACEMENT_CURSOR_MOVED, 
-	PLACEMENT_CURSOR_REMOVED
+	PLACEMENT_CURSOR_REMOVED,
+	PLACEMENT_TOGGLE,
+	PLACEMENT_PICK
     }
     
     ChangeType type;

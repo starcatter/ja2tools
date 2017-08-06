@@ -163,7 +163,7 @@ public class TileRenderer extends Observable implements ITileRendererManager {
     protected void renderMap() {
 	//canvasGraphicsContext.clearRect(0, 0, canvasX, canvasY);
 
-	defaultTarget.canvasGraphicsContext.clearRect(0, 0, canvasX, canvasY);
+	//defaultTarget.canvasGraphicsContext.clearRect(0, 0, canvasX, canvasY);
 	for (TileRendererTarget target : renderTargets.values()) {
 	    target.canvasGraphicsContext.clearRect(0, 0, canvasX, canvasY);
 	}

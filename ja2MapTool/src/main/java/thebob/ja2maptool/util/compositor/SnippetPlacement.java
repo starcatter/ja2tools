@@ -21,42 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.scopes.map;
+package thebob.ja2maptool.util.compositor;
 
-import de.saxsys.mvvmfx.Scope;
-import java.util.ArrayList;
-import java.util.List;
-import thebob.ja2maptool.util.compositor.SnippetPlacement;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
 
-public class MapCompositorScope implements Scope {
-    MapScope map = new MapScope();
-    MapSnippetScope loadedSnippets = null;
-    List<SnippetPlacement> placedSnippets = new ArrayList<SnippetPlacement>();
+/**
+ *
+ * @author the_bob
+ */
+public class SnippetPlacement {
 
-    public MapScope getMap() {
-	return map;
-    }
-
-    public void setMap(MapScope map) {
-	this.map = map;
-    }
-
-    public MapSnippetScope getLoadedSnippets() {
-	return loadedSnippets;
-    }
-
-    public void setLoadedSnippets(MapSnippetScope loadedSnippets) {
-	this.loadedSnippets = loadedSnippets;
-    }
-
-    public List<SnippetPlacement> getPlacedSnippets() {
-	return placedSnippets;
-    }
-
-    public void setPlacedSnippets(List<SnippetPlacement> placedSnippets) {
-	this.placedSnippets = placedSnippets;
-    }
-    
+    int cellX;
+    int cellY;
+    int cell;
+    SelectedTiles snippet;
+    boolean[] enabledLayers = new boolean[5];
     
 }

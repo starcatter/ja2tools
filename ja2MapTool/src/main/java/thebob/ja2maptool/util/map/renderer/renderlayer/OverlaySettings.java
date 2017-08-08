@@ -21,42 +21,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.scopes.map;
+package thebob.ja2maptool.util.map.renderer.renderlayer;
 
-import de.saxsys.mvvmfx.Scope;
-import java.util.ArrayList;
-import java.util.List;
-import thebob.ja2maptool.util.compositor.SnippetPlacement;
-import thebob.ja2maptool.util.compositor.SelectedTiles;
+import javafx.scene.effect.Effect;
 
-public class MapCompositorScope implements Scope {
-    MapScope map = new MapScope();
-    MapSnippetScope loadedSnippets = null;
-    List<SnippetPlacement> placedSnippets = new ArrayList<SnippetPlacement>();
+/**
+ *
+ * @author the_bob
+ */
+public class OverlaySettings {
 
-    public MapScope getMap() {
-	return map;
+    double opacity;
+    double offsetX;
+    double offsetY;
+    Effect effect;
+
+    public OverlaySettings(double opacity, double offsetX, double offsetY, Effect effect) {
+	this.opacity = opacity;
+	this.offsetX = offsetX;
+	this.offsetY = offsetY;
+	this.effect = effect;
     }
 
-    public void setMap(MapScope map) {
-	this.map = map;
+    public double getOpacity() {
+	return opacity;
     }
 
-    public MapSnippetScope getLoadedSnippets() {
-	return loadedSnippets;
+    public double getOffsetX() {
+	return offsetX;
     }
 
-    public void setLoadedSnippets(MapSnippetScope loadedSnippets) {
-	this.loadedSnippets = loadedSnippets;
+    public double getOffsetY() {
+	return offsetY;
     }
 
-    public List<SnippetPlacement> getPlacedSnippets() {
-	return placedSnippets;
+    public Effect getEffect() {
+	return effect;
     }
 
-    public void setPlacedSnippets(List<SnippetPlacement> placedSnippets) {
-	this.placedSnippets = placedSnippets;
-    }
-    
-    
 }

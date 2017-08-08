@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 the_bob.
@@ -21,42 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.scopes.map;
+package thebob.ja2maptool.util.map.controller.converter;
 
-import de.saxsys.mvvmfx.Scope;
-import java.util.ArrayList;
-import java.util.List;
-import thebob.ja2maptool.util.compositor.SnippetPlacement;
-import thebob.ja2maptool.util.compositor.SelectedTiles;
+import thebob.ja2maptool.util.map.controller.base.IMapController;
 
-public class MapCompositorScope implements Scope {
-    MapScope map = new MapScope();
-    MapSnippetScope loadedSnippets = null;
-    List<SnippetPlacement> placedSnippets = new ArrayList<SnippetPlacement>();
-
-    public MapScope getMap() {
-	return map;
-    }
-
-    public void setMap(MapScope map) {
-	this.map = map;
-    }
-
-    public MapSnippetScope getLoadedSnippets() {
-	return loadedSnippets;
-    }
-
-    public void setLoadedSnippets(MapSnippetScope loadedSnippets) {
-	this.loadedSnippets = loadedSnippets;
-    }
-
-    public List<SnippetPlacement> getPlacedSnippets() {
-	return placedSnippets;
-    }
-
-    public void setPlacedSnippets(List<SnippetPlacement> placedSnippets) {
-	this.placedSnippets = placedSnippets;
-    }
-    
+/**
+ *
+ * @author the_bob
+ */
+public interface IMapConverterController extends IMapController{
     
 }

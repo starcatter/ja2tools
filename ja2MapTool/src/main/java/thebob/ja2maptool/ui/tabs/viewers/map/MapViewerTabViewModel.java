@@ -31,9 +31,9 @@ import javafx.beans.property.StringProperty;
 import thebob.assetloader.tileset.Tileset;
 import thebob.ja2maptool.scopes.map.MapScope;
 import static thebob.ja2maptool.ui.tabs.convert.ConvertMapTabViewModel.MAP_LOADED;
-import thebob.ja2maptool.util.compositor.SelectedTiles;
-import thebob.ja2maptool.util.renderer.DisplayManager;
-import thebob.ja2maptool.util.renderer.IMapDisplayManager;
+import thebob.ja2maptool.util.map.MapDisplayManager;
+import thebob.ja2maptool.util.map.IMapDisplayManager;
+import thebob.ja2maptool.util.map.controller.viewer.IMapViewerController;
 
 /**
  *
@@ -41,14 +41,26 @@ import thebob.ja2maptool.util.renderer.IMapDisplayManager;
  */
 public class MapViewerTabViewModel implements ViewModel {
 
+    public static final String VIEWER_MODE_SET = "VIEWER_MODE_SET";
+    public static final String TOOLBAR_SWITCH = "TOOLBAR_SWITCH";
+
     @InjectScope
     MapScope mapScope;
 
-    IMapDisplayManager renderer = new DisplayManager();//new MapRenderer();
+    IMapDisplayManager renderer = new MapDisplayManager();
+    IMapViewerController viewer = null;
 
     StringProperty mapNameProperty = new SimpleStringProperty();
 
+    public enum MapViewerMode {
+	Browser,
+	Editor
+    }
+
     public void initialize() {
+	if (viewer == null) {
+	    setViewerMode(MapViewerMode.Browser);
+	}
 	mapScope.subscribe(MapScope.MAP_UPDATED, (key, values) -> {
 	    updateRenderer(true);
 	});
@@ -68,18 +80,18 @@ public class MapViewerTabViewModel implements ViewModel {
 	    tileset = mapScope.getMapAssets().getTilesets().getTileset(0);
 	}
 
-	int oldX = renderer.getWindowOffsetX();
-	int oldY = renderer.getWindowOffsetY();
+	int oldX = viewer.getWindowOffsetX();
+	int oldY = viewer.getWindowOffsetY();
 
 	renderer.setMapTileset(tileset);
 	renderer.loadMap(mapScope.getMapData());
 
 	if (!centerMap) {
-	    renderer.setWindowOffsetX(oldX);
-	    renderer.setWindowOffsetY(oldY);
+	    viewer.setWindowOffsetX(oldX);
+	    viewer.setWindowOffsetY(oldY);
 	}
 
-	renderer.moveWindow(0, 0);
+	// viewModel.scrollPreview(0, 0); // <- renderer should update itself
 	publish(MAP_LOADED);
     }
 
@@ -96,27 +108,37 @@ public class MapViewerTabViewModel implements ViewModel {
     }
 
     void scrollPreview(int xDelta, int yDelta) {
-	renderer.moveWindow(xDelta, yDelta);
+	viewer.moveWindow(xDelta, yDelta);
     }
 
     public StringProperty getMapNameProperty() {
 	return mapNameProperty;
     }
 
-    void clearSelection() {
-	mapScope.setSelection(null);
-    }
-
-    void getSelection() {
-	SelectedTiles selection = renderer.getSelection();
-	// store the selection in the map scope
-	if (selection != null) {
-	    mapScope.setSelection(selection);
-	}
-    }
-
     void setLayerButtons(BooleanProperty[] viewerButtons) {
 	renderer.setMapLayerButtons(viewerButtons);
     }
 
+    public IMapViewerController getViewer() {
+	return viewer;
+    }
+
+    public void setViewerMode(MapViewerMode mode) {
+	switch (mode) {
+	    case Browser:
+		viewer = renderer.connectBasicViewer(this);
+		break;
+	    case Editor:
+		viewer = renderer.connectEditorViewer(this);
+		break;
+	    default:
+		throw new AssertionError(mode.name());
+	}
+	publish(VIEWER_MODE_SET, mode);
+    }
+
+    public void toggleToolbars() {
+	publish(TOOLBAR_SWITCH);
+    }
+    
 }

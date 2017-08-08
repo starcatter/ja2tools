@@ -95,8 +95,14 @@ public class VfsViewerTabView implements FxmlView<VfsViewerTabViewModel>, Initia
 
     @FXML
     void select_file(MouseEvent event) {
+	select_file();
+    }
+
+    void select_file() {
 	viewModel.populateVariants(vfs_list.getSelectionModel().getSelectedItem());
 	vfs_variants.refresh();
+	vfs_variants.getSelectionModel().selectLast();
+	viewModel.populatePreview(vfs_variants.getSelectionModel().getSelectedItem());
     }
 
     @FXML
@@ -114,6 +120,10 @@ public class VfsViewerTabView implements FxmlView<VfsViewerTabViewModel>, Initia
 	vfs_list.setRoot(viewModel.getListRoot());
 	vfs_variants.setItems(viewModel.getVariantsList());
 	viewModel.populateTree();
+
+	vfs_list.getSelectionModel().selectedIndexProperty().addListener(event -> {
+	    select_file();
+	});
 
 	viewModel.subscribe(PREVIEW_OPTIONS_UPDATED, (key, value) -> {
 	    System.out.println("thebob.ja2maptool.ui.tabs.viewers.vfs.VfsViewerTabView.initialize() PREVIEW_OPTIONS_UPDATED");
@@ -149,32 +159,45 @@ public class VfsViewerTabView implements FxmlView<VfsViewerTabViewModel>, Initia
 	});
     }
 
-    private void loadMapPreview(VFSAccessor source) {	
-	
-	AssetManager assets = viewModel.getAssets();	
+    ViewTuple<MapViewerTabView, MapViewerTabViewModel> mapViewer = null;
+
+    private void loadMapViewer(MapScope scope) {
+	mapViewer = FluentViewLoader.fxmlView(MapViewerTabView.class)
+		.providedScopes(scope)
+		.load();
+    }
+
+    private void loadMapPreview(VFSAccessor source) {
+
+	AssetManager assets = viewModel.getAssets();
 	MapData data = assets.getMaps().loadMapData(source.getBytes());
-	
+
 	MapScope scope = new MapScope();
-	scope.setMapData( data );
+	scope.setMapData(data);
 	scope.setTilesetId(data.getSettings().iTilesetID);
-	scope.setTileset(assets.getTilesets().getTileset(data.getSettings().iTilesetID));	
+	scope.setTileset(assets.getTilesets().getTileset(data.getSettings().iTilesetID));
 	scope.setMapAssets(assets);
 	scope.setMapName(source.getPath());
 
-	ViewTuple<MapViewerTabView, MapViewerTabViewModel> selectorTouple = FluentViewLoader.fxmlView(MapViewerTabView.class)
-		.providedScopes(scope)
-		.load();
+	if (mapViewer == null) {
+	    loadMapViewer(scope);
+	} else {
+	    mapViewer.getViewModel().setMapScope(scope);
+	}
 
-	Parent content = selectorTouple.getView();
+	Parent content = mapViewer.getView();
 
 	vfs_preview.getChildren().clear();
 	vfs_preview.getChildren().add(content);
-	
+
 	vfs_preview.setTopAnchor(content, 0d);
 	vfs_preview.setLeftAnchor(content, 0d);
 	vfs_preview.setRightAnchor(content, 0d);
 	vfs_preview.setBottomAnchor(content, 0d);
+
+	mapViewer.getViewModel().updateRenderer(true);
     }
+
     private void loadStiPreview(VFSAccessor source) {
 	StiViewerScope scope = new StiViewerScope();
 	scope.setFileBytes(source.getBytes());
@@ -187,7 +210,7 @@ public class VfsViewerTabView implements FxmlView<VfsViewerTabViewModel>, Initia
 
 	vfs_preview.getChildren().clear();
 	vfs_preview.getChildren().add(content);
-	
+
 	vfs_preview.setTopAnchor(content, 0d);
 	vfs_preview.setLeftAnchor(content, 0d);
 	vfs_preview.setRightAnchor(content, 0d);

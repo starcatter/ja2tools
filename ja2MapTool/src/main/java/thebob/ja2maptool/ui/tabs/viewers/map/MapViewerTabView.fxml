@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
 The MIT License
 
@@ -35,16 +36,16 @@ THE SOFTWARE.
 
 <AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabView">
    <children>
-      <BorderPane fx:id="preview_wrapper" layoutX="189.0" layoutY="67.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <BorderPane fx:id="preview_wrapper" layoutX="189.0" layoutY="67.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
             <Label fx:id="map_name" text="Map name" BorderPane.alignment="CENTER" />
          </top>
          <center>
             <AnchorPane BorderPane.alignment="CENTER">
                <children>
-                  <StackPane style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <StackPane onContextMenuRequested="#prev_window_context" onKeyPressed="#prev_window_key_press" onKeyReleased="#prev_window_key_release" onKeyTyped="#prev_window_key_typed" onMouseClicked="#prev_window_click" onMouseDragged="#prev_window_dragged" onMouseEntered="#prev_window_entered" onMouseExited="#prev_window_exited" onMouseMoved="#prev_window_moved" onMousePressed="#prev_window_pressed" onMouseReleased="#prev_window_released" onScroll="#prev_window_scroll" onScrollFinished="#prev_window_scroll_end" onScrollStarted="#prev_window_scroll_start" style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <Canvas fx:id="prev_window" height="200.0" onMouseClicked="#prev_window_click" onScroll="#prev_window_scroll" width="200.0">
+                        <Canvas fx:id="prev_window" focusTraversable="true" height="200.0" width="200.0">
                            <cursor>
                               <Cursor fx:constant="MOVE" />
                            </cursor>

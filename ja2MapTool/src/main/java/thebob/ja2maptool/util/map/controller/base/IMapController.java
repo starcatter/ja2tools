@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 the_bob.
@@ -21,42 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.scopes.map;
+package thebob.ja2maptool.util.map.controller.base;
 
-import de.saxsys.mvvmfx.Scope;
-import java.util.ArrayList;
-import java.util.List;
-import thebob.ja2maptool.util.compositor.SnippetPlacement;
-import thebob.ja2maptool.util.compositor.SelectedTiles;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 
-public class MapCompositorScope implements Scope {
-    MapScope map = new MapScope();
-    MapSnippetScope loadedSnippets = null;
-    List<SnippetPlacement> placedSnippets = new ArrayList<SnippetPlacement>();
-
-    public MapScope getMap() {
-	return map;
-    }
-
-    public void setMap(MapScope map) {
-	this.map = map;
-    }
-
-    public MapSnippetScope getLoadedSnippets() {
-	return loadedSnippets;
-    }
-
-    public void setLoadedSnippets(MapSnippetScope loadedSnippets) {
-	this.loadedSnippets = loadedSnippets;
-    }
-
-    public List<SnippetPlacement> getPlacedSnippets() {
-	return placedSnippets;
-    }
-
-    public void setPlacedSnippets(List<SnippetPlacement> placedSnippets) {
-	this.placedSnippets = placedSnippets;
-    }
+/**
+ * Map Controllers provide an interface to the map renderer and abstract various tasks performed on map data. 
+ * 
+ * Before their introduction everything was handled by the MapDisplayManager, which made that class cluttered and hard to work on.
+ * 
+ * @author the_bob
+ */
+public interface IMapController {
     
-    
+    public void mouseEvent(MouseEvent e);   
+    public void keyEvent(KeyEvent e);    
+
+    public void disconnect();
 }

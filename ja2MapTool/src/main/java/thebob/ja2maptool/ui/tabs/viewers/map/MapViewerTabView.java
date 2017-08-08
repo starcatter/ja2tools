@@ -27,7 +27,6 @@ import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -36,11 +35,14 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
+import javafx.scene.input.ContextMenuEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import static thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabViewModel.VIEWER_MODE_SET;
 
 /**
  * FXML Controller class
@@ -88,57 +90,48 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
 
     boolean toolbarVisible = false;
 
+    void toggleToolbars() {
+	if (toolbarVisible == false) {
+	    preview_wrapper.setRight(preview_controls_right);
+	    toolbarVisible = true;
+	} else {
+	    preview_wrapper.setRight(null);
+	    toolbarVisible = false;
+	}
+    }
+
     @FXML
     void prev_window_click(MouseEvent event) {
+
+	prev_window.requestFocus();
 
 	double dx = event.getX();
 	double dy = event.getY();
 
 	if (event.getButton() == MouseButton.MIDDLE) {
-	    if (toolbarVisible == false) {
-		preview_wrapper.setRight(preview_controls_right);
-		toolbarVisible = true;
-	    } else {
-		preview_wrapper.setRight(null);
-		toolbarVisible = false;
-	    }
-	} else if (event.getButton() == MouseButton.PRIMARY || event.getButton() == MouseButton.SECONDARY) {
+	    toggleToolbars();
+	}/* else if (event.getButton() == MouseButton.PRIMARY) {
 
-	    if (event.isControlDown()) {
-		// send cursor location to the renderer
-		viewModel.getRenderer().sendClick(dx, dy, event.getButton(), event.isControlDown(), event.isShiftDown(), event.isAltDown());
+	    // move the window toward the click location
+	    double wx = prev_window.getWidth() / 2d;
+	    double wy = prev_window.getHeight() / 2d;
 
-		// if shift was clicked, try to get the selection
-		if (event.isShiftDown()) {
-		    viewModel.getSelection();
-		} else {
-		    viewModel.clearSelection();
-		}
+	    double deltaX = (dx - wx) / wx;
+	    double deltaY = (dy - wy) / wx;
 
-		viewModel.scrollPreview(0, 0);
-	    } else {
-		// move the window toward the click location
-		double wx = prev_window.getWidth() / 2d;
-		double wy = prev_window.getHeight() / 2d;
+	    double transX = deltaX / 2 + deltaY / 2;
+	    double transY = deltaY - deltaX / 2;
 
-		double deltaX = (dx - wx) / wx;
-		double deltaY = (dy - wy) / wx;
-
-		double transX = deltaX / 2 + deltaY / 2;
-		double transY = deltaY - deltaX / 2;
-
-		viewModel.getRenderer().hideCursor();
-		viewModel.clearSelection();
-		viewModel.scrollPreview((int) (transX * 10d), (int) (transY * 10d));
-	    }
+	    viewModel.scrollPreview((int) (transX * 10d), (int) (transY * 10d));
 	}
+	 */
     }
 
     @FXML
     void prev_window_scroll(ScrollEvent event) {
 
 	double scrolled = event.getDeltaY() / event.getMultiplierY();
-	double zoom = viewModel.getRenderer().getScale();
+	double zoom = viewModel.getViewer().getScale();
 	double newZoom = zoom + scrolled * zoomFactor;
 	if (newZoom < minZoom) {
 	    newZoom = minZoom;
@@ -147,9 +140,87 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
 	    newZoom = maxZoom;
 	}
 	if (zoom != newZoom) {
-	    viewModel.getRenderer().setScale(newZoom);
-	    viewModel.scrollPreview(0, 0);
+	    viewModel.getViewer().setScale(newZoom);
 	}
+
+    }
+
+    @FXML
+    void prev_window_context(ContextMenuEvent event) {
+
+    }
+
+    @FXML
+    void prev_window_dragged(MouseEvent event) {
+
+    }
+
+    @FXML
+    void prev_window_entered(MouseEvent event) {
+
+    }
+
+    @FXML
+    void prev_window_exited(MouseEvent event) {
+
+    }
+
+    @FXML
+    void prev_window_key_press(KeyEvent event) {
+	event.consume();
+    }
+
+    @FXML
+    void prev_window_key_release(KeyEvent event) {
+	event.consume();
+    }
+
+    @FXML
+    void prev_window_key_typed(KeyEvent event) {
+	event.consume();
+    }
+
+    @FXML
+    void prev_window_moved(MouseEvent event) {
+	/*
+	if (event.isControlDown()) {
+	    if (!cursorInViewer) {
+		prev_window.setCursor(Cursor.NONE);
+		cursorInViewer = true;
+	    }
+
+	    double dx = event.getX();
+	    double dy = event.getY();
+
+	    viewModel.getRenderer().sendCursor(dx, dy, event.isControlDown(), event.isShiftDown(), event.isAltDown());
+	    // viewModel.scrollPreview(0, 0); // <- renderer should update itself
+	} else if (cursorInViewer) {
+	    prev_window.setCursor(Cursor.MOVE);
+	    viewModel.getRenderer().hideCursor();
+	    // viewModel.scrollPreview(0, 0); // <- renderer should update itself
+
+	    cursorInViewer = false;
+	}	
+	 */
+    }
+
+    @FXML
+    void prev_window_pressed(MouseEvent event) {
+
+    }
+
+    @FXML
+    void prev_window_released(MouseEvent event) {
+
+    }
+
+    @FXML
+    void prev_window_scroll_end(ScrollEvent event) {
+
+    }
+
+    @FXML
+    void prev_window_scroll_start(ScrollEvent event) {
 
     }
 
@@ -168,34 +239,10 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
 
 	prev_window.heightProperty().addListener(event -> {
 	    viewModel.getRenderer().setCanvas(prev_window);
-	    viewModel.scrollPreview(0, 0);
 	});
 
 	prev_window.widthProperty().addListener(event -> {
 	    viewModel.getRenderer().setCanvas(prev_window);
-	    viewModel.scrollPreview(0, 0);
-	});
-
-	// mouse movement handler TODO: move to FXML event
-	prev_window.setOnMouseMoved(event -> {
-	    if (event.isControlDown()) {
-		if (!cursorInViewer) {
-		    prev_window.setCursor(Cursor.NONE);
-		    cursorInViewer = true;
-		}
-
-		double dx = event.getX();
-		double dy = event.getY();
-
-		viewModel.getRenderer().sendCursor(dx, dy, event.isControlDown(), event.isShiftDown(), event.isAltDown());
-		viewModel.scrollPreview(0, 0);
-	    } else if (cursorInViewer) {
-		prev_window.setCursor(Cursor.MOVE);
-		viewModel.getRenderer().hideCursor();
-		viewModel.scrollPreview(0, 0);
-
-		cursorInViewer = false;
-	    }
 	});
 
 	// hide right toolbar
@@ -217,16 +264,26 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
 	    layer_onroof.selectedProperty()
 	};
 
-	for (BooleanProperty button : viewerButtons) {
-	    button.addListener(event -> {
-		Platform.runLater(() -> {
-		    viewModel.scrollPreview(0, 0);
-		});
-
-	    });
-	}
-
 	viewModel.setLayerButtons(viewerButtons);
+
+	// events
+	viewModel.subscribe(MapViewerTabViewModel.TOOLBAR_SWITCH, (key, value) -> {
+	    toggleToolbars();
+	});
+	
+	viewModel.subscribe(VIEWER_MODE_SET, (key, value) -> {
+	    MapViewerTabViewModel.MapViewerMode mode = (MapViewerTabViewModel.MapViewerMode) value[0];
+	    switch (mode) {
+		case Browser:
+		    prev_window.setCursor(Cursor.MOVE);
+		    break;
+		case Editor:
+		    prev_window.setCursor(Cursor.NONE);
+		    break;
+		default:
+		    throw new AssertionError(mode.name());
+	    }
+	});
 
 	// ready to go!
 	viewModel.updateRenderer(true);

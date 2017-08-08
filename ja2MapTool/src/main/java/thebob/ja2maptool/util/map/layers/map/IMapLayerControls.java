@@ -21,42 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.scopes.map;
+package thebob.ja2maptool.util.map.layers.map;
 
-import de.saxsys.mvvmfx.Scope;
-import java.util.ArrayList;
-import java.util.List;
-import thebob.ja2maptool.util.compositor.SnippetPlacement;
-import thebob.ja2maptool.util.compositor.SelectedTiles;
+import javafx.beans.property.BooleanProperty;
+import thebob.assetloader.map.core.MapData;
+import thebob.assetloader.tileset.Tileset;
 
-public class MapCompositorScope implements Scope {
-    MapScope map = new MapScope();
-    MapSnippetScope loadedSnippets = null;
-    List<SnippetPlacement> placedSnippets = new ArrayList<SnippetPlacement>();
+/**
+ * Basic map layer controls, supposed to be manipulated from outside of the DisplayManager
+ * @author the_bob
+ */
+public interface IMapLayerControls {
 
-    public MapScope getMap() {
-	return map;
-    }
+    void loadMap(MapData map);
 
-    public void setMap(MapScope map) {
-	this.map = map;
-    }
-
-    public MapSnippetScope getLoadedSnippets() {
-	return loadedSnippets;
-    }
-
-    public void setLoadedSnippets(MapSnippetScope loadedSnippets) {
-	this.loadedSnippets = loadedSnippets;
-    }
-
-    public List<SnippetPlacement> getPlacedSnippets() {
-	return placedSnippets;
-    }
-
-    public void setPlacedSnippets(List<SnippetPlacement> placedSnippets) {
-	this.placedSnippets = placedSnippets;
-    }
+    void setMapTileset(Tileset tileset);
     
-    
+    // connects viewer buttons to the map layers
+    public void setMapLayerButtons(BooleanProperty[] viewerButtons);
 }
+
+

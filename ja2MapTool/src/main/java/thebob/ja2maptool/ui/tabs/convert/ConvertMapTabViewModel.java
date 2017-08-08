@@ -55,6 +55,7 @@ import thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabViewModel;
 import thebob.ja2maptool.util.MapTransformer;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.compositor.SnippetIO;
+import thebob.ja2maptool.util.map.controller.converter.IMapConverterController;
 
 @ScopeProvider(scopes = {MapScope.class})   // we need to provide the scope for the map viewer to load, it will be replaced once setPreviewModel() is called
 public class ConvertMapTabViewModel implements ViewModel {
@@ -73,7 +74,8 @@ public class ConvertMapTabViewModel implements ViewModel {
     @InjectScope
     ConvertMapScope convertMapScope;
 
-    MapViewerTabViewModel mapViewer;
+    MapViewerTabViewModel mapViewer = null;
+    IMapConverterController converter = null;
 
     PreviewMode rendererMode = DIRECT;
 
@@ -100,7 +102,10 @@ public class ConvertMapTabViewModel implements ViewModel {
     void setPreviewModel(MapViewerTabViewModel viewModel) {
 	mapViewer = viewModel;
 	mapViewer.setMapScope(convertMapScope.getMap());
+	mapViewer.setViewerMode(MapViewerTabViewModel.MapViewerMode.Editor);
 	mapViewer.initialize();
+	// hook up the map converter interface to the DisplayManager
+	converter = mapViewer.getRenderer().connectConverter(convertMapScope);
     }
 
     public static enum PreviewMode {
@@ -176,18 +181,18 @@ public class ConvertMapTabViewModel implements ViewModel {
 	    mapViewer.getRenderer().setMapTileset(targetTileset);
 
 	    if (rendererMode == REMAPPED) {
-		int oldX = mapViewer.getRenderer().getWindowOffsetX();
-		int oldY = mapViewer.getRenderer().getWindowOffsetY();
+		int oldX = mapViewer.getViewer().getWindowOffsetX();
+		int oldY = mapViewer.getViewer().getWindowOffsetY();
 
 		MapTransformer transformer = new MapTransformer(convertMapScope);
 		mapViewer.getRenderer().loadMap(transformer.getRemappedData(true));
 
 		if (!centerMap) {
-		    mapViewer.getRenderer().setWindowOffsetX(oldX);
-		    mapViewer.getRenderer().setWindowOffsetY(oldY);
+		    mapViewer.getViewer().setWindowOffsetX(oldX);
+		    mapViewer.getViewer().setWindowOffsetY(oldY);
 		}
 	    }
-	    mapViewer.getRenderer().moveWindow(0, 0);
+	    // mapViewer.getRenderer().moveWindow(0, 0); // <- renderer should update itself
 	}
 
 	publish(MAP_LOADED);

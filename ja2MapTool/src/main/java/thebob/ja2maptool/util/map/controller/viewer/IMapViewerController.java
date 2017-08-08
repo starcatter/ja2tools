@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 the_bob.
@@ -21,42 +21,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.scopes.map;
+package thebob.ja2maptool.util.map.controller.viewer;
 
-import de.saxsys.mvvmfx.Scope;
-import java.util.ArrayList;
-import java.util.List;
-import thebob.ja2maptool.util.compositor.SnippetPlacement;
-import thebob.ja2maptool.util.compositor.SelectedTiles;
+import thebob.ja2maptool.util.map.controller.base.IMapController;
 
-public class MapCompositorScope implements Scope {
-    MapScope map = new MapScope();
-    MapSnippetScope loadedSnippets = null;
-    List<SnippetPlacement> placedSnippets = new ArrayList<SnippetPlacement>();
-
-    public MapScope getMap() {
-	return map;
-    }
-
-    public void setMap(MapScope map) {
-	this.map = map;
-    }
-
-    public MapSnippetScope getLoadedSnippets() {
-	return loadedSnippets;
-    }
-
-    public void setLoadedSnippets(MapSnippetScope loadedSnippets) {
-	this.loadedSnippets = loadedSnippets;
-    }
-
-    public List<SnippetPlacement> getPlacedSnippets() {
-	return placedSnippets;
-    }
-
-    public void setPlacedSnippets(List<SnippetPlacement> placedSnippets) {
-	this.placedSnippets = placedSnippets;
-    }
+/**
+ *
+ * @author the_bob
+ */
+public interface IMapViewerController extends IMapController{
+    /*
+     *
+     * moves the view window by specified offsets and redraws the screen. Call with 0,0 to force screen refresh. note that the parameters are offsets to move the window by, not coordinates to move the window to. *
+     */
+    void moveWindow(int x, int y);
     
-    
+    /**
+     * Sets the renderer scale and updated the view
+     * @param scale 
+     */
+    void setScale(double scale);
+    /**
+     * Gets the current rendering scale
+     * @return 
+     */
+    double getScale();
+
+    /*
+     *
+     * use this to move the window to specific coordinates, followed by moveWindow(0,0) *
+     */
+    public void setWindowOffsetX(int oldX);
+
+    /*
+     *
+     * use this to move the window to specific coordinates, followed by moveWindow(0,0) *
+     */
+    void setWindowOffsetY(int oldY);
+
+    int getWindowOffsetY();
+
+    int getWindowOffsetX();
 }

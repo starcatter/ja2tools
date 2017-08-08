@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 the_bob.
@@ -21,42 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.scopes.map;
+package thebob.ja2maptool.util.map.controller.base;
 
-import de.saxsys.mvvmfx.Scope;
-import java.util.ArrayList;
-import java.util.List;
-import thebob.ja2maptool.util.compositor.SnippetPlacement;
-import thebob.ja2maptool.util.compositor.SelectedTiles;
+import java.util.Observer;
+import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
+import thebob.ja2maptool.util.map.layers.map.IMapLayerManager;
 
-public class MapCompositorScope implements Scope {
-    MapScope map = new MapScope();
-    MapSnippetScope loadedSnippets = null;
-    List<SnippetPlacement> placedSnippets = new ArrayList<SnippetPlacement>();
+/**
+ *
+ * @author the_bob
+ */
+public abstract class MapControllerBase implements IMapController, Observer {
 
-    public MapScope getMap() {
-	return map;
-    }
+    protected ITileRendererManager renderer;
+    protected IMapLayerManager map;
 
-    public void setMap(MapScope map) {
+    public MapControllerBase(ITileRendererManager renderer, IMapLayerManager map) {
+	this.renderer = renderer;
 	this.map = map;
+
+	renderer.addObserver(this);
+	map.subscribe(this);
+
+	System.out.println("thebob.ja2maptool.util.map.controller.base.MapControllerBase.<init>(): created " + this.getClass().getSimpleName());
     }
 
-    public MapSnippetScope getLoadedSnippets() {
-	return loadedSnippets;
+    @Override
+    public void disconnect() {
+	renderer.deleteObserver(this);
+	map.unsubscribe(this);
+
+	System.out.println("thebob.ja2maptool.util.map.controller.base.MapControllerBase.disconnect(): " + this.getClass().getSimpleName());
     }
 
-    public void setLoadedSnippets(MapSnippetScope loadedSnippets) {
-	this.loadedSnippets = loadedSnippets;
-    }
-
-    public List<SnippetPlacement> getPlacedSnippets() {
-	return placedSnippets;
-    }
-
-    public void setPlacedSnippets(List<SnippetPlacement> placedSnippets) {
-	this.placedSnippets = placedSnippets;
-    }
-    
-    
 }

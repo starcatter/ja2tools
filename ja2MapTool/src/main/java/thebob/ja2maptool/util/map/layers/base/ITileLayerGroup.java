@@ -21,42 +21,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.scopes.map;
+package thebob.ja2maptool.util.map.layers.base;
 
-import de.saxsys.mvvmfx.Scope;
-import java.util.ArrayList;
-import java.util.List;
-import thebob.ja2maptool.util.compositor.SnippetPlacement;
-import thebob.ja2maptool.util.compositor.SelectedTiles;
+import thebob.ja2maptool.util.map.MapEvent;
+import java.util.Observable;
+import java.util.Observer;
+import thebob.assetloader.tileset.Tileset;
 
-public class MapCompositorScope implements Scope {
-    MapScope map = new MapScope();
-    MapSnippetScope loadedSnippets = null;
-    List<SnippetPlacement> placedSnippets = new ArrayList<SnippetPlacement>();
+/**
+ *
+ * @author the_bob
+ */
+public interface ITileLayerGroup extends Iterable<TileLayer> {
 
-    public MapScope getMap() {
-	return map;
-    }
+    int getMapCols();
 
-    public void setMap(MapScope map) {
-	this.map = map;
-    }
+    int getMapRows();
 
-    public MapSnippetScope getLoadedSnippets() {
-	return loadedSnippets;
-    }
+    int getMapSize();
 
-    public void setLoadedSnippets(MapSnippetScope loadedSnippets) {
-	this.loadedSnippets = loadedSnippets;
-    }
+    Tileset getTileset();
 
-    public List<SnippetPlacement> getPlacedSnippets() {
-	return placedSnippets;
-    }
-
-    public void setPlacedSnippets(List<SnippetPlacement> placedSnippets) {
-	this.placedSnippets = placedSnippets;
-    }
+    void setTileset(Tileset tileset);
     
-    
+    <T extends MapEvent> void notifySubscribers(T message);
+    void subscribe(Observer observer);
+    void unsubscribe(Observer observer);
+
 }

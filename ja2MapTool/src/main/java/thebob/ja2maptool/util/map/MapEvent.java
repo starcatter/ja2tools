@@ -21,42 +21,47 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.scopes.map;
+package thebob.ja2maptool.util.map;
 
-import de.saxsys.mvvmfx.Scope;
-import java.util.ArrayList;
-import java.util.List;
-import thebob.ja2maptool.util.compositor.SnippetPlacement;
-import thebob.ja2maptool.util.compositor.SelectedTiles;
-
-public class MapCompositorScope implements Scope {
-    MapScope map = new MapScope();
-    MapSnippetScope loadedSnippets = null;
-    List<SnippetPlacement> placedSnippets = new ArrayList<SnippetPlacement>();
-
-    public MapScope getMap() {
-	return map;
-    }
-
-    public void setMap(MapScope map) {
-	this.map = map;
-    }
-
-    public MapSnippetScope getLoadedSnippets() {
-	return loadedSnippets;
-    }
-
-    public void setLoadedSnippets(MapSnippetScope loadedSnippets) {
-	this.loadedSnippets = loadedSnippets;
-    }
-
-    public List<SnippetPlacement> getPlacedSnippets() {
-	return placedSnippets;
-    }
-
-    public void setPlacedSnippets(List<SnippetPlacement> placedSnippets) {
-	this.placedSnippets = placedSnippets;
+/**
+ *
+ * @author the_bob
+ */
+public class MapEvent {
+    public enum ChangeType{
+	// Layer events
+	LAYER_ALTERED,
+	// MapLayer events
+	MAP_LOADED,
+	MAP_ALTERED,
+	// TileRenderer events
+	MAP_WINDOW_MOVED,
+	MAP_WINDOW_ZOOMED,
+	MAP_CANVAS_CHANGED,
+	// CursorLayer events
+	CURSOR_MOVED, 
+	PLACEMENT_CURSOR_ADDED, 
+	PLACEMENT_CURSOR_MOVED, 
+	PLACEMENT_CURSOR_REMOVED,
+	// placement management
+	PLACEMENT_TOGGLE,
+	PLACEMENT_PICK, 
+	PLACEMENT_DELETE, 
     }
     
+    ChangeType type;
+
+    public MapEvent(ChangeType type) {
+	this.type = type;
+    }
+
+    public ChangeType getType() {
+	return type;
+    }
+
+    @Override
+    public String toString() {
+	return "TileLayerGroupChange{" + "type=" + type + '}';
+    }
     
 }

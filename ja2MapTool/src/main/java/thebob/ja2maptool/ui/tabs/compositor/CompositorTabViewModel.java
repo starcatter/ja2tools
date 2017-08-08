@@ -46,6 +46,7 @@ import static thebob.ja2maptool.ui.tabs.convert.ConvertMapTabViewModel.MAP_LOADE
 import thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabViewModel;
 import thebob.ja2maptool.util.MapTransformer;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
+import thebob.ja2maptool.util.map.controller.compositor.IMapCompositorController;
 
 @ScopeProvider(scopes = {MapScope.class})   // we need to provide the scope for the map viewer to load, it will be replaced once setPreviewModel() is called
 public class CompositorTabViewModel implements ViewModel {
@@ -65,7 +66,8 @@ public class CompositorTabViewModel implements ViewModel {
     Map<TreeItem<String>, SelectedTiles> treeItemMap = new HashMap<TreeItem<String>, SelectedTiles>();
     Set<ConvertMapScope> subbedScopes = new HashSet<ConvertMapScope>();	// keep track of what we're subscribed to, it's easier than dealing with unsubscribing
 
-    MapViewerTabViewModel mapViewer;
+    MapViewerTabViewModel mapViewer = null;
+    IMapCompositorController compositor = null;
 
     // checkboxes
     BooleanProperty snippet_land = new SimpleBooleanProperty(true);
@@ -79,27 +81,32 @@ public class CompositorTabViewModel implements ViewModel {
     BooleanProperty snippet_structures_walls = new SimpleBooleanProperty(true);
 
     public void initialize() {
+	// hook up all of the current converters
 	updateConverterSubscriptions();
 
+	// and subscribe to hook up all the future ones
 	mainScreen.getActiveMapConversions().addListener((ListChangeListener.Change<? extends ConvertMapScope> c) -> {
 	    updateConverterSubscriptions();
 	});
 
+	// hook up the map scope (map is not loaded at this time but the scope should be ready for setup)
 	compositorScope.getMap().subscribe(MapScope.MAP_UPDATED, (key, values) -> {
 	    updateRenderer(true);
 	    mainScreen.publish(UPDATE_SCOPES);
 	});
     }
 
+    /**
+     * Subscribes to every ConvertMapScope's snippet list
+     * Also keeps track of who we've already subscribed to, otherwise we'd get their events twice!
+     */
     void updateConverterSubscriptions() {
 	for (ConvertMapScope converter : mainScreen.getActiveMapConversions()) {
 	    if (!subbedScopes.contains(converter)) {
 		subbedScopes.add(converter);
 
 		converter.subscribe(ConvertMapScope.SNIPPETS_UPDATED, (key, value) -> {
-		    System.out.println("thebob.ja2maptool.ui.tabs.compositor.CompositorTabViewModel.updateConverterSubscriptions() updating tree...");
 		    updateTree();
-		    System.out.println("thebob.ja2maptool.ui.tabs.compositor.CompositorTabViewModel.updateConverterSubscriptions() updating selection...");
 		    updateSnippetSelection();
 		});
 	    }
@@ -107,10 +114,20 @@ public class CompositorTabViewModel implements ViewModel {
 	updateTree();
     }
 
+    /**
+     * Connects this viewModel to the viewmodel of the map viewer we're using.
+     * Also injects our mapScope and registers the compositor component with the DisplayManager
+     * @param viewModel 
+     */
     void setPreviewModel(MapViewerTabViewModel viewModel) {
 	mapViewer = viewModel;
 	mapViewer.setMapScope(compositorScope.getMap());
+	mapViewer.setViewerMode(MapViewerTabViewModel.MapViewerMode.Editor);
 	mapViewer.initialize();
+	
+	
+	// registers the map compositor interface with the renderer
+	compositor = mapViewer.getRenderer().connectCompositor(compositorScope);
     }
 
     // preview window renderer handlers
@@ -186,8 +203,7 @@ public class CompositorTabViewModel implements ViewModel {
 
 	System.out.println("thebob.ja2maptool.ui.tabs.compositor.CompositorTabViewModel.updateSnippetSelection(): deselected");
 
-	mapViewer.getRenderer().setPlacementPreview(null);
-	mapViewer.getRenderer().moveWindow(0, 0);
+	compositor.setPlacementPreview(null);
 
 	publish(TREE_UPDATED);
     }
@@ -209,16 +225,14 @@ public class CompositorTabViewModel implements ViewModel {
 		placedSelection = selectedSnippet;
 	    }
 
-	    mapViewer.getRenderer().setPlacementPreview(placedSelection);
-	    mapViewer.getRenderer().moveWindow(0, 0);
+	    compositor.setPlacementPreview(placedSelection);
 	} else {
 	    selectedItem = null;
 	    selectedSnippet = null;
 
 	    System.out.println("thebob.ja2maptool.ui.tabs.compositor.CompositorTabViewModel.updateSnippetSelection(): deselected");
 
-	    mapViewer.getRenderer().setPlacementPreview(null);
-	    mapViewer.getRenderer().moveWindow(0, 0);
+	    compositor.setPlacementPreview(null);
 	}
     }
 
@@ -245,12 +259,12 @@ public class CompositorTabViewModel implements ViewModel {
 		placedSelection = selectedSnippet;
 	    }
 
-	    mapViewer.getRenderer().placeSelection(placedSelection, options);
+	    compositor.placeSelection(placedSelection, options);
 	}
     }
 
     void copySnippet() {
-	SelectedTiles selection = mapViewer.getRenderer().getSelection();
+	SelectedTiles selection = compositor.getSelection();
 	if (selection != null) {
 	    if (compositorScope.getLoadedSnippets() == null) {
 		compositorScope.setLoadedSnippets(new MapSnippetScope());

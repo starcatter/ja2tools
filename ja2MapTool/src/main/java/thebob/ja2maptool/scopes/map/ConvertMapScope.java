@@ -121,7 +121,6 @@ public class ConvertMapScope implements Scope {
 	    } else {
 		return map.getSelection();
 	    }
-
 	}
 	return null;
     }

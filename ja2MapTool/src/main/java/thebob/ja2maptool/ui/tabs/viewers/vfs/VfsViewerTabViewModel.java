@@ -93,14 +93,17 @@ public class VfsViewerTabViewModel implements ViewModel {
 
     void populateVariants(TreeItem<String> selectedItem) {
 	variantsList.clear();
-	publish(PREVIEW_OPTIONS_UPDATED, false, false, false);
+	//publish(PREVIEW_OPTIONS_UPDATED, false, false, false);
 
 	if (selectedItem != null && selectedItem.isLeaf()) {
 	    String path = getLeafPath(selectedItem);
 	    System.out.println("thebob.ja2maptool.ui.tabs.viewers.vfs.VfsViewerTabViewModel.populateVariants(): " + selectedItem);
+	    VFSAccessor lastVariant = null;
+	    
 	    for (VFSAccessor variant : config.getFileVariants(path)) {
 		variantsList.add(variant);
-	    }
+		lastVariant = variant;
+	    }	    	    
 	}
     }
 
@@ -157,12 +160,14 @@ public class VfsViewerTabViewModel implements ViewModel {
 	switch (getAssetType(selectedItem)) {
 	    case STI:
 		publish(PREVIEW_OPTIONS_UPDATED, true, true, true);
+		preview(selectedItem);
 		break;
 	    case SLF:
 		publish(PREVIEW_OPTIONS_UPDATED, false, true, false);
 		break;
 	    case Map:
 		publish(PREVIEW_OPTIONS_UPDATED, true, true, true);
+		preview(selectedItem);
 		break;
 	    case Text:
 		publish(PREVIEW_OPTIONS_UPDATED, true, false, true);
@@ -173,6 +178,7 @@ public class VfsViewerTabViewModel implements ViewModel {
 	    default:
 		throw new AssertionError(getAssetType(selectedItem).name());
 	}
+		
 
     }
 

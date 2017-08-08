@@ -27,9 +27,11 @@ import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -77,6 +79,9 @@ public class StiViewerTabView implements FxmlView<StiViewerTabViewModel>, Initia
     private ImageView main_image;
 
     @FXML
+    private StackPane main_image_container;
+
+    @FXML
     private TilePane prevPane;
     @FXML
     private AnchorPane prevPaneContainer;
@@ -84,14 +89,14 @@ public class StiViewerTabView implements FxmlView<StiViewerTabViewModel>, Initia
     @FXML
     void nextFrame(Event event) {
 	if (viewModel.nextImage()) {
-	    updateImage();
+	    updateImage(false);
 	}
     }
 
     @FXML
     void prevFrame(Event event) {
 	if (viewModel.prevImage()) {
-	    updateImage();
+	    updateImage(false);
 	}
     }
 
@@ -120,24 +125,42 @@ public class StiViewerTabView implements FxmlView<StiViewerTabViewModel>, Initia
     double baseWidth = 0.0d;
     double baseHeight = 0.0d;
 
-    private void updateImage() {
+    private void updateImage(boolean scaleFit) {
 	Image image = viewModel.getImage();
-	main_image.setImage(image);
+	
+	
 	baseWidth = image.getWidth();
 	baseHeight = image.getHeight();
-	scaleImage();
+
+	if (scaleFit) {
+	    //Platform.runLater(() -> {
+		main_image_container.getParent().layout();
+		double b = main_image_container.getWidth();
+		scale = (b * 0.8d) / (double) baseWidth;
+
+		System.out.println("thebob.ja2maptool.ui.tabs.viewers.sti.StiViewerTabView.updateImage() window width: " + b);
+		System.out.println("thebob.ja2maptool.ui.tabs.viewers.sti.StiViewerTabView.updateImage() baseWidth: " + baseWidth);
+		System.out.println("thebob.ja2maptool.ui.tabs.viewers.sti.StiViewerTabView.updateImage() inital scale: " + scale);
+
+		scaleImage();
+		main_image.setImage(image);
+	   //});
+	} else {
+	    main_image.setImage(image);
+	    scaleImage();
+	}
+
     }
 
     private void scaleImage() {
 	double w = baseWidth * scale;
 	double h = baseHeight * scale;
 
-	StackPane parent = (StackPane) main_image.getParent();
-	if (parent.getWidth() - 10d < w) {
-	    w = parent.getWidth() - 10d;
+	if (main_image_container.getWidth() - 10d < w) {
+	    w = main_image_container.getWidth() - 10d;
 	}
-	if (parent.getHeight() - 10d < h) {
-	    h = parent.getHeight() - 10d;
+	if (main_image_container.getHeight() - 10d < h) {
+	    h = main_image_container.getHeight() - 10d;
 	}
 
 	main_image.setFitWidth(w);
@@ -149,7 +172,7 @@ public class StiViewerTabView implements FxmlView<StiViewerTabViewModel>, Initia
     private StiViewerTabViewModel viewModel;
 
     @Override
-    public void initialize(URL url, ResourceBundle rb) {	
+    public void initialize(URL url, ResourceBundle rb) {
 	main_pane.setLeft(null);
 	main_pane.setRight(null);
 
@@ -158,8 +181,8 @@ public class StiViewerTabView implements FxmlView<StiViewerTabViewModel>, Initia
 	prevFrameBtn.disableProperty().bind(viewModel.getCurrentIndex().lessThan(1));
 	nextFrameBtn.disableProperty().bind(viewModel.getCurrentIndex().greaterThanOrEqualTo(viewModel.getMaxIndex()));
 
-	updateImage();
-	
+	updateImage(true);
+
 	main_image.setOnScroll(event -> {
 	    double scrolled = event.getDeltaY() / event.getMultiplierY();
 	    scale += scrolled * 0.1d;

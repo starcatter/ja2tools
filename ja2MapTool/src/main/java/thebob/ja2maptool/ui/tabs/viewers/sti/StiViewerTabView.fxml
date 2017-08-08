@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
 The MIT License
 
@@ -149,7 +150,7 @@ THE SOFTWARE.
             </GridPane>
          </left>
          <center>
-            <StackPane>
+            <StackPane fx:id="main_image_container" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                <children>
                   <ImageView fx:id="main_image" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
                </children>

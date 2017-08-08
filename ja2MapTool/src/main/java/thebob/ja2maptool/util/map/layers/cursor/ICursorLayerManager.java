@@ -21,42 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.scopes.map;
+package thebob.ja2maptool.util.map.layers.cursor;
 
-import de.saxsys.mvvmfx.Scope;
-import java.util.ArrayList;
-import java.util.List;
-import thebob.ja2maptool.util.compositor.SnippetPlacement;
+import javafx.scene.input.MouseButton;
+import thebob.assetloader.tileset.Tileset;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
+import thebob.ja2maptool.util.map.layers.base.ITileLayerGroup;
 
-public class MapCompositorScope implements Scope {
-    MapScope map = new MapScope();
-    MapSnippetScope loadedSnippets = null;
-    List<SnippetPlacement> placedSnippets = new ArrayList<SnippetPlacement>();
+/**
+ * Extended CursorLayer interface including ITileLayerGroup access
+ *
+ * @author the_bob
+ */
+public interface ICursorLayerManager extends ICursorLayerControls, ITileLayerGroup {
 
-    public MapScope getMap() {
-	return map;
-    }
+    public void init(int mapRows, int mapCols, Tileset tileset);
 
-    public void setMap(MapScope map) {
-	this.map = map;
-    }
+    void sendCursor(double dx, double dy, boolean controlDown, boolean shiftDown, boolean altDown);
 
-    public MapSnippetScope getLoadedSnippets() {
-	return loadedSnippets;
-    }
-
-    public void setLoadedSnippets(MapSnippetScope loadedSnippets) {
-	this.loadedSnippets = loadedSnippets;
-    }
-
-    public List<SnippetPlacement> getPlacedSnippets() {
-	return placedSnippets;
-    }
-
-    public void setPlacedSnippets(List<SnippetPlacement> placedSnippets) {
-	this.placedSnippets = placedSnippets;
-    }
+    void sendClick(double dx, double dy, MouseButton button, boolean controlDown, boolean shiftDown, boolean altDown);
     
-    
+    void updateCursor();
+
+    public void setWindow(int windowOffsetX, int windowOffsetY, double scale);
+
+    public void setCanvasSize(int canvasX, int canvasY);
+
+    public SelectedTiles getSelection();
+
+    public void setPlacementPreview(SelectedTiles selection);
+
+    public MapCursor getPlacementCursor();
+    public MapCursor getMainCursor();
+
 }

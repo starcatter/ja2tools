@@ -301,13 +301,13 @@ public class MapLayers extends MapComponent {
 
     public void updateLayerCounts() {
 
-	System.out.println("Updating layer counts, initial state:");
-	System.out.println("\ttotalLandLayers: " + totalLandLayers);
-	System.out.println("\ttotalObjectLayers: " + totalObjectLayers);
-	System.out.println("\ttotalStructLayers: " + totalStructLayers);
-	System.out.println("\ttotalShadowLayers: " + totalShadowLayers);
-	System.out.println("\ttotalRoofLayers: " + totalRoofLayers);
-	System.out.println("\ttotalOnRoofLayers: " + totalOnRoofLayers);
+//	System.out.println("Updating layer counts, initial state:");
+//	System.out.println("\ttotalLandLayers: " + totalLandLayers);
+//	System.out.println("\ttotalObjectLayers: " + totalObjectLayers);
+//	System.out.println("\ttotalStructLayers: " + totalStructLayers);
+//	System.out.println("\ttotalShadowLayers: " + totalShadowLayers);
+//	System.out.println("\ttotalRoofLayers: " + totalRoofLayers);
+//	System.out.println("\ttotalOnRoofLayers: " + totalOnRoofLayers);
 
 	totalLandLayers = 0;
 	totalObjectLayers = 0;
@@ -336,13 +336,13 @@ public class MapLayers extends MapComponent {
 	    totalOnRoofLayers += onRoofLayer[i].length;
 	}
 
-	System.out.println("new state:");
-	System.out.println("\ttotalLandLayers: " + totalLandLayers);
-	System.out.println("\ttotalObjectLayers: " + totalObjectLayers);
-	System.out.println("\ttotalStructLayers: " + totalStructLayers);
-	System.out.println("\ttotalShadowLayers: " + totalShadowLayers);
-	System.out.println("\ttotalRoofLayers: " + totalRoofLayers);
-	System.out.println("\ttotalOnRoofLayers: " + totalOnRoofLayers);
+//	System.out.println("new state:");
+//	System.out.println("\ttotalLandLayers: " + totalLandLayers);
+//	System.out.println("\ttotalObjectLayers: " + totalObjectLayers);
+//	System.out.println("\ttotalStructLayers: " + totalStructLayers);
+//	System.out.println("\ttotalShadowLayers: " + totalShadowLayers);
+//	System.out.println("\ttotalRoofLayers: " + totalRoofLayers);
+//	System.out.println("\ttotalOnRoofLayers: " + totalOnRoofLayers);
 
     }
 

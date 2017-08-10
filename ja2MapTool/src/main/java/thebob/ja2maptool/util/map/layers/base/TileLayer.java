@@ -25,7 +25,9 @@ package thebob.ja2maptool.util.map.layers.base;
 
 import java.util.Iterator;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import thebob.assetloader.map.core.components.IndexedElement;
 
 /**
@@ -35,9 +37,11 @@ import thebob.assetloader.map.core.components.IndexedElement;
 public class TileLayer {
 
     BooleanProperty enabled = new SimpleBooleanProperty(true);
+    DoubleProperty opacity = new SimpleDoubleProperty(1.0d);
+
     int displayOffsetX;
     int displayOffsetY;
-    
+
     IndexedElement tiles[][];
 
     public TileLayer(boolean displayLayer, int displayOffsetX, int displayOffsetY, IndexedElement[][] tiles) {
@@ -50,8 +54,7 @@ public class TileLayer {
     public BooleanProperty getEnabledProperty() {
 	return enabled;
     }
-    
-    
+
     public boolean isEnabled() {
 	return enabled.get();
     }
@@ -83,5 +86,17 @@ public class TileLayer {
     public void setTiles(IndexedElement[][] tiles) {
 	this.tiles = tiles;
     }
-        
+
+    public DoubleProperty getOpacityProprty() {
+	return opacity;
+    }
+
+    public double getOpacity() {
+	return opacity.get();
+    }
+
+    public void setOpacity(double opacity) {
+	this.opacity.set(opacity);
+    }
+
 }

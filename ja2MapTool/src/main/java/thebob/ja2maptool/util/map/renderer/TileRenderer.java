@@ -250,6 +250,8 @@ public class TileRenderer extends Observable implements ITileRendererManager {
 	    if (tileLayer.isEnabled() == false) {
 		continue;
 	    }
+	    
+	    layerTargetContext.setGlobalAlpha(tileLayer.getOpacity());	    
 
 	    int layerOffsetX = tileLayer.getDisplayOffsetX();
 	    int layerOffsetY = tileLayer.getDisplayOffsetY();

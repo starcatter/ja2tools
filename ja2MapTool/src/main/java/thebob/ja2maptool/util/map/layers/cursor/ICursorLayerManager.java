@@ -23,10 +23,9 @@
  */
 package thebob.ja2maptool.util.map.layers.cursor;
 
-import javafx.scene.input.MouseButton;
-import thebob.assetloader.tileset.Tileset;
-import thebob.ja2maptool.util.compositor.SelectedTiles;
+import thebob.assetloader.map.core.components.IndexedElement;
 import thebob.ja2maptool.util.map.layers.base.ITileLayerGroup;
+import thebob.ja2maptool.util.map.layers.base.TileLayer;
 
 /**
  * Extended CursorLayer interface including ITileLayerGroup access
@@ -35,23 +34,10 @@ import thebob.ja2maptool.util.map.layers.base.ITileLayerGroup;
  */
 public interface ICursorLayerManager extends ICursorLayerControls, ITileLayerGroup {
 
-    public void init(int mapRows, int mapCols, Tileset tileset);
+    MapCursor getCursor(int x, int y, IndexedElement cursor);
 
-    void sendCursor(double dx, double dy, boolean controlDown, boolean shiftDown, boolean altDown);
+    MapCursor getCursor(double x, double y, IndexedElement cursor);
 
-    void sendClick(double dx, double dy, MouseButton button, boolean controlDown, boolean shiftDown, boolean altDown);
-    
-    void updateCursor();
-
-    public void setWindow(int windowOffsetX, int windowOffsetY, double scale);
-
-    public void setCanvasSize(int canvasX, int canvasY);
-
-    public SelectedTiles getSelection();
-
-    public void setPlacementPreview(SelectedTiles selection);
-
-    public MapCursor getPlacementCursor();
-    public MapCursor getMainCursor();
+    TileLayer getLayer(int n);
 
 }

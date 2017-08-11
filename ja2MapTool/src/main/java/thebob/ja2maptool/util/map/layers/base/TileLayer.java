@@ -23,7 +23,6 @@
  */
 package thebob.ja2maptool.util.map.layers.base;
 
-import java.util.Iterator;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -45,58 +44,62 @@ public class TileLayer {
     IndexedElement tiles[][];
 
     public TileLayer(boolean displayLayer, int displayOffsetX, int displayOffsetY, IndexedElement[][] tiles) {
-	this.enabled.set(displayLayer);
-	this.displayOffsetX = displayOffsetX;
-	this.displayOffsetY = displayOffsetY;
-	this.tiles = tiles;
+        this.enabled.set(displayLayer);
+        this.displayOffsetX = displayOffsetX;
+        this.displayOffsetY = displayOffsetY;
+        this.tiles = tiles;
     }
 
     public BooleanProperty getEnabledProperty() {
-	return enabled;
+        return enabled;
     }
 
     public boolean isEnabled() {
-	return enabled.get();
+        return enabled.get();
     }
 
     public void setEnabled(boolean enabled) {
-	this.enabled.set(enabled);
+        this.enabled.set(enabled);
     }
 
     public int getDisplayOffsetX() {
-	return displayOffsetX;
+        return displayOffsetX;
     }
 
     public void setDisplayOffsetX(int displayOffsetX) {
-	this.displayOffsetX = displayOffsetX;
+        this.displayOffsetX = displayOffsetX;
     }
 
     public int getDisplayOffsetY() {
-	return displayOffsetY;
+        return displayOffsetY;
     }
 
     public void setDisplayOffsetY(int displayOffsetY) {
-	this.displayOffsetY = displayOffsetY;
+        this.displayOffsetY = displayOffsetY;
     }
 
     public IndexedElement[][] getTiles() {
-	return tiles;
+        return tiles;
     }
 
     public void setTiles(IndexedElement[][] tiles) {
-	this.tiles = tiles;
+        this.tiles = tiles;
+    }
+
+    public void clearTiles() {
+        this.tiles = new IndexedElement[tiles.length][0];
     }
 
     public DoubleProperty getOpacityProprty() {
-	return opacity;
+        return opacity;
     }
 
     public double getOpacity() {
-	return opacity.get();
+        return opacity.get();
     }
 
     public void setOpacity(double opacity) {
-	this.opacity.set(opacity);
+        this.opacity.set(opacity);
     }
 
 }

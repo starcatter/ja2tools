@@ -1,7 +1,7 @@
-/* 
+/*
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 maste_000.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,34 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.layers.base;
+package thebob.ja2maptool.util.map.controller.placement.snippets;
 
-import java.util.Observer;
-import thebob.assetloader.tileset.Tileset;
-import thebob.ja2maptool.util.map.MapEvent;
+import thebob.ja2maptool.util.compositor.SelectedTiles;
 
 /**
  *
- * @author the_bob
+ * @author maste_000
  */
-public interface ITileLayerGroup extends Iterable<TileLayer> {
+public interface IMapSnippetPlacementController {
 
-    void init(int mapRows, int mapCols, Tileset tileset);
+    public void setContents(SelectedTiles preview);
     
-    int getMapCols();
-
-    int getMapRows();
-
-    int getMapSize();
-
-    Tileset getTileset();
-
-    void setTileset(Tileset tileset);
-    
-    int rowColToPos(int y, int x);       
-    
-    <T extends MapEvent> void notifySubscribers(T message);
-    void subscribe(Observer observer);
-    void unsubscribe(Observer observer);
-
 }

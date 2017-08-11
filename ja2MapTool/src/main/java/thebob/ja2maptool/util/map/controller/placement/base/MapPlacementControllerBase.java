@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 maste_000.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,55 +21,65 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.controller.converter;
+package thebob.ja2maptool.util.map.controller.placement.base;
 
-import thebob.ja2maptool.util.map.controller.base.MapControllerBase;
 import java.util.Observable;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import thebob.ja2maptool.scopes.map.ConvertMapScope;
-import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
-import thebob.ja2maptool.util.map.layers.cursor.ICursorLayerManager;
+import thebob.ja2maptool.util.compositor.SelectedTiles;
+import thebob.ja2maptool.util.map.controller.base.MapControllerBase;
+import thebob.ja2maptool.util.map.layers.cursor.MapCursor;
 import thebob.ja2maptool.util.map.layers.map.IMapLayerManager;
+import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
 
 /**
- *
- * @author the_bob
+ * Base class for controllers putting stuff on the map.
+ * @author maste_000
  */
-public class MapConverterController extends MapControllerBase implements IMapConverterController {
+public abstract class MapPlacementControllerBase extends MapControllerBase implements IMapPlacementController {
 
-    protected ICursorLayerManager cursors = null;
-    ConvertMapScope scope;
-
-    public MapConverterController(ITileRendererManager renderer, IMapLayerManager map, ConvertMapScope converter) {
-	super(renderer, map);
-
-	scope = converter;
+    protected SelectedTiles payload = null;
+    protected MapCursor placement = null;
+    
+    // -------------------------------------------
+    
+    public MapPlacementControllerBase(ITileRendererManager renderer, IMapLayerManager map) {
+        super(renderer, map);
     }
 
+    // -------------------------------------------
+
+    public SelectedTiles getPayload() {
+        return payload;
+    }
+
+    public void setPayload(SelectedTiles payload) {
+        this.payload = payload;
+    }
+
+    public MapCursor getPlacement() {
+        return placement;
+    }
+
+    public void setPlacement(MapCursor placement) {
+        this.placement = placement;
+    }      
+    
+    // -------------------------------------------
+    
     @Override
     public void mouseEvent(MouseEvent e) {
-	if (e.getEventType() == MouseEvent.MOUSE_CLICKED) {
-	    cursors.sendClick(e.getX(), e.getY(), e.getButton(), e.isControlDown(), e.isShiftDown(), e.isAltDown());
-	} else if (e.getEventType() == MouseEvent.MOUSE_MOVED) {
-	    cursors.sendCursor(e.getX(), e.getY(), e.isControlDown(), e.isShiftDown(), e.isAltDown());
-	}
+        
     }
 
     @Override
     public void keyEvent(KeyEvent e) {
-
+        
     }
 
     @Override
     public void update(Observable o, Object arg) {
-	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void disconnect() {
-	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
 }

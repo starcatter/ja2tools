@@ -21,14 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.controller.converter;
+package thebob.ja2maptool.util.map.controller.editors.compositor;
 
 import thebob.ja2maptool.util.map.controller.base.IMapController;
+import thebob.ja2maptool.util.compositor.SelectedTiles;
+import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
 
 /**
  *
  * @author the_bob
  */
-public interface IMapConverterController extends IMapController{
+public interface IMapCompositorController extends IMapController {
+
+    // returns currently selected tiles
+    SelectedTiles getSelection();
+
+    // places the passed tiles at placement position
+    void placeSelection(SelectedTiles selection, SelectionPlacementOptions options);
+
+    // sets placement preview tiles
+    public void setPlacementPreview(SelectedTiles selection);
     
 }

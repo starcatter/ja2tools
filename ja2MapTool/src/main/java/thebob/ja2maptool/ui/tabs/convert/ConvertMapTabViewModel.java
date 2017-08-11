@@ -55,7 +55,7 @@ import thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabViewModel;
 import thebob.ja2maptool.util.MapTransformer;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.compositor.SnippetIO;
-import thebob.ja2maptool.util.map.controller.converter.IMapConverterController;
+import thebob.ja2maptool.util.map.controller.editors.converter.IMapConverterController;
 
 @ScopeProvider(scopes = {MapScope.class})   // we need to provide the scope for the map viewer to load, it will be replaced once setPreviewModel() is called
 public class ConvertMapTabViewModel implements ViewModel {

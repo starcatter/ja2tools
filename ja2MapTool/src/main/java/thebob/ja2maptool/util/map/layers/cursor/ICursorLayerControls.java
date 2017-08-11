@@ -23,15 +23,50 @@
  */
 package thebob.ja2maptool.util.map.layers.cursor;
 
+import thebob.assetloader.map.core.components.IndexedElement;
+import thebob.ja2maptool.util.map.layers.cursor.CursorLayer.CursorFillMode;
+
 /**
- * Basic cursor layer controls, supposed to be manipulated from outside of the DisplayManager
+ * Basic cursor layer controls, supposed to be manipulated from outside of the
+ * DisplayManager
+ *
  * @author the_bob
  */
 public interface ICursorLayerControls {
 
-    void setCursorSize(int x, int y);
+    void clearLayer(int layer);
 
-    public void hideCursor();
+    void clearLayers();
 
-    public void resetCursorSize();
+    void placeCursor(int layer, int cell, IndexedElement cursor);
+
+    void placeCursor(int layer, int cursorX, int cursorY, IndexedElement cursor);
+
+    /**
+     * Draws a cursor spanning a rectangular area from start(x,y) to end(x,y), following map grid lines (diagonal)
+     * @param layer
+     * @param startX
+     * @param startY
+     * @param endX
+     * @param endY
+     * @param cursor
+     * @param mode 
+     */
+    void placeCursorRect(int layer, int startX, int startY, int endX, int endY, IndexedElement cursor, CursorFillMode mode);
+    
+    /**
+     * Draws a cursor spanning a rectangular area centered at cursor(x,y)
+     * @param layer
+     * @param cursorX
+     * @param cursorY
+     * @param cursorWidth
+     * @param cursorHeight
+     * @param cursor
+     * @param mode 
+     */
+    void placeCursorCenterRect(int layer, int cursorX, int cursorY, int cursorWidth, int cursorHeight, IndexedElement cursor, CursorFillMode mode);
+
+    int[] getCellNumbersForRadius(int layer, int cursorX, int cursorY, int cursorWidth, int cursorHeight, CursorFillMode mode);
+    int[] getCellNumbersForRect(int layer, int startX, int startY, int endX, int endY, CursorFillMode mode);
+
 }

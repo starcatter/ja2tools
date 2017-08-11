@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 the_bob.
@@ -21,34 +21,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.layers.base;
+package thebob.ja2maptool.util.map.controller.viewer.base;
 
-import java.util.Observer;
-import thebob.assetloader.tileset.Tileset;
-import thebob.ja2maptool.util.map.MapEvent;
+import thebob.ja2maptool.util.map.controller.base.IMapController;
 
 /**
  *
  * @author the_bob
  */
-public interface ITileLayerGroup extends Iterable<TileLayer> {
-
-    void init(int mapRows, int mapCols, Tileset tileset);
+public interface IMapViewerController extends IMapController{
+    /*
+     *
+     * moves the view window by specified offsets and redraws the screen. Call with 0,0 to force screen refresh. note that the parameters are offsets to move the window by, not coordinates to move the window to. *
+     */
+    void moveWindow(int x, int y);
     
-    int getMapCols();
+    /**
+     * Sets the renderer scale and updated the view
+     * @param scale 
+     */
+    void setScale(double scale);
+    /**
+     * Gets the current rendering scale
+     * @return 
+     */
+    double getScale();
 
-    int getMapRows();
+    /*
+     *
+     * use this to move the window to specific coordinates, followed by moveWindow(0,0) *
+     */
+    public void setWindowOffsetX(int oldX);
 
-    int getMapSize();
+    /*
+     *
+     * use this to move the window to specific coordinates, followed by moveWindow(0,0) *
+     */
+    void setWindowOffsetY(int oldY);
 
-    Tileset getTileset();
+    int getWindowOffsetY();
 
-    void setTileset(Tileset tileset);
-    
-    int rowColToPos(int y, int x);       
-    
-    <T extends MapEvent> void notifySubscribers(T message);
-    void subscribe(Observer observer);
-    void unsubscribe(Observer observer);
-
+    int getWindowOffsetX();
 }

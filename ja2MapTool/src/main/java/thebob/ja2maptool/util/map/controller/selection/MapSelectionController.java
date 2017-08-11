@@ -25,10 +25,13 @@ package thebob.ja2maptool.util.map.controller.selection;
 
 import java.util.Observable;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import thebob.assetloader.map.core.components.IndexedElement;
+import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.map.controller.base.MapControllerBase;
-import thebob.ja2maptool.util.map.controller.converter.IMapConverterController;
+import thebob.ja2maptool.util.map.layers.cursor.CursorLayer;
+import static thebob.ja2maptool.util.map.layers.cursor.CursorLayer.LAYER_ACTION;
+import thebob.ja2maptool.util.map.layers.cursor.ICursorLayerManager;
 import thebob.ja2maptool.util.map.layers.map.IMapLayerManager;
 import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
 
@@ -38,75 +41,143 @@ import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
  */
 public class MapSelectionController extends MapControllerBase implements IMapSelectionController {
 
-    /*
-    @FXML
-    void prev_window_click(MouseEvent event) {
+    protected static final IndexedElement SELECTED_TILES_CURSOR = new IndexedElement(131, 10);
 
-	double dx = event.getX();
-	double dy = event.getY();
+    protected ICursorLayerManager cursorLayer;
 
-	if (event.getButton() == MouseButton.MIDDLE) {
-	    if (toolbarVisible == false) {
-		preview_wrapper.setRight(preview_controls_right);
-		toolbarVisible = true;
-	    } else {
-		preview_wrapper.setRight(null);
-		toolbarVisible = false;
-	    }
-	} else if (event.getButton() == MouseButton.PRIMARY || event.getButton() == MouseButton.SECONDARY) {
+    protected Integer selectionStartX = null;
+    protected Integer selectionStartY = null;
+    protected Integer selectionStartCell = null;
 
-	    if (event.isControlDown()) {
-		// send cursor location to the renderer
-		viewModel.getRenderer().mouseEvent(dx, dy, event.getButton(), event.isControlDown(), event.isShiftDown(), event.isAltDown());
+    protected Integer selectionEndX = null;
+    protected Integer selectionEndY = null;
+    protected Integer selectionEndCell = null;
 
-		// if shift was clicked, try to get the selection
-		if (event.isShiftDown()) {
-		    viewModel.getSelection();
-		} else {
-		    viewModel.clearSelection();
-		}
+    SelectionMode selMode = SelectionMode.CellRect;
 
-		// viewModel.scrollPreview(0, 0); // <- renderer should update itself
-	    } else {
-		// move the window toward the click location
-		double wx = prev_window.getWidth() / 2d;
-		double wy = prev_window.getHeight() / 2d;
-
-		double deltaX = (dx - wx) / wx;
-		double deltaY = (dy - wy) / wx;
-
-		double transX = deltaX / 2 + deltaY / 2;
-		double transY = deltaY - deltaX / 2;
-
-		viewModel.getRenderer().hideCursor();
-		viewModel.clearSelection();
-		viewModel.scrollPreview((int) (transX * 10d), (int) (transY * 10d));
-	    }
-	}
-    }
-     */
-    public MapSelectionController(ITileRendererManager renderer, IMapLayerManager map) {
-	super(renderer, map);
+    public MapSelectionController(ITileRendererManager renderer, IMapLayerManager map, ICursorLayerManager cursorLayer) {
+        super(renderer, map);
+        this.cursorLayer = cursorLayer;
     }
 
     @Override
-    public void update(Observable o, Object arg) {
-	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Integer getSelectionStart() {
+        return selectionStartCell;
     }
 
+    @Override
+    public Integer getSelectionEnd() {
+        return selectionEndCell;
+    }
+
+    @Override
+    public boolean hasSelection() {
+        return selectionStartCell != null && selectionEndCell != null;
+    }
+
+    /**
+     *  TODO: fire notification event
+     */
+    @Override
+    public void placeMarker(int mouseCellX, int mouseCellY) {
+        if (selectionStartCell == null) {
+            selectionStartX = mouseCellX;
+            selectionStartY = mouseCellY;
+            selectionStartCell = cursorLayer.rowColToPos(selectionStartY, selectionStartX);
+        } else if (selectionEndCell == null || (mouseCellX != selectionEndX || mouseCellY != selectionEndY)) {
+            selectionEndX = mouseCellX;
+            selectionEndY = mouseCellY;
+            selectionEndCell = cursorLayer.rowColToPos(selectionEndY, selectionEndX);
+            updateSelectionGrids(selMode);
+        } else if (selectionEndCell != null && mouseCellX == selectionEndX && mouseCellY == selectionEndY) {
+            //selMode = selMode.getNext();
+            //updateSelectionGrids(selMode);
+        }
+    }
+
+    @Override
+    public SelectedTiles getSelection() {
+        int startX = selectionStartX < selectionEndX ? selectionStartX : selectionEndX;
+        int endX = selectionStartX > selectionEndX ? selectionStartX : selectionEndX;
+        int startY = selectionStartY < selectionEndY ? selectionStartY : selectionEndY;
+        int endY = selectionStartY > selectionEndY ? selectionStartY : selectionEndY;
+
+        SelectedTiles selectedTiles = new SelectedTiles(map.getTileset().getIndex(), startX, endX, selectionStartCell, startY, endY, selectionEndCell);
+
+        switch (selMode) {
+            case CellRect:
+                selectedTiles.setSelectedCells(cursorLayer.getCellNumbersForRect(LAYER_ACTION, startX, startY, endX, endY, CursorLayer.CursorFillMode.Full));
+                break;
+
+            case CellRectRadius:
+                selectedTiles.setSelectedCells(cursorLayer.getCellNumbersForRadius(LAYER_ACTION, startX, startY, Math.abs(endX - startX) * 2, Math.abs(endY - startY) * 2, CursorLayer.CursorFillMode.Full));
+                break;
+        }
+
+        return selectedTiles;
+    }
+
+    @Override
+    public void clearSelection() {
+        selectionStartX = null;
+        selectionStartY = null;
+        selectionStartCell = null;
+
+        selectionEndX = null;
+        selectionEndY = null;
+        selectionEndCell = null;
+        
+        cursorLayer.clearLayer(LAYER_ACTION);
+    }
+
+    // --------------------------------
+    private void updateSelectionGrids(SelectionMode mode) {
+        if (selectionStartCell != null && selectionEndCell != null) {
+            cursorLayer.clearLayer(LAYER_ACTION);
+
+            switch (mode) {
+                case CellRect:
+                    cursorLayer.placeCursorRect(LAYER_ACTION, selectionStartX, selectionStartY, selectionEndX, selectionEndY, SELECTED_TILES_CURSOR, CursorLayer.CursorFillMode.Full);
+                    break;
+
+                case CellRectRadius:
+                    cursorLayer.placeCursorCenterRect(LAYER_ACTION, selectionStartX, selectionStartY, Math.abs(selectionEndX - selectionStartX) * 2, Math.abs(selectionEndY - selectionStartY) * 2, SELECTED_TILES_CURSOR, CursorLayer.CursorFillMode.Full);
+                    break;
+            }
+        }
+    }
+
+    // --------------------------------
     @Override
     public void mouseEvent(MouseEvent e) {
-	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // nothing to do?
     }
 
     @Override
     public void keyEvent(KeyEvent e) {
-	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // nothing to do?
     }
 
     @Override
     public void disconnect() {
-	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // nothing to do?
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        // nothing to do?
+    }
+
+    // ---------------------------
+    public enum SelectionMode {
+        CellRect,
+        // ScreenRect, TODO
+        CellRectRadius;
+
+        // http://siliconsparrow.com/how-to-cycle-through-the-values-of-an-enum-in-java/
+        public SelectionMode getNext() {
+            return values()[(ordinal() + 1) % values().length];
+        }
     }
 
 }

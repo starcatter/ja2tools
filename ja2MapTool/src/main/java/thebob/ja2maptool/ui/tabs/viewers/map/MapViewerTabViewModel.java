@@ -31,9 +31,9 @@ import javafx.beans.property.StringProperty;
 import thebob.assetloader.tileset.Tileset;
 import thebob.ja2maptool.scopes.map.MapScope;
 import static thebob.ja2maptool.ui.tabs.convert.ConvertMapTabViewModel.MAP_LOADED;
-import thebob.ja2maptool.util.map.MapDisplayManager;
 import thebob.ja2maptool.util.map.IMapDisplayManager;
-import thebob.ja2maptool.util.map.controller.viewer.IMapViewerController;
+import thebob.ja2maptool.util.map.MapDisplayManager;
+import thebob.ja2maptool.util.map.controller.viewer.base.IMapViewerController;
 
 /**
  *
@@ -43,6 +43,7 @@ public class MapViewerTabViewModel implements ViewModel {
 
     public static final String VIEWER_MODE_SET = "VIEWER_MODE_SET";
     public static final String TOOLBAR_SWITCH = "TOOLBAR_SWITCH";
+    public static final String FOCUS_WINDOW = "FOCUS_WINDOW";
 
     @InjectScope
     MapScope mapScope;
@@ -137,6 +138,10 @@ public class MapViewerTabViewModel implements ViewModel {
 	publish(VIEWER_MODE_SET, mode);
     }
 
+    public void focusWindow() {
+        publish(FOCUS_WINDOW);
+    }
+    
     public void toggleToolbars() {
 	publish(TOOLBAR_SWITCH);
     }

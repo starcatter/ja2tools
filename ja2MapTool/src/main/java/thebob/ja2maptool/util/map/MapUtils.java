@@ -30,11 +30,19 @@ package thebob.ja2maptool.util.map;
 public class MapUtils {
 
     public static int screenXYtoCellX(double screenX, double screenY) {
-	return (int) ((screenX + (2 * screenY) + 2) / 4);
+        return (int) ((screenX + (2 * screenY) + 2) / 4);
     }
 
     public static int screenXYtoCellY(double screenX, double screenY) {
-	return (int) (((2 * screenY) - screenX + 2) / 4);
+        return (int) (((2 * screenY) - screenX + 2) / 4);
+    }
+
+    public static int FromCellToScreenCoordinatesX(int sCellX, int sCellY) {
+        return (2 * sCellX) - (2 * sCellY);
+    }
+
+    public static int FromCellToScreenCoordinatesY(int sCellX, int sCellY) {
+        return sCellX + sCellY;
     }
 
 }

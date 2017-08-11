@@ -23,10 +23,10 @@
  */
 package thebob.ja2maptool.util.map.layers.base;
 
-import thebob.ja2maptool.util.map.MapEvent;
 import java.util.Observable;
 import java.util.Observer;
 import thebob.assetloader.tileset.Tileset;
+import thebob.ja2maptool.util.map.MapEvent;
 
 /**
  * The TileLayerGroup is meant to be a wrapper around content displayed in the renderer - maps, cursors, previews, overlays.
@@ -42,6 +42,7 @@ public abstract class TileLayerGroup extends Observable implements ITileLayerGro
     protected int mapSize;
     protected Tileset tileset;
 
+    @Override
     public int rowColToPos(int y, int x) {
 	return ((y) * mapCols + (x));
     }
@@ -52,6 +53,12 @@ public abstract class TileLayerGroup extends Observable implements ITileLayerGro
 	mapSize = mapCols * mapRows;
     }
 
+    @Override
+    public void init(int mapRows, int mapCols, Tileset tileset) {
+        setLayerSize(mapCols, mapRows);
+        setTileset(tileset);        
+    }
+    
     @Override
     public int getMapCols() {
 	return mapCols;

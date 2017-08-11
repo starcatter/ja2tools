@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 maste_000.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,25 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.controller.compositor;
+package thebob.ja2maptool.util.map.controller.placement.clipboard;
 
-import thebob.ja2maptool.util.map.controller.base.IMapController;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
+import thebob.ja2maptool.util.map.controller.base.IMapController;
 
 /**
  *
- * @author the_bob
+ * @author maste_000
  */
-public interface IMapCompositorController extends IMapController {
-
-    // returns currently selected tiles
-    SelectedTiles getSelection();
-
-    // places the passed tiles at placement position
-    void placeSelection(SelectedTiles selection, SelectionPlacementOptions options);
-
-    // sets placement preview tiles
-    public void setPlacementPreview(SelectedTiles selection);
+public interface IMapClipboardController extends IMapController {
+    boolean hasContents();
     
+    SelectedTiles getContents();
+    void setContents(SelectedTiles clipboardContents);
+    void emptyContents();
+    
+    boolean canPaste();
+    boolean canCopy();
+    boolean canCut();
+    
+    boolean copy();
+    boolean cut();
+    boolean paste(SelectionPlacementOptions options);
 }

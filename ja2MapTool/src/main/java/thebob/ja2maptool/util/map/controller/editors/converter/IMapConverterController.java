@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 the_bob.
@@ -21,34 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.layers.base;
+package thebob.ja2maptool.util.map.controller.editors.converter;
 
-import java.util.Observer;
-import thebob.assetloader.tileset.Tileset;
-import thebob.ja2maptool.util.map.MapEvent;
+import thebob.ja2maptool.util.map.controller.base.IMapController;
 
 /**
  *
  * @author the_bob
  */
-public interface ITileLayerGroup extends Iterable<TileLayer> {
-
-    void init(int mapRows, int mapCols, Tileset tileset);
+public interface IMapConverterController extends IMapController{
     
-    int getMapCols();
-
-    int getMapRows();
-
-    int getMapSize();
-
-    Tileset getTileset();
-
-    void setTileset(Tileset tileset);
-    
-    int rowColToPos(int y, int x);       
-    
-    <T extends MapEvent> void notifySubscribers(T message);
-    void subscribe(Observer observer);
-    void unsubscribe(Observer observer);
-
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 the_bob.
@@ -21,34 +21,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.layers.base;
+package thebob.ja2maptool.util.map.controller.cursor.base;
 
-import java.util.Observer;
-import thebob.assetloader.tileset.Tileset;
-import thebob.ja2maptool.util.map.MapEvent;
+import thebob.assetloader.map.core.components.IndexedElement;
+import thebob.ja2maptool.util.map.controller.base.IMapController;
+import thebob.ja2maptool.util.map.layers.cursor.MapCursor;
 
 /**
  *
  * @author the_bob
  */
-public interface ITileLayerGroup extends Iterable<TileLayer> {
+public interface IMapCursorController extends IMapController {
 
-    void init(int mapRows, int mapCols, Tileset tileset);
-    
-    int getMapCols();
+    int getMouseCellX();
 
-    int getMapRows();
+    int getMouseCellY();
 
-    int getMapSize();
+    int getMouseCell();
 
-    Tileset getTileset();
+    double getLastCursorX();
 
-    void setTileset(Tileset tileset);
-    
-    int rowColToPos(int y, int x);       
-    
-    <T extends MapEvent> void notifySubscribers(T message);
-    void subscribe(Observer observer);
-    void unsubscribe(Observer observer);
+    double getLastCursorY();
 
+    boolean isControlDown();
+
+    boolean isShiftDown();
+
+    boolean isAltDown();
+
+    IMapCursorController transferStateFrom(IMapCursorController oldController);
+
+    MapCursor getCursor();
+
+    MapCursor getCursor(int x, int y, IndexedElement cursor);
+
+    MapCursor getCursor(double x, double y, IndexedElement cursor);
 }

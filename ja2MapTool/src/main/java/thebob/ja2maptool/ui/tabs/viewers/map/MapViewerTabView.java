@@ -270,6 +270,10 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
 	viewModel.subscribe(MapViewerTabViewModel.TOOLBAR_SWITCH, (key, value) -> {
 	    toggleToolbars();
 	});
+        
+	viewModel.subscribe(MapViewerTabViewModel.FOCUS_WINDOW, (key, value) -> {
+	    prev_window.requestFocus();
+	});
 	
 	viewModel.subscribe(VIEWER_MODE_SET, (key, value) -> {
 	    MapViewerTabViewModel.MapViewerMode mode = (MapViewerTabViewModel.MapViewerMode) value[0];

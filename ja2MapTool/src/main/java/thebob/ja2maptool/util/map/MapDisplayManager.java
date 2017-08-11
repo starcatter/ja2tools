@@ -41,13 +41,13 @@ import thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabViewModel;
 import thebob.ja2maptool.util.map.controller.base.IMapController;
 import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
 import thebob.ja2maptool.util.map.renderer.TileRenderer;
-import thebob.ja2maptool.util.map.controller.compositor.MapCompositorController;
-import thebob.ja2maptool.util.map.controller.converter.MapConverterController;
+import thebob.ja2maptool.util.map.controller.editors.compositor.MapCompositorController;
+import thebob.ja2maptool.util.map.controller.editors.converter.MapConverterController;
 import thebob.ja2maptool.util.map.layers.map.IMapLayerManager;
 import thebob.ja2maptool.util.map.layers.map.MapLayer;
-import thebob.ja2maptool.util.map.controller.compositor.IMapCompositorController;
-import thebob.ja2maptool.util.map.controller.converter.IMapConverterController;
-import thebob.ja2maptool.util.map.controller.viewer.IMapViewerController;
+import thebob.ja2maptool.util.map.controller.editors.compositor.IMapCompositorController;
+import thebob.ja2maptool.util.map.controller.editors.converter.IMapConverterController;
+import thebob.ja2maptool.util.map.controller.viewer.base.IMapViewerController;
 import thebob.ja2maptool.util.map.controller.viewer.MapBrowserViewerController;
 import thebob.ja2maptool.util.map.controller.viewer.MapEditorViewerController;
 

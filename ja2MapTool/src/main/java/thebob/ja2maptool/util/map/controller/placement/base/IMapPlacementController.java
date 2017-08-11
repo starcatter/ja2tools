@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 maste_000.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,45 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.controller.viewer;
+package thebob.ja2maptool.util.map.controller.placement.base;
 
+import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.map.controller.base.IMapController;
+import thebob.ja2maptool.util.map.layers.cursor.MapCursor;
 
 /**
  *
- * @author the_bob
+ * @author maste_000
  */
-public interface IMapViewerController extends IMapController{
-    /*
-     *
-     * moves the view window by specified offsets and redraws the screen. Call with 0,0 to force screen refresh. note that the parameters are offsets to move the window by, not coordinates to move the window to. *
-     */
-    void moveWindow(int x, int y);
-    
-    /**
-     * Sets the renderer scale and updated the view
-     * @param scale 
-     */
-    void setScale(double scale);
-    /**
-     * Gets the current rendering scale
-     * @return 
-     */
-    double getScale();
-
-    /*
-     *
-     * use this to move the window to specific coordinates, followed by moveWindow(0,0) *
-     */
-    public void setWindowOffsetX(int oldX);
-
-    /*
-     *
-     * use this to move the window to specific coordinates, followed by moveWindow(0,0) *
-     */
-    void setWindowOffsetY(int oldY);
-
-    int getWindowOffsetY();
-
-    int getWindowOffsetX();
+public interface IMapPlacementController extends IMapController {
+    SelectedTiles getPayload();    
+    void setPayload(SelectedTiles payload);
+    MapCursor getPlacement();
+    void setPlacement(MapCursor placement);
+    boolean hoverPlacement(int placement);
 }

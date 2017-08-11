@@ -21,10 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.controller.viewer;
+package thebob.ja2maptool.util.map.controller.editors.converter;
 
-import thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabViewModel;
+import java.util.Observable;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import thebob.ja2maptool.scopes.map.ConvertMapScope;
 import thebob.ja2maptool.util.map.controller.base.MapControllerBase;
+import thebob.ja2maptool.util.map.layers.cursor.ICursorLayerManager;
 import thebob.ja2maptool.util.map.layers.map.IMapLayerManager;
 import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
 
@@ -32,58 +36,39 @@ import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
  *
  * @author the_bob
  */
-public abstract class MapViewerControllerBase extends MapControllerBase implements IMapViewerController {
+public class MapConverterController extends MapControllerBase implements IMapConverterController {
 
-    MapViewerTabViewModel viewWindow;
+    protected ICursorLayerManager cursors = null;
+    ConvertMapScope scope;
 
-    public MapViewerControllerBase(ITileRendererManager renderer, IMapLayerManager map, MapViewerTabViewModel viewWindow) {
+    public MapConverterController(ITileRendererManager renderer, IMapLayerManager map, ConvertMapScope converter) {
 	super(renderer, map);
-	this.viewWindow = viewWindow;
-    }
 
-    protected void zoom(int amount) {
-	System.out.println("thebob.ja2maptool.util.map.controller.viewer.MapViewerControllerBase.zoom()");
-	zoom(amount / 100d);
-    }
-
-    protected void zoom(double amount) {
-	renderer.setScale(renderer.getScale() + amount);
-    }
-
-    // -- stuff passed through to the renderer
-    @Override
-    public void moveWindow(int x, int y) {
-	renderer.moveWindow(x, y);
+	scope = converter;
     }
 
     @Override
-    public double getScale() {
-	return renderer.getScale();
+    public void mouseEvent(MouseEvent e) {
+	if (e.getEventType() == MouseEvent.MOUSE_CLICKED) {
+//	    cursors.sendClick(e.getX(), e.getY(), e.getButton(), e.isControlDown(), e.isShiftDown(), e.isAltDown());
+	} else if (e.getEventType() == MouseEvent.MOUSE_MOVED) {
+//	    cursors.sendCursor(e.getX(), e.getY(), e.isControlDown(), e.isShiftDown(), e.isAltDown());
+	}
     }
 
     @Override
-    public void setScale(double scale) {
-	renderer.setScale(scale);
+    public void keyEvent(KeyEvent e) {
+
     }
 
     @Override
-    public void setWindowOffsetX(int oldX) {
-	renderer.setWindowOffsetX(oldX);
+    public void update(Observable o, Object arg) {
+	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void setWindowOffsetY(int oldY) {
-	renderer.setWindowOffsetY(oldY);
-    }
-
-    @Override
-    public int getWindowOffsetY() {
-	return renderer.getWindowOffsetY();
-    }
-
-    @Override
-    public int getWindowOffsetX() {
-	return renderer.getWindowOffsetX();
+    public void disconnect() {
+	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

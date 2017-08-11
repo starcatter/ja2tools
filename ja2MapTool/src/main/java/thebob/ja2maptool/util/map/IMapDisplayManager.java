@@ -34,9 +34,9 @@ import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.map.renderer.ITileRendererControls;
 import thebob.ja2maptool.util.map.layers.cursor.ICursorLayerControls;
 import thebob.ja2maptool.util.map.layers.map.IMapLayerControls;
-import thebob.ja2maptool.util.map.controller.compositor.IMapCompositorController;
-import thebob.ja2maptool.util.map.controller.converter.IMapConverterController;
-import thebob.ja2maptool.util.map.controller.viewer.IMapViewerController;
+import thebob.ja2maptool.util.map.controller.editors.compositor.IMapCompositorController;
+import thebob.ja2maptool.util.map.controller.editors.converter.IMapConverterController;
+import thebob.ja2maptool.util.map.controller.viewer.base.IMapViewerController;
 
 /**
  * The interface that combines all of the map display functionality.

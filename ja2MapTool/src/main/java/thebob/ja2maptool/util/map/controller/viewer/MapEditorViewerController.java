@@ -23,11 +23,11 @@
  */
 package thebob.ja2maptool.util.map.controller.viewer;
 
+import thebob.ja2maptool.util.map.controller.viewer.base.MapViewerControllerBase;
 import java.util.Observable;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabViewModel;
-import thebob.ja2maptool.util.map.MapEvent;
 import thebob.ja2maptool.util.map.layers.map.IMapLayerManager;
 import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
 
@@ -48,6 +48,9 @@ public class MapEditorViewerController extends MapViewerControllerBase {
 
     @Override
     public void mouseEvent(MouseEvent e) {
+        if(e.getEventType() == MouseEvent.MOUSE_ENTERED){
+            viewWindow.focusWindow();
+        }
 	// TODO: edge scrolling
 	// TODO: window lock
     }
@@ -69,7 +72,8 @@ public class MapEditorViewerController extends MapViewerControllerBase {
     private void moveRight() {
 	moveWindow(scrollAmount, -scrollAmount);
     }
-
+    
+    
     @Override
     public void keyEvent(KeyEvent e) {
 	if (e.getEventType() == KeyEvent.KEY_PRESSED) {

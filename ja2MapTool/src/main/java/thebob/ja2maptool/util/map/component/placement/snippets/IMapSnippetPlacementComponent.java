@@ -23,7 +23,10 @@
  */
 package thebob.ja2maptool.util.map.component.placement.snippets;
 
+import java.util.List;
+import java.util.Map;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
+import thebob.ja2maptool.util.compositor.SnippetPlacement;
 import thebob.ja2maptool.util.map.controller.base.IMapController;
 
 /**
@@ -34,5 +37,8 @@ public interface IMapSnippetPlacementComponent extends IMapController {
 
     public void setContents(SelectedTiles preview);
     public boolean hasContents();
+    Map<Integer, SnippetPlacement> getPlacements();
+    public void movePlacement(int placementCell, int deltaX, int deltaY);
+    public void movePlacementList(List<SnippetPlacement> selectedPlacements, int deltaX, int deltaY);
     
 }

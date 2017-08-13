@@ -23,6 +23,8 @@
  */
 package thebob.ja2maptool.util.map.component.selection;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import javafx.application.Platform;
 import javafx.scene.input.KeyEvent;
@@ -30,10 +32,12 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import thebob.assetloader.map.core.components.IndexedElement;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
+import thebob.ja2maptool.util.compositor.SnippetPlacement;
 import thebob.ja2maptool.util.map.component.interaction.IMapInteractionComponent;
 import thebob.ja2maptool.util.map.component.interaction.data.MapInteractionData;
 import thebob.ja2maptool.util.map.component.interaction.layer.MapInteractionLayer;
 import thebob.ja2maptool.util.map.component.interaction.target.IMapInteractiveComponent;
+import thebob.ja2maptool.util.map.component.placement.snippets.IMapSnippetPlacementComponent;
 import thebob.ja2maptool.util.map.controller.base.MapControllerBase;
 import thebob.ja2maptool.util.map.events.MapEvent;
 import thebob.ja2maptool.util.map.layers.cursor.CursorLayer;
@@ -53,6 +57,7 @@ public class MapSelectionComponent extends MapControllerBase implements IMapSele
 
     protected ICursorLayerManager cursorLayer;
     private final IMapInteractionComponent cells;
+    private final IMapSnippetPlacementComponent placements;
 
     // selction start marker
     protected Integer selectionStartX = null;
@@ -77,6 +82,14 @@ public class MapSelectionComponent extends MapControllerBase implements IMapSele
         super(renderer, map);
         this.cursorLayer = cursorLayer;
         this.cells = cells;
+        placements = null;
+    }
+
+    public MapSelectionComponent(ITileRendererManager renderer, IMapLayerManager map, ICursorLayerManager cursorLayer, IMapInteractionComponent cells, IMapSnippetPlacementComponent placements) {
+        super(renderer, map);
+        this.cursorLayer = cursorLayer;
+        this.cells = cells;
+        this.placements = placements;
     }
 
     // --------------------------------
@@ -163,6 +176,8 @@ public class MapSelectionComponent extends MapControllerBase implements IMapSele
     // --------------------------------
     // Methods for updating state
     // --------------------------------
+    List<SnippetPlacement> selectedPlacements = new ArrayList<SnippetPlacement>();
+
     private void updateSelectionGrids(SelectionMode mode) {
         if (selectionStartCell != null && selectionEndCell != null) {
             rectStartX = selectionStartX < selectionEndX ? selectionStartX : selectionEndX;
@@ -172,6 +187,18 @@ public class MapSelectionComponent extends MapControllerBase implements IMapSele
 
             refreshSelectionGridDisplay(mode);
             refreshInteractionGrid(mode);
+
+            // placement selection
+            if (placements != null) {
+                selectedPlacements.clear();
+                int[] cells = cursorLayer.getCellNumbersForRect(rectStartX, rectStartY, rectEndX, rectEndY, CursorLayer.CursorFillMode.Full);
+                for (int cell : cells) {
+                    SnippetPlacement placement = placements.getPlacements().get(cell);
+                    if (placement != null) {
+                        selectedPlacements.add(placement);
+                    }
+                }
+            }
         }
     }
 
@@ -216,7 +243,7 @@ public class MapSelectionComponent extends MapControllerBase implements IMapSele
         if (rectStartX == null || rectEndX == null || rectStartY == null || rectEndY == null) {
             return false;
         }
-        
+
         hovered = true;
 
         int deltaX = 0;
@@ -241,6 +268,12 @@ public class MapSelectionComponent extends MapControllerBase implements IMapSele
 
                 selectionStartCell = cursorLayer.rowColToPos(selectionStartY, selectionStartX);
                 selectionEndCell = cursorLayer.rowColToPos(selectionEndY, selectionEndX);
+
+                if (placements != null && selectedPlacements.isEmpty() == false) {
+                    placements.movePlacementList(selectedPlacements, deltaX, deltaY);
+                }
+
+                notifyObservers(new MapEvent(MapEvent.ChangeType.SELECTION_CHANGED));
             }
         }
 
@@ -309,6 +342,4 @@ public class MapSelectionComponent extends MapControllerBase implements IMapSele
         return "MapSelectionComponent{" + "rectStartX=" + rectStartX + ", rectEndX=" + rectEndX + ", rectStartY=" + rectStartY + ", rectEndY=" + rectEndY + ", hovered=" + hovered + '}';
     }
 
-    
-    
 }

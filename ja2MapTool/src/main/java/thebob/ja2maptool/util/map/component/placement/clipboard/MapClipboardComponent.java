@@ -70,6 +70,10 @@ public class MapClipboardComponent extends MapPlacementComponentBase implements 
 
     // -------------------------
     protected void updatePreview() {
+        if (previewLayer == null) {
+            return;
+        }
+
         if (canPaste()) {
             previewLayer.setPreview(payload);
             previewLayer.placePreview(placementLocation);

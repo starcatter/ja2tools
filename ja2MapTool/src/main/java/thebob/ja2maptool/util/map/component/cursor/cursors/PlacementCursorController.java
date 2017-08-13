@@ -72,19 +72,6 @@ public class PlacementCursorController extends CursorControllerBase {
             Integer placementCell = placementController.hoverPlacement(getMouseCell());
             if (placementCell != null) {    // different cursor for hovering over a placement
                 getCursors().placeCursor(LAYER_CURSOR, getMouseCell(), PLACEMENT_CURSOR_ACTIVE);
-                /* none of these looked good or helpful
-                // placement center
-                getCursors().placeCursor(LAYER_CURSOR, placementCell, PLACEMENT_CORNERS_CURSOR);               
-                // looped guides
-                for (int i = 1; i < 3; i++) {
-                    getCursors().placeCursorCenterRect(LAYER_CURSOR, getCursors().GridNoToCellX(placementCell), getCursors().GridNoToCellY(placementCell), width + 2, height + (4*i), PLACEMENT_MARKERS_CURSOR, CursorLayer.CursorFillMode.Corners);
-                    getCursors().placeCursorCenterRect(LAYER_CURSOR, getCursors().GridNoToCellX(placementCell), getCursors().GridNoToCellY(placementCell), width + (4*i), height + 2, PLACEMENT_MARKERS_CURSOR, CursorLayer.CursorFillMode.Corners);
-                }
-                // manual guides
-                getCursors().placeCursorCenterRect(LAYER_CURSOR, getCursors().GridNoToCellX(placementCell), getCursors().GridNoToCellY(placementCell), width + 2, height + 2, PLACEMENT_CORNERS_CURSOR, CursorLayer.CursorFillMode.Corners);
-                getCursors().placeCursorCenterRect(LAYER_CURSOR, getCursors().GridNoToCellX(placementCell), getCursors().GridNoToCellY(placementCell), width + 4, height + 2, PLACEMENT_CORNERS_CURSOR, CursorLayer.CursorFillMode.Corners);
-                getCursors().placeCursorCenterRect(LAYER_CURSOR, getCursors().GridNoToCellX(placementCell), getCursors().GridNoToCellY(placementCell), width + 2, height + 4, PLACEMENT_CORNERS_CURSOR, CursorLayer.CursorFillMode.Corners);
-                */
             } else {
                 getCursors().placeCursorCenterRect(LAYER_CURSOR, getMouseCellX(), getMouseCellY(), width, height, PLACEMENT_TILES_CURSOR, CursorLayer.CursorFillMode.Border);
                 getCursors().placeCursorCenterRect(LAYER_CURSOR, getMouseCellX(), getMouseCellY(), width + 2, height + 2, PLACEMENT_CORNERS_CURSOR, CursorLayer.CursorFillMode.Corners);

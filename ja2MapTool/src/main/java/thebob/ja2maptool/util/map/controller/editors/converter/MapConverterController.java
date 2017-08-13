@@ -24,13 +24,28 @@
 package thebob.ja2maptool.util.map.controller.editors.converter;
 
 import java.util.Observable;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import thebob.ja2maptool.scopes.map.ConvertMapScope;
+import static thebob.ja2maptool.scopes.map.MapScope.SELECTION_UPDATED;
+import thebob.ja2maptool.util.map.component.cursor.MapCursorComponent;
+import thebob.ja2maptool.util.map.component.cursor.base.IMapCursorComponent;
+import thebob.ja2maptool.util.map.component.cursor.cursors.BasicCursorController;
+import thebob.ja2maptool.util.map.component.cursor.cursors.SelectionCursorController;
+import thebob.ja2maptool.util.map.component.interaction.IMapInteractionComponent;
+import thebob.ja2maptool.util.map.component.interaction.MapInteractionComponent;
+import thebob.ja2maptool.util.map.component.placement.clipboard.IMapClipboardComponent;
+import thebob.ja2maptool.util.map.component.placement.clipboard.MapClipboardComponent;
+import thebob.ja2maptool.util.map.component.selection.IMapSelectionComponent;
+import thebob.ja2maptool.util.map.component.selection.MapSelectionComponent;
 import thebob.ja2maptool.util.map.controller.base.MapControllerBase;
+import thebob.ja2maptool.util.map.events.MapEvent;
+import thebob.ja2maptool.util.map.layers.cursor.CursorLayer;
 import thebob.ja2maptool.util.map.layers.cursor.ICursorLayerManager;
 import thebob.ja2maptool.util.map.layers.map.IMapLayerManager;
 import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
+import thebob.ja2maptool.util.map.renderer.renderlayer.OverlaySettings;
 
 /**
  *
@@ -38,37 +53,77 @@ import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
  */
 public class MapConverterController extends MapControllerBase implements IMapConverterController {
 
-    protected ICursorLayerManager cursors = null;
     ConvertMapScope scope;
 
-    public MapConverterController(ITileRendererManager renderer, IMapLayerManager map, ConvertMapScope converter) {
-	super(renderer, map);
+    protected ICursorLayerManager cursorLayer = new CursorLayer();
 
-	scope = converter;
+    protected IMapInteractionComponent cells = new MapInteractionComponent(getRenderer(), getMap());
+    protected IMapCursorComponent cursors = new MapCursorComponent(getRenderer(), getMap(), cursorLayer, cells);
+    protected IMapSelectionComponent selection = new MapSelectionComponent(getRenderer(), getMap(), cursorLayer, cells);
+    protected IMapClipboardComponent clipboard = new MapClipboardComponent(getRenderer(), getMap(), cursorLayer, null, selection);
+
+    public MapConverterController(ITileRendererManager renderer, IMapLayerManager map, ConvertMapScope converter) {
+        super(renderer, map);
+
+        scope = converter;
+
+        cursors.setCursor(new BasicCursorController());
+
+        cursors.addObserver(this);
+        selection.addObserver(this);
+        clipboard.addObserver(this);
+
+        renderer.addRenderOverlay(cursorLayer, new OverlaySettings(1.0d, 0, 0, null)); // new Glow(1d) /// new Shadow(2d, Color.BLACK)
     }
 
     @Override
     public void mouseEvent(MouseEvent e) {
-	if (e.getEventType() == MouseEvent.MOUSE_CLICKED) {
-//	    cursors.sendClick(e.getX(), e.getY(), e.getButton(), e.isControlDown(), e.isShiftDown(), e.isAltDown());
-	} else if (e.getEventType() == MouseEvent.MOUSE_MOVED) {
-//	    cursors.sendCursor(e.getX(), e.getY(), e.isControlDown(), e.isShiftDown(), e.isAltDown());
-	}
+        cursors.mouseEvent(e);
     }
 
     @Override
     public void keyEvent(KeyEvent e) {
+        if (e.getEventType() == KeyEvent.KEY_PRESSED && e.getCode() == KeyCode.SHIFT) {
+            cursors.setCursor(new SelectionCursorController(selection));
+        } else if (e.getEventType() == KeyEvent.KEY_RELEASED && (e.getCode() == KeyCode.SHIFT)) {
+            cursors.setCursor(new BasicCursorController());
+        }
 
+        cursors.keyEvent(e);
     }
 
     @Override
+
     public void update(Observable o, Object arg) {
-	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        MapEvent message = (MapEvent) arg;
+
+        if (message != null) {
+            switch (message.getType()) {
+                case MAP_LOADED:
+                    cursorLayer.init(getMap().getMapRows(), getMap().getMapCols(), getMap().getTileset());
+                    break;
+
+                case SELECTION_CHANGED:
+                    clipboard.copy();
+                    break;
+                case CLIPBOARD_FILLED:
+                    scope.getMap().setSelection(clipboard.getContents());
+                    scope.getMap().publish(SELECTION_UPDATED);
+                    break;
+                case SELECTION_CLEARED:
+                    clipboard.emptyContents();
+                    break;
+                case CLIPBOARD_EMPTIED:
+                    scope.getMap().setSelection(null);
+                    scope.getMap().publish(SELECTION_UPDATED);
+                    break;
+            }
+        }
     }
 
     @Override
     public void disconnect() {
-	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

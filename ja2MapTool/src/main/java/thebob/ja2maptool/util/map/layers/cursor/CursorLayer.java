@@ -62,11 +62,11 @@ public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
         for (int i = 0; i < LAYERS; i++) {
             layers.add(new TileLayer(true, 0, 0, new IndexedElement[mapSize][0]));
         }
-        
+
         layers.get(LAYER_CURSOR).setOpacity(0.80);
         layers.get(LAYER_ACTION).setOpacity(0.45);
         layers.get(LAYER_STATE).setOpacity(0.75);
-        
+
         System.out.println("thebob.ja2maptool.util.map.layers.cursor.CursorLayer.init()");
     }
 
@@ -82,6 +82,9 @@ public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
 
     @Override
     public void clearLayer(int layer) {
+        if (layers.isEmpty() || layers.size() <= layer) {
+            return;
+        }
         layers.get(layer).clearTiles();
         notifySubscribers(new MapEvent(MapEvent.ChangeType.LAYER_ALTERED));
     }
@@ -146,7 +149,7 @@ public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
         int endX = startX + cursorWidth - 1;
         int endY = startY + cursorHeight - 1;
 
-        int size = (cursorWidth+1) * (cursorHeight+1);
+        int size = (cursorWidth + 1) * (cursorHeight + 1);
         int[] cells = new int[size];
 
         int i = 0;

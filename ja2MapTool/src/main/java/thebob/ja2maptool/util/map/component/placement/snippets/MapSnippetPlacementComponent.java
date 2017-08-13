@@ -24,6 +24,7 @@
 package thebob.ja2maptool.util.map.component.placement.snippets;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javafx.application.Platform;
 import javafx.scene.input.MouseButton;
@@ -58,17 +59,17 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
         Multi;  // must unset the payload manually
     }
 
-    PlacementMode mode = PlacementMode.Multi;
-    SnippetPlacement pickedPlacement = null;
-    Integer hoveredPlacement = null;
-    Integer x = null;
-    Integer y = null;
+    private PlacementMode mode = PlacementMode.Multi;
+    private SnippetPlacement pickedPlacement = null;
+    private Integer hoveredPlacement = null;
+    private Integer x = null;
+    private Integer y = null;
 
     private final ICursorLayerManager cursorLayer;
     private final PreviewLayer previewLayer;
     private final IMapInteractionComponent activeCells;
 
-    Map<Integer, SnippetPlacement> placements = new HashMap<Integer, SnippetPlacement>();
+    private Map<Integer, SnippetPlacement> placements = new HashMap<Integer, SnippetPlacement>();
 
     public MapSnippetPlacementComponent(ITileRendererManager renderer, IMapLayerManager map, ICursorLayerManager cursorLayer, PreviewLayer previewLayer, IMapInteractionComponent cells) {
         super(renderer, map);
@@ -127,6 +128,22 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
     // -------------------------
     // Internal action implementations
     // -------------------------
+    SnippetPlacement selectedPlacement = null;
+
+    private void deselect() {
+        notifyObservers(new MapEvent(MapEvent.ChangeType.PLACEMENT_DESELECTED, new MapPlacementEventPayload(selectedPlacement)));
+        selectedPlacement = null;
+    }
+
+    private void select(SnippetPlacement placement) {
+        if (selectedPlacement != null) {
+            deselect();
+        }
+        selectedPlacement = placement;
+        notifyObservers(new MapEvent(MapEvent.ChangeType.PLACEMENT_SELECTED, new MapPlacementEventPayload(selectedPlacement)));
+        updateStateLayer();
+    }
+
     private void pick(SnippetPlacement placement) {
         setContents(placement.getSnippet());
         setMode(PlacementMode.Single);
@@ -207,13 +224,46 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
         activeCellLayer.clear();
 
         placements.forEach((cell, placement) -> {
-            cursorLayer.placeCursorCenterRect(LAYER_STATE, placement.getCellX(), placement.getCellY(), placement.getSnippet().getWidth(), placement.getSnippet().getHeight(), PLACEMENT_TILES_CURSOR, CursorFillMode.Corners);
+            if (placement != selectedPlacement) {
+                cursorLayer.placeCursorCenterRect(LAYER_STATE, placement.getCellX(), placement.getCellY(), placement.getSnippet().getWidth(), placement.getSnippet().getHeight(), PLACEMENT_TILES_CURSOR, CursorFillMode.Corners);
+            } else {
+                cursorLayer.placeCursorCenterRect(LAYER_STATE, placement.getCellX(), placement.getCellY(), placement.getSnippet().getWidth(), placement.getSnippet().getHeight(), PLACEMENT_TILES_CURSOR, CursorFillMode.Border);
+            }
 
             int[] cells = cursorLayer.getCellNumbersForRadius(placement.getCellX(), placement.getCellY(), placement.getSnippet().getWidth() + 2, placement.getSnippet().getHeight() + 2, CursorFillMode.Full);
             activeCellLayer.registerCells(cells, new PlacementInteractionData(placement));
         });
 
         activeCells.refreshLayers();
+    }
+
+    public void movePlacementList(List<SnippetPlacement> selectedPlacements, int deltaX, int deltaY) {
+        for (SnippetPlacement placement : selectedPlacements) {
+            movePlacement(placement.getCell(), deltaX, deltaY);
+        }
+        Platform.runLater(() -> {
+            updateStateLayer();
+        });
+    }
+
+    public void movePlacement(int placementCell, int deltaX, int deltaY) {
+        SnippetPlacement activePlacement = placements.get(placementCell);
+        if (activePlacement != null) {
+            previewLayer.removePlacement(activePlacement.getCell());
+            placements.remove(activePlacement.getCell());
+
+            activePlacement.setCellX(activePlacement.getCellX() + deltaX);
+            activePlacement.setCellY(activePlacement.getCellY() + deltaY);
+            activePlacement.setCell(cursorLayer.rowColToPos(activePlacement.getCellY(), activePlacement.getCellX()));
+
+            hoveredPlacement = activePlacement.getCell();
+            placements.put(activePlacement.getCell(), activePlacement);
+
+            previewLayer.addPlacement(activePlacement.getCell(), activePlacement.getSnippet());
+
+            cursorLayer.clearLayer(LAYER_ACTION);
+            cursorLayer.placeCursorCenterRect(LAYER_ACTION, activePlacement.getCellX(), activePlacement.getCellY(), activePlacement.getSnippet().getWidth(), activePlacement.getSnippet().getHeight(), PLACEMENT_TILES_ACTIVE_CURSOR, CursorFillMode.Full);
+        }
     }
 
     // --------------------------
@@ -235,6 +285,7 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
             y = null;
         }
 
+        // drag&drop initiated?
         if (x != null && y != null) {
             int deltaX = data.getMouseCellX() - x;
             int deltaY = data.getMouseCellY() - y;
@@ -242,33 +293,22 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
             // are we trying to drag stuff?
             if (data.getButton() == MouseButton.PRIMARY && (deltaX != 0 || deltaY != 0)) {
 
-                previewLayer.removePlacement(activePlacement.getCell());
-                placements.remove(activePlacement.getCell());
-
-                activePlacement.setCellX(activePlacement.getCellX() + deltaX);
-                activePlacement.setCellY(activePlacement.getCellY() + deltaY);
-                activePlacement.setCell(cursorLayer.rowColToPos(activePlacement.getCellY(), activePlacement.getCellX()));
-
-                hoveredPlacement = activePlacement.getCell();
-                placements.put(activePlacement.getCell(), activePlacement);
+                movePlacement(activePlacement.getCell(), deltaX, deltaY);
+                selectedPlacement = null;
 
                 Platform.runLater(() -> {
                     updateStateLayer();
-
-                    previewLayer.addPlacement(activePlacement.getCell(), activePlacement.getSnippet());
-
-                    cursorLayer.clearLayer(LAYER_ACTION);
-                    cursorLayer.placeCursorCenterRect(LAYER_ACTION, activePlacement.getCellX(), activePlacement.getCellY(), activePlacement.getSnippet().getWidth(), activePlacement.getSnippet().getHeight(), PLACEMENT_TILES_ACTIVE_CURSOR, CursorFillMode.Full);
                 });
             }
         }
 
+        // initiate drag&drop
         if (data.getButton() == MouseButton.PRIMARY) {
             x = data.getMouseCellX();
             y = data.getMouseCellY();
         }
 
-        return true;
+        return true; // consume hover event!
     }
 
     @Override
@@ -277,13 +317,19 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
         SnippetPlacement activePlacement = placementData.getPlacement();
 
         if (data.getButton() == MouseButton.PRIMARY && hasContents() == false) {
-            pick(activePlacement);
+
+            if (selectedPlacement == null || selectedPlacement != activePlacement) {
+                select(activePlacement);
+            } else {
+                pick(activePlacement);
+            }
+
             return true;
         } else if (data.getButton() == MouseButton.SECONDARY) {
             remove(activePlacement.getCell());
             return true;
         }
-        
+
         return false;
     }
 
@@ -302,6 +348,10 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
 
     public void setMode(PlacementMode mode) {
         this.mode = mode;
+    }
+
+    public Map<Integer, SnippetPlacement> getPlacements() {
+        return placements;
     }
 
     @Override

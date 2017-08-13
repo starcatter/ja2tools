@@ -70,9 +70,9 @@ public class MapCompositorController extends MapControllerBase implements IMapCo
     // Components
     protected IMapInteractionComponent cells = new MapInteractionComponent(getRenderer(), getMap());
     protected IMapCursorComponent cursors = new MapCursorComponent(getRenderer(), getMap(), cursorLayer, cells);
-    protected IMapSelectionComponent selection = new MapSelectionComponent(getRenderer(), getMap(), cursorLayer, cells);
-    protected IMapClipboardComponent clipboard = new MapClipboardComponent(getRenderer(), getMap(), cursorLayer, previewLayer, selection);
     protected IMapSnippetPlacementComponent placements = new MapSnippetPlacementComponent(getRenderer(), getMap(), cursorLayer, previewLayer, cells);
+    protected IMapSelectionComponent selection = new MapSelectionComponent(getRenderer(), getMap(), cursorLayer, cells, placements);
+    protected IMapClipboardComponent clipboard = new MapClipboardComponent(getRenderer(), getMap(), cursorLayer, previewLayer, selection);
 
     SelectedTiles preview = null;
 

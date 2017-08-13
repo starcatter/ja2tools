@@ -1,7 +1,7 @@
-/*
+/* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,19 +30,24 @@ import javafx.scene.input.MouseEvent;
 import thebob.ja2maptool.scopes.map.MapCompositorScope;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
-import thebob.ja2maptool.util.map.MapEvent;
+import thebob.ja2maptool.util.compositor.SnippetPlacement;
+import thebob.ja2maptool.util.map.component.cursor.MapCursorComponent;
+import thebob.ja2maptool.util.map.component.cursor.base.IMapCursorComponent;
+import thebob.ja2maptool.util.map.component.cursor.cursors.BasicCursorController;
+import thebob.ja2maptool.util.map.component.cursor.cursors.PlacementCursorController;
+import thebob.ja2maptool.util.map.component.cursor.cursors.SelectionCursorController;
+import thebob.ja2maptool.util.map.component.interaction.IMapInteractionComponent;
+import thebob.ja2maptool.util.map.component.interaction.MapInteractionComponent;
+import thebob.ja2maptool.util.map.component.placement.base.IMapPlacementComponent;
+import thebob.ja2maptool.util.map.component.placement.clipboard.IMapClipboardComponent;
+import thebob.ja2maptool.util.map.component.placement.clipboard.MapClipboardComponent;
+import thebob.ja2maptool.util.map.component.placement.snippets.IMapSnippetPlacementComponent;
+import thebob.ja2maptool.util.map.component.placement.snippets.MapSnippetPlacementComponent;
+import thebob.ja2maptool.util.map.component.selection.IMapSelectionComponent;
+import thebob.ja2maptool.util.map.component.selection.MapSelectionComponent;
 import thebob.ja2maptool.util.map.controller.base.MapControllerBase;
-import thebob.ja2maptool.util.map.controller.cursor.BasicCursorController;
-import thebob.ja2maptool.util.map.controller.cursor.PlacementCursorController;
-import thebob.ja2maptool.util.map.controller.cursor.SelectionCursorController;
-import thebob.ja2maptool.util.map.controller.cursor.base.IMapCursorController;
-import thebob.ja2maptool.util.map.controller.placement.base.IMapPlacementController;
-import thebob.ja2maptool.util.map.controller.placement.clipboard.IMapClipboardController;
-import thebob.ja2maptool.util.map.controller.placement.clipboard.MapClipboardController;
-import thebob.ja2maptool.util.map.controller.placement.snippets.IMapSnippetPlacementController;
-import thebob.ja2maptool.util.map.controller.placement.snippets.MapSnippetPlacementController;
-import thebob.ja2maptool.util.map.controller.selection.IMapSelectionController;
-import thebob.ja2maptool.util.map.controller.selection.MapSelectionController;
+import thebob.ja2maptool.util.map.events.MapEvent;
+import thebob.ja2maptool.util.map.events.MapPlacementEventPayload;
 import thebob.ja2maptool.util.map.layers.cursor.CursorLayer;
 import thebob.ja2maptool.util.map.layers.cursor.ICursorLayerManager;
 import thebob.ja2maptool.util.map.layers.map.IMapLayerManager;
@@ -62,20 +67,28 @@ public class MapCompositorController extends MapControllerBase implements IMapCo
     protected ICursorLayerManager cursorLayer = new CursorLayer();
     protected PreviewLayer previewLayer = new PreviewLayer();
 
-    // controllers
-    protected IMapCursorController cursors = new BasicCursorController(renderer, map, cursorLayer);
-    protected IMapSelectionController selection = new MapSelectionController(renderer, map, cursorLayer);
-    protected IMapClipboardController clipboard = new MapClipboardController(renderer, map, cursorLayer, previewLayer, selection);
-    protected IMapSnippetPlacementController placements = new MapSnippetPlacementController(renderer, map, cursorLayer, previewLayer);
+    // Components
+    protected IMapInteractionComponent cells = new MapInteractionComponent(getRenderer(), getMap());
+    protected IMapCursorComponent cursors = new MapCursorComponent(getRenderer(), getMap(), cursorLayer, cells);
+    protected IMapSelectionComponent selection = new MapSelectionComponent(getRenderer(), getMap(), cursorLayer, cells);
+    protected IMapClipboardComponent clipboard = new MapClipboardComponent(getRenderer(), getMap(), cursorLayer, previewLayer, selection);
+    protected IMapSnippetPlacementComponent placements = new MapSnippetPlacementComponent(getRenderer(), getMap(), cursorLayer, previewLayer, cells);
 
     SelectedTiles preview = null;
 
     public MapCompositorController(ITileRendererManager renderer, IMapLayerManager map, MapCompositorScope compositor) {
         super(renderer, map);
-
+        // remember parent window scope
         scope = compositor;
 
-        cursorLayer.subscribe(this);
+        // init cursor
+        cursors.setCursor(new BasicCursorController());
+
+        // setup observables
+        cursors.addObserver(this);
+        selection.addObserver(this);
+        clipboard.addObserver(this);
+        placements.addObserver(this);
 
         renderer.addRenderOverlay(previewLayer, new OverlaySettings(0.65, 0, 0, null)); // new Glow(1d)) /// new Shadow(2d, Color.BLACK)
         renderer.addRenderOverlay(cursorLayer, new OverlaySettings(1.0d, 0, 0, null)); // new Glow(1d) /// new Shadow(2d, Color.BLACK)
@@ -89,9 +102,45 @@ public class MapCompositorController extends MapControllerBase implements IMapCo
         if (message != null) {
             switch (message.getType()) {
                 case MAP_LOADED:
-                    cursorLayer.init(map.getMapRows(), map.getMapCols(), map.getTileset());
-                    previewLayer.init(map.getMapRows(), map.getMapCols(), map.getTileset());
+                    cursorLayer.init(getMap().getMapRows(), getMap().getMapCols(), getMap().getTileset());
+                    previewLayer.init(getMap().getMapRows(), getMap().getMapCols(), getMap().getTileset());
                     break;
+
+                case PLACEMENT_ADDED: {
+                    SnippetPlacement placement = ((MapPlacementEventPayload) message.getPayload()).getPlacement();
+                    if (placements.hasContents() == false) {
+                        System.out.println("thebob.ja2maptool.util.map.controller.editors.compositor.MapCompositorController.update() dropped");
+                        updateCursor();
+                    }
+                    scope.addPlacement(placement);
+                }
+                break;
+                case PLACEMENT_DELETED: {
+                    SnippetPlacement placement = ((MapPlacementEventPayload) message.getPayload()).getPlacement();
+                    scope.deletePlacement(placement);
+                }
+                break;
+                case PLACEMENT_CANCELED: {
+                    System.out.println("thebob.ja2maptool.util.map.controller.editors.compositor.MapCompositorController.update() cancelled");
+                    updateCursor();
+                    scope.cancelPlacement();
+                }
+                break;
+                case PLACEMENT_PICKED: {
+                    SnippetPlacement placement = ((MapPlacementEventPayload) message.getPayload()).getPlacement();
+                    updateCursor();
+                    scope.pickPlacement(placement);
+                }
+                break;
+                case PLACEMENT_HOVERED: {
+                    if (message.getPayload() != null) {
+                        SnippetPlacement placement = ((MapPlacementEventPayload) message.getPayload()).getPlacement();
+                        scope.hoverPlacement(placement);
+                    } else {
+                        scope.hoverPlacement(null);
+                    }
+                }
+                break;
             }
         }
     }
@@ -115,6 +164,7 @@ public class MapCompositorController extends MapControllerBase implements IMapCo
     public void setPlacementPreview(SelectedTiles preview) {
         clipboard.setContents(preview);
         placements.setContents(preview);
+        selection.clearSelection();
         updateCursor();
     }
 
@@ -127,12 +177,12 @@ public class MapCompositorController extends MapControllerBase implements IMapCo
     public void keyEvent(KeyEvent e) {
         if (clipboard.hasContents()) {
             if (e.getEventType() == KeyEvent.KEY_PRESSED && e.getCode() == KeyCode.CONTROL) {
-                cursors = new PlacementCursorController(renderer, map, cursorLayer, (IMapPlacementController) placements).transferStateFrom(cursors);
+                cursors.setCursor(new PlacementCursorController((IMapPlacementComponent) placements));
             } else {
                 updateCursor();
             }
         } else if (e.getEventType() == KeyEvent.KEY_PRESSED && e.getCode() == KeyCode.SHIFT) {
-            cursors = new SelectionCursorController(renderer, map, cursorLayer, selection).transferStateFrom(cursors);
+            cursors.setCursor(new SelectionCursorController(selection));
         } else if (e.getEventType() == KeyEvent.KEY_RELEASED && (e.getCode() == KeyCode.SHIFT || e.getCode() == KeyCode.CONTROL)) {
             updateCursor();
         }
@@ -142,9 +192,11 @@ public class MapCompositorController extends MapControllerBase implements IMapCo
 
     private void updateCursor() {
         if (clipboard.hasContents()) {
-            cursors = new PlacementCursorController(renderer, map, cursorLayer, (IMapPlacementController) clipboard).transferStateFrom(cursors);
+            cursors.setCursor(new PlacementCursorController((IMapPlacementComponent) clipboard));
+        } else if (placements.hasContents()) {
+            cursors.setCursor(new PlacementCursorController((IMapPlacementComponent) placements));
         } else {
-            cursors = new BasicCursorController(renderer, map, cursorLayer).transferStateFrom(cursors);
+            cursors.setCursor(new BasicCursorController());
         }
     }
 

@@ -1,7 +1,7 @@
 /* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,9 +28,9 @@ import java.util.Iterator;
 import java.util.List;
 import thebob.assetloader.map.core.components.IndexedElement;
 import thebob.assetloader.tileset.Tileset;
-import thebob.ja2maptool.util.map.MapEvent;
 import static thebob.ja2maptool.util.map.MapUtils.screenXYtoCellX;
 import static thebob.ja2maptool.util.map.MapUtils.screenXYtoCellY;
+import thebob.ja2maptool.util.map.events.MapEvent;
 import thebob.ja2maptool.util.map.layers.base.TileLayer;
 import thebob.ja2maptool.util.map.layers.base.TileLayerGroup;
 
@@ -41,9 +41,9 @@ import thebob.ja2maptool.util.map.layers.base.TileLayerGroup;
  */
 public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
 
-    public static final int LAYER_CURSOR = 0;
+    public static final int LAYER_CURSOR = 2;
     public static final int LAYER_ACTION = 1;
-    public static final int LAYER_STATE = 2;
+    public static final int LAYER_STATE = 0;
     public static final int LAYERS = 3;
 
     public enum CursorFillMode {
@@ -62,6 +62,11 @@ public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
         for (int i = 0; i < LAYERS; i++) {
             layers.add(new TileLayer(true, 0, 0, new IndexedElement[mapSize][0]));
         }
+        
+        layers.get(LAYER_CURSOR).setOpacity(0.80);
+        layers.get(LAYER_ACTION).setOpacity(0.45);
+        layers.get(LAYER_STATE).setOpacity(0.75);
+        
         System.out.println("thebob.ja2maptool.util.map.layers.cursor.CursorLayer.init()");
     }
 
@@ -118,7 +123,7 @@ public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
 
     @Override
     public void placeCursorCenterRect(int layer, int cursorX, int cursorY, int cursorWidth, int cursorHeight, IndexedElement cursor, CursorFillMode mode) {
-        int[] cells = getCellNumbersForRadius(layer, cursorX, cursorY, cursorWidth, cursorHeight, mode);
+        int[] cells = getCellNumbersForRadius(cursorX, cursorY, cursorWidth, cursorHeight, mode);
         for (int cell : cells) {
             placeCursor(layer, cell, cursor);
         }
@@ -127,7 +132,7 @@ public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
 
     @Override
     public void placeCursorRect(int layer, int startX, int startY, int endX, int endY, IndexedElement cursor, CursorFillMode mode) {
-        int[] cells = getCellNumbersForRect(layer, startX, startY, endX, endY, mode);
+        int[] cells = getCellNumbersForRect(startX, startY, endX, endY, mode);
         for (int cell : cells) {
             placeCursor(layer, cell, cursor);
         }
@@ -135,7 +140,7 @@ public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
     }
 
     @Override
-    public int[] getCellNumbersForRadius(int layer, int cursorX, int cursorY, int cursorWidth, int cursorHeight, CursorFillMode mode) {
+    public int[] getCellNumbersForRadius(int cursorX, int cursorY, int cursorWidth, int cursorHeight, CursorFillMode mode) {
         int startX = cursorX - cursorWidth / 2;
         int startY = cursorY - cursorHeight / 2;
         int endX = startX + cursorWidth - 1;
@@ -158,7 +163,7 @@ public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
     }
 
     @Override
-    public int[] getCellNumbersForRect(int layer, int startX, int startY, int endX, int endY, CursorFillMode mode) {
+    public int[] getCellNumbersForRect(int startX, int startY, int endX, int endY, CursorFillMode mode) {
         int X1 = startX < endX ? startX : endX;
         int Y1 = startY < endY ? startY : endY;
         int X2 = startX > endX ? startX : endX;

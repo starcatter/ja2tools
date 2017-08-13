@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,51 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.controller.selection;
-
-import thebob.ja2maptool.util.compositor.SelectedTiles;
-import thebob.ja2maptool.util.map.controller.base.IMapController;
+package thebob.ja2maptool.util.map.component.interaction.data;
 
 /**
+ * Superclass for all sorts of userdata components might attach to cells they
+ * mark as active.
  *
- * @author the_bob
+ * @author starcatter
  */
-public interface IMapSelectionController extends IMapController {
-
-    /**
-     *
-     * @return cell id of selection start marker
-     */
-    Integer getSelectionStart();
-
-    /**
-     *
-     * @return cell id of selection end marker
-     */
-    Integer getSelectionEnd();
-
-    /**
-     *
-     * @return true if there is valid selection
-     */
-    boolean hasSelection();
-
-    /**
-     *
-     * @return selection object with cell id array populated
-     */
-    SelectedTiles getSelection();
-
-    void clearSelection();
-
-    /**
-     * Places either the selection start or selection end marker, if the former
-     * is already present. If this results in a valid selection, sends out a
-     * notification
-     *
-     * @param mouseCellX
-     * @param mouseCellY
-     */
-    void placeMarker(int mouseCellX, int mouseCellY);
+public abstract class MapInteractionUserdata {
 
 }

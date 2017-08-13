@@ -1,7 +1,7 @@
 /* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -49,6 +49,7 @@ import thebob.ja2maptool.ui.dialogs.mapselect.MapSelectionDialogViewModel;
 import static thebob.ja2maptool.ui.tabs.compositor.CompositorTabViewModel.TREE_UPDATED;
 import thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabView;
 import thebob.ja2maptool.util.DialogHelper;
+import thebob.ja2maptool.util.compositor.SnippetPlacement;
 
 /**
  *
@@ -190,7 +191,7 @@ public class CompositorTabView implements FxmlView<CompositorTabViewModel>, Init
 	// placement list mgmt
 
     @FXML
-    private ListView<?> placement_list;
+    private ListView<SnippetPlacement> placement_list;
 	
     @FXML
     private Button load_placements_btn;
@@ -238,11 +239,13 @@ public class CompositorTabView implements FxmlView<CompositorTabViewModel>, Init
 	// setup renderer
 	viewModel.setPreviewModel(mapViewController.getViewModel());
 
+        // setup snippet list
 	snippet_list.setRoot(viewModel.getListRoot());
 	snippet_list.setOnMouseClicked(event -> {
 	    viewModel.updateSnippetSelection(snippet_list.getSelectionModel().getSelectedItem());
 	});
 
+        // setup snippet placement options
 	snippet_land.selectedProperty().bindBidirectional(viewModel.getSnippet_land());
 	snippet_objects.selectedProperty().bindBidirectional(viewModel.getSnippet_objects());
 	snippet_structures.selectedProperty().bindBidirectional(viewModel.getSnippet_structures());
@@ -253,8 +256,12 @@ public class CompositorTabView implements FxmlView<CompositorTabViewModel>, Init
 	snippet_land_floors.selectedProperty().bindBidirectional(viewModel.getSnippet_land_floors());	
 	snippet_structures_walls.selectedProperty().bindBidirectional(viewModel.getSnippet_structures_walls());
 	
+        // hook up tree update
 	viewModel.subscribe(TREE_UPDATED, (key,value)->{
 	    viewModel.updateSnippetSelection(snippet_list.getSelectionModel().getSelectedItem());
 	});
+        
+        // setup placement list
+        placement_list.setItems( viewModel.getPlacementListContents() );
     }
 }

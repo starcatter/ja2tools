@@ -1,7 +1,7 @@
-/*
+/* 
  * The MIT License
  *
- * Copyright 2017 maste_000.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,12 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.controller.placement.clipboard;
+package thebob.ja2maptool.util.map.component.placement.clipboard;
 
 import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
-import thebob.ja2maptool.util.map.controller.placement.base.MapPlacementControllerBase;
-import thebob.ja2maptool.util.map.controller.selection.IMapSelectionController;
+import thebob.ja2maptool.util.map.component.placement.base.MapPlacementComponentBase;
+import thebob.ja2maptool.util.map.component.selection.IMapSelectionComponent;
+import thebob.ja2maptool.util.map.events.MapEvent;
 import thebob.ja2maptool.util.map.layers.cursor.ICursorLayerManager;
 import thebob.ja2maptool.util.map.layers.cursor.MapCursor;
 import thebob.ja2maptool.util.map.layers.map.IMapLayerManager;
@@ -35,15 +36,15 @@ import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
 
 /**
  *
- * @author maste_000
+ * @author the_bob
  */
-public class MapClipboardController extends MapPlacementControllerBase implements IMapClipboardController {
+public class MapClipboardComponent extends MapPlacementComponentBase implements IMapClipboardComponent {
 
     private final ICursorLayerManager cursorLayer;
     private final PreviewLayer previewLayer;
-    private final IMapSelectionController selection;
+    private final IMapSelectionComponent selection;
 
-    public MapClipboardController(ITileRendererManager renderer, IMapLayerManager map, ICursorLayerManager cursorLayer, PreviewLayer previewLayer, IMapSelectionController selection) {
+    public MapClipboardComponent(ITileRendererManager renderer, IMapLayerManager map, ICursorLayerManager cursorLayer, PreviewLayer previewLayer, IMapSelectionComponent selection) {
         super(renderer, map);
         this.cursorLayer = cursorLayer;
         this.previewLayer = previewLayer;
@@ -52,23 +53,26 @@ public class MapClipboardController extends MapPlacementControllerBase implement
 
     // -------------------------
     @Override
-    public void setPlacement(MapCursor placement) {
-        super.setPlacement(placement);
+    public void setPlacementLocation(MapCursor placement) {
+        super.setPlacementLocation(placement);
         updatePreview();
+
+        notifyObservers(new MapEvent(MapEvent.ChangeType.CLIPBOARD_PLACED));
     }
 
     @Override
     public void setPayload(SelectedTiles payload) {
         super.setPayload(payload);
         updatePreview();
+
+        notifyObservers(new MapEvent(MapEvent.ChangeType.CLIPBOARD_FILLED));
     }
 
     // -------------------------
-    
     protected void updatePreview() {
         if (canPaste()) {
             previewLayer.setPreview(payload);
-            previewLayer.placePreview(placement);
+            previewLayer.placePreview(placementLocation);
         } else {
             previewLayer.setPreview(null);
             previewLayer.placePreview(null);
@@ -94,11 +98,12 @@ public class MapClipboardController extends MapPlacementControllerBase implement
     @Override
     public void emptyContents() {
         setPayload(null);
+        notifyObservers(new MapEvent(MapEvent.ChangeType.CLIPBOARD_EMPTIED));
     }
 
     @Override
     public boolean canPaste() {
-        return getPayload() != null && getPlacement() != null;
+        return getPayload() != null && getPlacementLocation() != null;
     }
 
     @Override
@@ -118,7 +123,7 @@ public class MapClipboardController extends MapPlacementControllerBase implement
         }
 
         SelectedTiles tiles = selection.getSelection();
-        if (map.getTilesForSelection(tiles) != null) {
+        if (getMap().getTilesForSelection(tiles) != null) {
             setPayload(tiles);
             return true;
         } else {
@@ -134,7 +139,7 @@ public class MapClipboardController extends MapPlacementControllerBase implement
         }
 
         SelectedTiles tiles = selection.getSelection();
-        if (map.getTilesForSelection(tiles) != null) {
+        if (getMap().getTilesForSelection(tiles) != null) {
             setPayload(tiles);
             return true;
         } else {
@@ -148,14 +153,14 @@ public class MapClipboardController extends MapPlacementControllerBase implement
             return false;
         }
 
-        map.appendTiles(getPlacement(), getPayload(), options);
+        getMap().appendTiles(getPlacementLocation(), getPayload(), options);
 
         return true;
     }
 
     @Override
-    public boolean hoverPlacement(int placement) {
-        return false;
+    public Integer hoverPlacement(int placement) {
+        return null;
     }
 
 }

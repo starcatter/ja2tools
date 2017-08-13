@@ -1,7 +1,7 @@
 /* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,47 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map;
+package thebob.ja2maptool.util.map.component.base;
 
 /**
- *
+ * TODO: split components from controllers
  * @author the_bob
  */
-public class MapEvent {
-    public enum ChangeType{
-	// Layer events
-	LAYER_ALTERED,
-	// MapLayer events
-	MAP_LOADED,
-	MAP_ALTERED,
-	// TileRenderer events
-	MAP_WINDOW_MOVED,
-	MAP_WINDOW_ZOOMED,
-	MAP_CANVAS_CHANGED,
-	// CursorLayer events
-	CURSOR_MOVED, 
-	PLACEMENT_CURSOR_ADDED, 
-	PLACEMENT_CURSOR_MOVED, 
-	PLACEMENT_CURSOR_REMOVED,
-	// placement management
-	PLACEMENT_TOGGLE,
-	PLACEMENT_PICK, 
-	PLACEMENT_DELETE, 
-    }
-    
-    ChangeType type;
-
-    public MapEvent(ChangeType type) {
-	this.type = type;
-    }
-
-    public ChangeType getType() {
-	return type;
-    }
-
-    @Override
-    public String toString() {
-	return "TileLayerGroupChange{" + "type=" + type + '}';
-    }
+public class MapComponent {
     
 }

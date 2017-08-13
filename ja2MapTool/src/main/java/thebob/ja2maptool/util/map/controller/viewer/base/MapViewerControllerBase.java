@@ -1,7 +1,7 @@
-/*
+/* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,43 +47,43 @@ public abstract class MapViewerControllerBase extends MapControllerBase implemen
     }
 
     protected void zoom(double amount) {
-	renderer.setScale(renderer.getScale() + amount);
+	getRenderer().setScale(getRenderer().getScale() + amount);
     }
 
     // -- stuff passed through to the renderer
     @Override
     public void moveWindow(int x, int y) {
-	renderer.moveWindow(x, y);
+	getRenderer().moveWindow(x, y);
     }
 
     @Override
     public double getScale() {
-	return renderer.getScale();
+	return getRenderer().getScale();
     }
 
     @Override
     public void setScale(double scale) {
-	renderer.setScale(scale);
+	getRenderer().setScale(scale);
     }
 
     @Override
     public void setWindowOffsetX(int oldX) {
-	renderer.setWindowOffsetX(oldX);
+	getRenderer().setWindowOffsetX(oldX);
     }
 
     @Override
     public void setWindowOffsetY(int oldY) {
-	renderer.setWindowOffsetY(oldY);
+	getRenderer().setWindowOffsetY(oldY);
     }
 
     @Override
     public int getWindowOffsetY() {
-	return renderer.getWindowOffsetY();
+	return getRenderer().getWindowOffsetY();
     }
 
     @Override
     public int getWindowOffsetX() {
-	return renderer.getWindowOffsetX();
+	return getRenderer().getWindowOffsetX();
     }
 
 }

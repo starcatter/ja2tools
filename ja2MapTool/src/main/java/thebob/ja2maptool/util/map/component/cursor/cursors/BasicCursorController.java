@@ -1,7 +1,7 @@
-/*
+/* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,16 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.controller.cursor;
+package thebob.ja2maptool.util.map.component.cursor.cursors;
 
 import thebob.assetloader.map.core.components.IndexedElement;
 import static thebob.ja2maptool.util.map.MapUtils.screenXYtoCellX;
 import static thebob.ja2maptool.util.map.MapUtils.screenXYtoCellY;
-import thebob.ja2maptool.util.map.controller.cursor.base.MapCursorControllerBase;
+import thebob.ja2maptool.util.map.component.cursor.cursors.base.CursorControllerBase;
 import static thebob.ja2maptool.util.map.layers.cursor.CursorLayer.LAYER_CURSOR;
-import thebob.ja2maptool.util.map.layers.cursor.ICursorLayerManager;
-import thebob.ja2maptool.util.map.layers.map.IMapLayerManager;
-import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
 
 /**
  * The basic cursor - simple square that follows the mouse + markers placed in
@@ -39,37 +36,33 @@ import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
  *
  * @author the_bob
  */
-public class BasicCursorController extends MapCursorControllerBase {
+public class BasicCursorController extends CursorControllerBase {
 
     private static final IndexedElement STD_CURSOR = new IndexedElement(131, 1);
     private static final IndexedElement VIEW_EDGE_TILES_CURSOR = new IndexedElement(131, 8);
 
-    public BasicCursorController(ITileRendererManager renderer, IMapLayerManager map, ICursorLayerManager cursors) {
-        super(renderer, map, cursors);
-    }
-
     private void updateCorners() {
-        double scaledCanvasX = renderer.getCanvasX() / renderer.getScale();
-        double scaledCanvasY = renderer.getCanvasY() / renderer.getScale();
+        double scaledCanvasX = getRenderer().getCanvasX() / getRenderer().getScale();
+        double scaledCanvasY = getRenderer().getCanvasY() / getRenderer().getScale();
 
         int width = (int) (scaledCanvasX / 10);
         int height = (int) (scaledCanvasY / 10);
 
-        int sX1 = windowScreenX + 4;
-        int sY1 = windowScreenY + 2;
+        int sX1 = getWindowScreenX() + 4;
+        int sY1 = getWindowScreenY() + 2;
         int sX2 = sX1 + width - 3;
         int sY2 = sY1 + height - 1;
         
-        cursors.placeCursor(LAYER_CURSOR, screenXYtoCellX(sX1, sY1), screenXYtoCellY(sX1, sY1), VIEW_EDGE_TILES_CURSOR);
-        cursors.placeCursor(LAYER_CURSOR, screenXYtoCellX(sX1, sY2), screenXYtoCellY(sX1, sY2), VIEW_EDGE_TILES_CURSOR);
-        cursors.placeCursor(LAYER_CURSOR, screenXYtoCellX(sX2, sY2), screenXYtoCellY(sX2, sY2), VIEW_EDGE_TILES_CURSOR);
-        cursors.placeCursor(LAYER_CURSOR, screenXYtoCellX(sX2, sY1), screenXYtoCellY(sX2, sY1), VIEW_EDGE_TILES_CURSOR);
+        getCursors().placeCursor(LAYER_CURSOR, screenXYtoCellX(sX1, sY1), screenXYtoCellY(sX1, sY1), VIEW_EDGE_TILES_CURSOR);
+        getCursors().placeCursor(LAYER_CURSOR, screenXYtoCellX(sX1, sY2), screenXYtoCellY(sX1, sY2), VIEW_EDGE_TILES_CURSOR);
+        getCursors().placeCursor(LAYER_CURSOR, screenXYtoCellX(sX2, sY2), screenXYtoCellY(sX2, sY2), VIEW_EDGE_TILES_CURSOR);
+        getCursors().placeCursor(LAYER_CURSOR, screenXYtoCellX(sX2, sY1), screenXYtoCellY(sX2, sY1), VIEW_EDGE_TILES_CURSOR);
     }
 
     @Override
-    protected void updateCursor() {
-        cursors.clearLayer(LAYER_CURSOR);
-        cursors.placeCursor(LAYER_CURSOR, mouseCell, STD_CURSOR);
+    public void updateCursor() {
+        getCursors().clearLayer(LAYER_CURSOR);
+        getCursors().placeCursor(LAYER_CURSOR, getMouseCell(), STD_CURSOR);
         updateCorners();
     }
 

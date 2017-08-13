@@ -1,7 +1,7 @@
 /* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,39 +24,69 @@
 package thebob.ja2maptool.scopes.map;
 
 import de.saxsys.mvvmfx.Scope;
-import java.util.ArrayList;
-import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import thebob.ja2maptool.util.compositor.SnippetPlacement;
-import thebob.ja2maptool.util.compositor.SelectedTiles;
 
 public class MapCompositorScope implements Scope {
+
+    public static final String PLACEMENT_PICKED = "PLACEMENT_PICKED";
+    public static final String PLACEMENT_HOVER_ON = "PLACEMENT_HOVER_ON";
+    public static final String PLACEMENT_HOVER_OFF = "PLACEMENT_HOVER_OFF";
+
     MapScope map = new MapScope();
     MapSnippetScope loadedSnippets = null;
-    List<SnippetPlacement> placedSnippets = new ArrayList<SnippetPlacement>();
+    ObservableList<SnippetPlacement> placedSnippets = FXCollections.observableArrayList();
 
     public MapScope getMap() {
-	return map;
+        return map;
     }
 
     public void setMap(MapScope map) {
-	this.map = map;
+        this.map = map;
     }
 
     public MapSnippetScope getLoadedSnippets() {
-	return loadedSnippets;
+        return loadedSnippets;
     }
 
     public void setLoadedSnippets(MapSnippetScope loadedSnippets) {
-	this.loadedSnippets = loadedSnippets;
+        this.loadedSnippets = loadedSnippets;
     }
 
-    public List<SnippetPlacement> getPlacedSnippets() {
-	return placedSnippets;
+    public ObservableList<SnippetPlacement> getPlacedSnippets() {
+        return placedSnippets;
     }
 
-    public void setPlacedSnippets(List<SnippetPlacement> placedSnippets) {
-	this.placedSnippets = placedSnippets;
+    public void setPlacedSnippets(ObservableList<SnippetPlacement> placedSnippets) {
+        this.placedSnippets = placedSnippets;
     }
-    
-    
+
+    public void addPlacement(SnippetPlacement placement) {
+        placedSnippets.add(placement);
+        System.out.println("thebob.ja2maptool.scopes.map.MapCompositorScope.addPlacement() " + placement);
+    }
+
+    public void deletePlacement(SnippetPlacement placement) {
+        placedSnippets.remove(placement);
+        System.out.println("thebob.ja2maptool.scopes.map.MapCompositorScope.deletePlacement()");
+    }
+
+    public void pickPlacement(SnippetPlacement placement) {
+        publish(PLACEMENT_PICKED, placement);
+        System.out.println("thebob.ja2maptool.scopes.map.MapCompositorScope.pickPlacement()");
+    }
+
+    public void cancelPlacement() {
+        publish(PLACEMENT_PICKED, null);
+    }
+
+    public void hoverPlacement(SnippetPlacement placement) {
+        if (placement != null) {
+            publish(PLACEMENT_HOVER_ON, placement);
+        } else {
+            publish(PLACEMENT_HOVER_OFF);
+        }
+    }
+
 }

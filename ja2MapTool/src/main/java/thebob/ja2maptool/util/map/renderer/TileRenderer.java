@@ -1,7 +1,7 @@
 /* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ import javafx.scene.layout.StackPane;
 import thebob.assetloader.map.core.components.IndexedElement;
 import thebob.assetloader.tileset.Tile;
 import thebob.assetloader.tileset.Tileset;
-import thebob.ja2maptool.util.map.MapEvent;
+import thebob.ja2maptool.util.map.events.MapEvent;
 import thebob.ja2maptool.util.map.layers.base.ITileLayerGroup;
 import thebob.ja2maptool.util.map.layers.base.TileLayer;
 import thebob.ja2maptool.util.map.renderer.renderlayer.OverlaySettings;
@@ -249,7 +249,7 @@ public class TileRenderer extends Observable implements ITileRendererManager {
                 continue;
             }
 
-            // layerTargetContext.setGlobalAlpha(tileLayer.getOpacity());	    
+            layerTargetContext.setGlobalAlpha(tileLayer.getOpacity());	    
             int layerOffsetX = tileLayer.getDisplayOffsetX();
             int layerOffsetY = tileLayer.getDisplayOffsetY();
 
@@ -459,9 +459,6 @@ public class TileRenderer extends Observable implements ITileRendererManager {
                     break;
                 case MAP_ALTERED:
                     updateLayerGroups();
-                    break;
-                case CURSOR_MOVED:
-
                     break;
             }
         }

@@ -1,7 +1,7 @@
-/*
+/* 
  * The MIT License
  *
- * Copyright 2017 maste_000.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.controller.placement.base;
+package thebob.ja2maptool.util.map.component.placement.base;
 
 import java.util.Observable;
 import javafx.scene.input.KeyEvent;
@@ -34,16 +34,16 @@ import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
 
 /**
  * Base class for controllers putting stuff on the map.
- * @author maste_000
+ * @author the_bob
  */
-public abstract class MapPlacementControllerBase extends MapControllerBase implements IMapPlacementController {
+public abstract class MapPlacementComponentBase extends MapControllerBase implements IMapPlacementComponent {
 
     protected SelectedTiles payload = null;
-    protected MapCursor placement = null;
+    protected MapCursor placementLocation = null;
     
     // -------------------------------------------
     
-    public MapPlacementControllerBase(ITileRendererManager renderer, IMapLayerManager map) {
+    public MapPlacementComponentBase(ITileRendererManager renderer, IMapLayerManager map) {
         super(renderer, map);
     }
 
@@ -57,12 +57,12 @@ public abstract class MapPlacementControllerBase extends MapControllerBase imple
         this.payload = payload;
     }
 
-    public MapCursor getPlacement() {
-        return placement;
+    public MapCursor getPlacementLocation() {
+        return placementLocation;
     }
 
-    public void setPlacement(MapCursor placement) {
-        this.placement = placement;
+    public void setPlacementLocation(MapCursor placementLocation) {
+        this.placementLocation = placementLocation;
     }      
     
     // -------------------------------------------

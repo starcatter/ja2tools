@@ -1,7 +1,7 @@
 /* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ package thebob.ja2maptool.util.map.layers.base;
 
 import java.util.Observer;
 import thebob.assetloader.tileset.Tileset;
-import thebob.ja2maptool.util.map.MapEvent;
+import thebob.ja2maptool.util.map.events.MapEvent;
 
 /**
  *
@@ -33,22 +33,72 @@ import thebob.ja2maptool.util.map.MapEvent;
  */
 public interface ITileLayerGroup extends Iterable<TileLayer> {
 
+    /**
+     *
+     * @param mapRows
+     * @param mapCols
+     * @param tileset
+     */
     void init(int mapRows, int mapCols, Tileset tileset);
-    
+
+    // -----------------------
+    // cell coordinate transformations
+    // -----------------------
+    /**
+     * Calculates cell id for given cell Y/X coordinates. Note the unusual
+     * coordinate order <b>Y</b> (row) coordinate goes first, <b>X</b> (col)
+     * coordinate second.
+     *
+     * @param y cell row
+     * @param x cell column
+     * @return cell id for the map of this size
+     */
+    int rowColToPos(int y, int x);
+
+    /**
+     *
+     * @param sGridNo
+     * @return X (column) coordinate of this grid for a map of this size
+     */
+    public int GridNoToCellX(int sGridNo);
+
+    /**
+     *
+     * @param sGridNo
+     * @return Y (row) coordinate of this grid for a map of this size
+     */
+    public int GridNoToCellY(int sGridNo);
+
+    // -----------------------
+    // layer info and setup
+    // -----------------------
+    /**
+     *
+     * @return map width in cells
+     */
     int getMapCols();
 
+    /**
+     *
+     * @return map height in cells
+     */
     int getMapRows();
 
+    /**
+     *
+     * @return total number of cells on this layer.
+     */
     int getMapSize();
 
     Tileset getTileset();
 
     void setTileset(Tileset tileset);
-    
-    int rowColToPos(int y, int x);       
-    
+
+    // observable implementation TODO: to be deleted and replaced by default
     <T extends MapEvent> void notifySubscribers(T message);
+
     void subscribe(Observer observer);
+
     void unsubscribe(Observer observer);
 
 }

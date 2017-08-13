@@ -1,7 +1,7 @@
-/*
+/* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,39 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.controller.cursor.base;
+package thebob.ja2maptool.util.map.events;
 
-import thebob.assetloader.map.core.components.IndexedElement;
-import thebob.ja2maptool.util.map.controller.base.IMapController;
-import thebob.ja2maptool.util.map.layers.cursor.MapCursor;
+import thebob.ja2maptool.util.compositor.SnippetPlacement;
 
 /**
  *
  * @author the_bob
  */
-public interface IMapCursorController extends IMapController {
+public class MapPlacementEventPayload implements MapEventPayload {
 
-    int getMouseCellX();
 
-    int getMouseCellY();
+    SnippetPlacement placement;
 
-    int getMouseCell();
+    public MapPlacementEventPayload(SnippetPlacement placement) {
+        this.placement = placement;
+    }
 
-    double getLastCursorX();
 
-    double getLastCursorY();
+    public SnippetPlacement getPlacement() {
+        return placement;
+    }
 
-    boolean isControlDown();
-
-    boolean isShiftDown();
-
-    boolean isAltDown();
-
-    IMapCursorController transferStateFrom(IMapCursorController oldController);
-
-    MapCursor getCursor();
-
-    MapCursor getCursor(int x, int y, IndexedElement cursor);
-
-    MapCursor getCursor(double x, double y, IndexedElement cursor);
 }

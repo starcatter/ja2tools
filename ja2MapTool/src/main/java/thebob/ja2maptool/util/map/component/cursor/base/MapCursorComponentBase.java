@@ -1,7 +1,7 @@
-/*
+/* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,16 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.controller.cursor.base;
+package thebob.ja2maptool.util.map.component.cursor.base;
 
 import java.util.Observable;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import thebob.assetloader.map.core.components.IndexedElement;
-import thebob.ja2maptool.util.map.MapEvent;
 import static thebob.ja2maptool.util.map.MapUtils.screenXYtoCellX;
 import static thebob.ja2maptool.util.map.MapUtils.screenXYtoCellY;
+import thebob.ja2maptool.util.map.component.interaction.IMapInteractionComponent;
+import thebob.ja2maptool.util.map.component.interaction.data.MapInteractionData;
 import thebob.ja2maptool.util.map.controller.base.MapControllerBase;
+import thebob.ja2maptool.util.map.events.MapEvent;
 import thebob.ja2maptool.util.map.layers.cursor.ICursorLayerManager;
 import thebob.ja2maptool.util.map.layers.cursor.MapCursor;
 import thebob.ja2maptool.util.map.layers.map.IMapLayerManager;
@@ -40,35 +43,38 @@ import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
  *
  * @author the_bob
  */
-public abstract class MapCursorControllerBase extends MapControllerBase implements IMapCursorController {
+public abstract class MapCursorComponentBase extends MapControllerBase implements IMapCursorComponent {
 
-    protected ICursorLayerManager cursors;
+    private ICursorLayerManager cursors;
+    private IMapInteractionComponent cells;
 
     // ----------------------------------------
     // Raw input state
     // ----------------------------------------
-    protected double lastCursorX = 0;   // cursor pos relative to canvas window
-    protected double lastCursorY = 0;   // cursor pos relative to canvas window
-    protected boolean controlDown = false;  // state during last input event
-    protected boolean shiftDown = false;  // state during last input event
-    protected boolean altDown = false;  // state during last input event
+    private double lastCursorX = 0;   // cursor pos relative to canvas window
+    private double lastCursorY = 0;   // cursor pos relative to canvas window
+    private boolean controlDown = false;  // state during last input event
+    private boolean shiftDown = false;  // state during last input event
+    private boolean altDown = false;  // state during last input event
+    private MouseButton button = MouseButton.NONE;  // state during last input event
 
     // ----------------------------------------
     // Porcessed input state
     // ----------------------------------------
-    protected int windowScreenX;    // view window distance from map edge
-    protected int windowScreenY;    // view window distance from map edge
+    private int windowScreenX;    // view window distance from map edge
+    private int windowScreenY;    // view window distance from map edge
 
-    protected double mouseScreenX;  // cursor pos relative to view window
-    protected double mouseScreenY;  // cursor pos relative to view window
+    private double mouseScreenX;  // cursor pos relative to view window
+    private double mouseScreenY;  // cursor pos relative to view window
 
-    protected int mouseCellX;   // map cell X under cursor
-    protected int mouseCellY;   // map cell Y under cursor
-    protected int mouseCell;   // map cell under cursor
+    private int mouseCellX;   // map cell X under cursor
+    private int mouseCellY;   // map cell Y under cursor
+    private int mouseCell;   // map cell under cursor
 
-    public MapCursorControllerBase(ITileRendererManager renderer, IMapLayerManager map, ICursorLayerManager cursors) {
+    public MapCursorComponentBase(ITileRendererManager renderer, IMapLayerManager map, ICursorLayerManager cursors, IMapInteractionComponent cells) {
         super(renderer, map);
         this.cursors = cursors;
+        this.cells = cells;
         System.out.println("thebob.ja2maptool.util.map.controller.cursor.base.MapCursorControllerBase.<init>()");
     }
 
@@ -76,30 +82,31 @@ public abstract class MapCursorControllerBase extends MapControllerBase implemen
     // Cursor creation methods
     // ----------------------------------------
     @Override
-    public MapCursor getCursor() {
-        return cursors.getCursor(mouseCellX, mouseCellY, null);
+    public MapCursor getMapCursor() {
+        return getCursors().getCursor(getMouseCellX(), getMouseCellY(), null);
     }
 
     @Override
-    public MapCursor getCursor(int x, int y, IndexedElement cursor) {
-        return cursors.getCursor(x, y, cursor);
+    public MapCursor getMapCursor(int x, int y, IndexedElement cursor) {
+        return getCursors().getCursor(x, y, cursor);
     }
 
     @Override
-    public MapCursor getCursor(double x, double y, IndexedElement cursor) {
-        return cursors.getCursor(x, y, cursor);
+    public MapCursor getMapCursor(double x, double y, IndexedElement cursor) {
+        return getCursors().getCursor(x, y, cursor);
     }
 
     // ----------------------------------------
     // Persist input state
     // ----------------------------------------
-    private void saveCursorEventData(double dx, double dy, boolean controlDown, boolean shiftDown, boolean altDown) {
+    private void saveCursorEventData(double dx, double dy, boolean controlDown, boolean shiftDown, boolean altDown, MouseButton button) {
         this.lastCursorX = dx;
         this.lastCursorY = dy;
 
         this.controlDown = controlDown;
         this.shiftDown = shiftDown;
         this.altDown = altDown;
+        this.button = button;
     }
 
     /**
@@ -112,23 +119,23 @@ public abstract class MapCursorControllerBase extends MapControllerBase implemen
      */
     protected boolean processCursorEventData() {
         // translate screen position to current map window position
-        windowScreenX = (2 * renderer.getWindowOffsetX()) - (2 * renderer.getWindowOffsetY());
-        windowScreenY = renderer.getWindowOffsetX() + renderer.getWindowOffsetY();
+        windowScreenX = (2 * getRenderer().getWindowOffsetX()) - (2 * getRenderer().getWindowOffsetY());
+        windowScreenY = getRenderer().getWindowOffsetX() + getRenderer().getWindowOffsetY();
         // apply current scale
-        double scaledCursorX = lastCursorX / renderer.getScale();
-        double scaledCursorY = lastCursorY / renderer.getScale();
+        double scaledCursorX = getLastCursorX() / getRenderer().getScale();
+        double scaledCursorY = getLastCursorY() / getRenderer().getScale();
 
         // calculate pixel position within view window
-        mouseScreenX = (windowScreenX + (scaledCursorX / 10) + 2);
-        mouseScreenY = (windowScreenY + (scaledCursorY / 10) + 1);
+        mouseScreenX = (getWindowScreenX() + (scaledCursorX / 10) + 2);
+        mouseScreenY = (getWindowScreenY() + (scaledCursorY / 10) + 1);
 
         // translate window pixel position to cell x/y
-        mouseCellX = screenXYtoCellX(mouseScreenX, mouseScreenY);
-        mouseCellY = screenXYtoCellY(mouseScreenX, mouseScreenY);
+        mouseCellX = screenXYtoCellX(getMouseScreenX(), getMouseScreenY());
+        mouseCellY = screenXYtoCellY(getMouseScreenX(), getMouseScreenY());
 
-        int newMouseCell = cursors.rowColToPos(mouseCellY, mouseCellX);
+        int newMouseCell = getCursors().rowColToPos(getMouseCellY(), getMouseCellX());
 
-        if (mouseCell == newMouseCell || cursors.getMapSize() < 1) {
+        if (getMouseCell() == newMouseCell || getCursors().getMapSize() < 1) {
             return false;
         }
 
@@ -139,16 +146,17 @@ public abstract class MapCursorControllerBase extends MapControllerBase implemen
 
     @Override
     public String toString() {
-        return "MapCursorControllerBase{" + "cursors=" + cursors + ", mouseCellX=" + mouseCellX + ", mouseCellY=" + mouseCellY + ", mouseCell=" + mouseCell + ", mouseScreenX=" + mouseScreenX + ", mouseScreenY=" + mouseScreenY + '}';
+        return "MapCursorControllerBase{" + "cursors=" + getCursors() + ", mouseCellX=" + getMouseCellX() + ", mouseCellY=" + getMouseCellY() + ", mouseCell=" + getMouseCell() + ", mouseScreenX=" + getMouseScreenX() + ", mouseScreenY=" + getMouseScreenY() + '}';
     }
 
     // ----------------------------------------
     // Input state update
     // ----------------------------------------
-    protected void updateState(double dx, double dy, boolean controlDown, boolean shiftDown, boolean altDown) {
-        saveCursorEventData(dx, dy, controlDown, shiftDown, altDown);
+    protected void updateState(double dx, double dy, boolean controlDown, boolean shiftDown, boolean altDown, MouseButton button) {
+        saveCursorEventData(dx, dy, controlDown, shiftDown, altDown, button);
         if (processCursorEventData()) {
             updateCursor();
+            cells.hoverCell(getMouseCell(), new MapInteractionData(getMouseCellX(), getMouseCellY(), getMouseCell(), isShiftDown(), isControlDown(), isAltDown(), getButton()));
         }
     }
 
@@ -178,7 +186,11 @@ public abstract class MapCursorControllerBase extends MapControllerBase implemen
     @Override
     public void mouseEvent(MouseEvent e) {
         if (e.getEventType() == MouseEvent.MOUSE_MOVED || e.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-            updateState(e.getX(), e.getY(), e.isControlDown(), e.isShiftDown(), e.isAltDown());
+            updateState(e.getX(), e.getY(), e.isControlDown(), e.isShiftDown(), e.isAltDown(), e.getButton());
+        } else if (e.getEventType() == MouseEvent.MOUSE_CLICKED) {
+            if (cells.activateCell(getMouseCell(), new MapInteractionData(getMouseCellX(), getMouseCellY(), getMouseCell(), e))) {
+                e.consume();
+            }
         }
     }
 
@@ -196,11 +208,6 @@ public abstract class MapCursorControllerBase extends MapControllerBase implemen
                         updateCursor();
                     }
                     break;
-                case LAYER_ALTERED:
-
-                    break;
-                case MAP_ALTERED:
-                    break;
                 case MAP_WINDOW_MOVED:
                     if (processCursorEventData()) {
                         updateCursor();
@@ -216,22 +223,6 @@ public abstract class MapCursorControllerBase extends MapControllerBase implemen
                         updateCursor();
                     }
                     break;
-                case CURSOR_MOVED:
-                    break;
-                case PLACEMENT_CURSOR_ADDED:
-                    break;
-                case PLACEMENT_CURSOR_MOVED:
-                    break;
-                case PLACEMENT_CURSOR_REMOVED:
-                    break;
-                case PLACEMENT_TOGGLE:
-                    break;
-                case PLACEMENT_PICK:
-                    break;
-                case PLACEMENT_DELETE:
-                    break;
-                default:
-                    throw new AssertionError(message.getType().name());
             }
         }
     }
@@ -276,11 +267,43 @@ public abstract class MapCursorControllerBase extends MapControllerBase implemen
         return altDown;
     }
 
-    @Override
-    public IMapCursorController transferStateFrom(IMapCursorController oldController) {
-        oldController.disconnect();
-        updateState(oldController.getLastCursorX(), oldController.getLastCursorY(), oldController.isControlDown(), oldController.isShiftDown(), oldController.isAltDown());
-        return this;
+    /**
+     * @return the windowScreenX
+     */
+    public int getWindowScreenX() {
+        return windowScreenX;
+    }
+
+    /**
+     * @return the windowScreenY
+     */
+    public int getWindowScreenY() {
+        return windowScreenY;
+    }
+
+    /**
+     * @return the mouseScreenX
+     */
+    public double getMouseScreenX() {
+        return mouseScreenX;
+    }
+
+    /**
+     * @return the mouseScreenY
+     */
+    public double getMouseScreenY() {
+        return mouseScreenY;
+    }
+
+    public MouseButton getButton() {
+        return button;
+    }
+
+    /**
+     * @return the cursors
+     */
+    public ICursorLayerManager getCursors() {
+        return cursors;
     }
 
 }

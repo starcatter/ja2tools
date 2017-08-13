@@ -1,7 +1,7 @@
-/*
+/* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,21 +23,43 @@
  */
 package thebob.ja2maptool.util.map.controller.base;
 
+import java.util.Observer;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
 /**
- * Map Controllers provide an interface to the map renderer and abstract various tasks performed on map data. 
- * 
- * Before their introduction everything was handled by the MapDisplayManager, which made that class cluttered and hard to work on.
- * 
+ * Map Controllers provide an interface to the map renderer and abstract various
+ * tasks performed on map data.
+ *
+ * Before their introduction everything was handled by the MapDisplayManager,
+ * which made that class cluttered and hard to work on.
+ *
  * @author the_bob
  */
 public interface IMapController {
-    
-    public void mouseEvent(MouseEvent e);   
-    public void keyEvent(KeyEvent e);    
 
-    public void disconnect();
+    void mouseEvent(MouseEvent e);
+
+    void keyEvent(KeyEvent e);
+
+    void disconnect();
+
+    /**
+     * Adds an observer to the set of observers for this object, provided that
+     * it is not the same as some observer already in the set. The order in
+     * which notifications will be delivered to multiple observers is not
+     * specified. See the class comment.
+     *
+     * @param o an observer to be added.
+     * @throws NullPointerException if the parameter o is null.
+     */
+    void addObserver(Observer o);
+
+    /**
+     * Deletes an observer from the set of observers of this object. Passing
+     * <CODE>null</CODE> to this method will have no effect.
+     *
+     * @param o the observer to be deleted.
+     */
+    void deleteObserver(Observer o);
 }

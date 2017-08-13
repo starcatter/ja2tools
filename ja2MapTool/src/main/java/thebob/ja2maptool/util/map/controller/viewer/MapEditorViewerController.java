@@ -1,7 +1,7 @@
-/*
+/* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -86,7 +86,7 @@ public class MapEditorViewerController extends MapViewerControllerBase {
 		    break;
 
 		case SPACE:
-		    renderer.centerWindow();
+		    getRenderer().centerWindow();
 		    break;
 
 		case A:

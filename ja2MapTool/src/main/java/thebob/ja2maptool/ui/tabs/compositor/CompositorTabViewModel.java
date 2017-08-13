@@ -1,7 +1,7 @@
 /* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@
  */
 package thebob.ja2maptool.ui.tabs.compositor;
 
-import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
 import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ScopeProvider;
 import de.saxsys.mvvmfx.ViewModel;
@@ -34,6 +33,7 @@ import java.util.Set;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 import thebob.ja2maptool.scopes.MainScope;
 import static thebob.ja2maptool.scopes.MainScope.UPDATE_SCOPES;
@@ -46,6 +46,8 @@ import static thebob.ja2maptool.ui.tabs.convert.ConvertMapTabViewModel.MAP_LOADE
 import thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabViewModel;
 import thebob.ja2maptool.util.MapTransformer;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
+import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
+import thebob.ja2maptool.util.compositor.SnippetPlacement;
 import thebob.ja2maptool.util.map.controller.editors.compositor.IMapCompositorController;
 
 @ScopeProvider(scopes = {MapScope.class})   // we need to provide the scope for the map viewer to load, it will be replaced once setPreviewModel() is called
@@ -309,6 +311,10 @@ public class CompositorTabViewModel implements ViewModel {
 
     public BooleanProperty getSnippet_structures_walls() {
 	return snippet_structures_walls;
+    }
+
+    ObservableList<SnippetPlacement> getPlacementListContents() {
+        return compositorScope.getPlacedSnippets();
     }
 
 }

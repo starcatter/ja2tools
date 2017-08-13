@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 maste_000.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,16 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.controller.placement.snippets;
+package thebob.ja2maptool.util.map.component.interaction.data.types;
 
-import thebob.ja2maptool.util.compositor.SelectedTiles;
+import thebob.ja2maptool.util.compositor.SnippetPlacement;
+import thebob.ja2maptool.util.map.component.interaction.data.MapInteractionUserdata;
 
 /**
  *
- * @author maste_000
+ * @author starcatter
  */
-public interface IMapSnippetPlacementController {
+public class PlacementInteractionData extends MapInteractionUserdata {
 
-    public void setContents(SelectedTiles preview);
-    
+    private final SnippetPlacement placement;
+
+    public PlacementInteractionData(SnippetPlacement placement) {
+        this.placement = placement;
+    }
+
+    public SnippetPlacement getPlacement() {
+        return placement;
+    }
+
 }

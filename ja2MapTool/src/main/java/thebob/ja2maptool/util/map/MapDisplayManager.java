@@ -1,7 +1,7 @@
 /* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,10 +23,9 @@
  */
 package thebob.ja2maptool.util.map;
 
+import thebob.ja2maptool.util.map.events.MapEvent;
 import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.MutableClassToInstanceMap;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import javafx.beans.property.BooleanProperty;
@@ -135,6 +134,8 @@ public class MapDisplayManager implements IMapDisplayManager, Observer {
 	return controller;
     }
 
+    // viewers
+    
     @Override
     public IMapViewerController connectBasicViewer(MapViewerTabViewModel viewWindow) {
 	return registerController(new MapBrowserViewerController(renderer, map, viewWindow), IMapViewerController.class);
@@ -144,6 +145,8 @@ public class MapDisplayManager implements IMapDisplayManager, Observer {
 	return registerController(new MapEditorViewerController(renderer, map, viewWindow), IMapViewerController.class);
     }
 
+    // editors
+    
     @Override
     public IMapCompositorController connectCompositor(MapCompositorScope compositor) {
 	return registerController(new MapCompositorController(renderer, map, compositor), IMapCompositorController.class);

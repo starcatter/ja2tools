@@ -1,7 +1,7 @@
-/*
+/* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,12 +23,12 @@
  */
 package thebob.ja2maptool.util.map.controller.viewer;
 
-import thebob.ja2maptool.util.map.controller.viewer.base.MapViewerControllerBase;
 import java.util.Observable;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabViewModel;
-import thebob.ja2maptool.util.map.MapEvent;
+import thebob.ja2maptool.util.map.events.MapEvent;
+import thebob.ja2maptool.util.map.controller.viewer.base.MapViewerControllerBase;
 import thebob.ja2maptool.util.map.layers.map.IMapLayerManager;
 import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
 
@@ -49,37 +49,6 @@ public class MapBrowserViewerController extends MapViewerControllerBase {
             System.out.println("thebob.ja2maptool.util.map.MapDisplayManager.update() got weird message from " + o);
             return;
         }
-        MapEvent message = (MapEvent) arg;
-
-        switch (message.getType()) {
-            case LAYER_ALTERED:
-                break;
-            case MAP_LOADED:
-                break;
-            case MAP_ALTERED:
-                break;
-            case MAP_WINDOW_MOVED:
-                break;
-            case MAP_WINDOW_ZOOMED:
-                break;
-            case MAP_CANVAS_CHANGED:
-                break;
-            case CURSOR_MOVED:
-                break;
-            case PLACEMENT_CURSOR_ADDED:
-                break;
-            case PLACEMENT_CURSOR_MOVED:
-                break;
-            case PLACEMENT_CURSOR_REMOVED:
-                break;
-            case PLACEMENT_TOGGLE:
-                break;
-            case PLACEMENT_PICK:
-                break;
-            case PLACEMENT_DELETE:
-                break;
-        }
-
     }
 
     @Override
@@ -89,8 +58,8 @@ public class MapBrowserViewerController extends MapViewerControllerBase {
             double dx = e.getX();
             double dy = e.getY();
 
-            double wx = renderer.getCanvasX() / 2d;
-            double wy = renderer.getCanvasY() / 2d;
+            double wx = getRenderer().getCanvasX() / 2d;
+            double wy = getRenderer().getCanvasY() / 2d;
 
             double deltaX = (dx - wx) / wx;
             double deltaY = (dy - wy) / wx;

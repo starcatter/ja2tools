@@ -1,7 +1,7 @@
-/*
+/* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,35 +23,60 @@
  */
 package thebob.ja2maptool.util.map.controller.base;
 
+import java.util.Observable;
 import java.util.Observer;
-import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
 import thebob.ja2maptool.util.map.layers.map.IMapLayerManager;
+import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
 
 /**
  *
  * @author the_bob
  */
-public abstract class MapControllerBase implements IMapController, Observer {
+public abstract class MapControllerBase extends Observable implements IMapController, Observer {
 
-    protected ITileRendererManager renderer;
-    protected IMapLayerManager map;
+    private ITileRendererManager renderer;
+    private IMapLayerManager map;
 
     public MapControllerBase(ITileRendererManager renderer, IMapLayerManager map) {
-	this.renderer = renderer;
-	this.map = map;
+        this.renderer = renderer;
+        this.map = map;
 
-	renderer.addObserver(this);
-	map.subscribe(this);
+        renderer.addObserver(this);
+        map.subscribe(this);
 
-	System.out.println("thebob.ja2maptool.util.map.controller.base.MapControllerBase.<init>(): created " + this.getClass().getSimpleName());
+        System.out.println("thebob.ja2maptool.util.map.controller.base.MapControllerBase.<init>(): created " + this.getClass().getSimpleName());
     }
 
     @Override
     public void disconnect() {
-	renderer.deleteObserver(this);
-	map.unsubscribe(this);
+        getRenderer().deleteObserver(this);
+        getMap().unsubscribe(this);
 
-	System.out.println("thebob.ja2maptool.util.map.controller.base.MapControllerBase.disconnect(): " + this.getClass().getSimpleName());
+        System.out.println("thebob.ja2maptool.util.map.controller.base.MapControllerBase.disconnect(): " + this.getClass().getSimpleName());
     }
 
+    // no need to spam setChanged() all over the controller classes, it's a simple observer implementation here 
+    @Override
+    public void notifyObservers(Object arg) {
+        setChanged();
+        super.notifyObservers(arg);
+    }
+    
+    // ----------
+
+    /**
+     * @return the renderer
+     */
+    public ITileRendererManager getRenderer() {
+        return renderer;
+    }
+
+    /**
+     * @return the map
+     */
+    public IMapLayerManager getMap() {
+        return map;
+    }
+    
+    
 }

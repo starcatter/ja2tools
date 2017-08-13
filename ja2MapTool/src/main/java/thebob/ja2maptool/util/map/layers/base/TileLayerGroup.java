@@ -1,7 +1,7 @@
 /* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@ package thebob.ja2maptool.util.map.layers.base;
 import java.util.Observable;
 import java.util.Observer;
 import thebob.assetloader.tileset.Tileset;
-import thebob.ja2maptool.util.map.MapEvent;
+import thebob.ja2maptool.util.map.events.MapEvent;
 
 /**
  * The TileLayerGroup is meant to be a wrapper around content displayed in the renderer - maps, cursors, previews, overlays.
@@ -42,10 +42,29 @@ public abstract class TileLayerGroup extends Observable implements ITileLayerGro
     protected int mapSize;
     protected Tileset tileset;
 
+    // ------------------------------
+    // Tile coordinate transformation
+    // ------------------------------
+    
     @Override
     public int rowColToPos(int y, int x) {
 	return ((y) * mapCols + (x));
     }
+    
+    @Override
+    public int GridNoToCellX(int sGridNo) {
+	int sYPos = (sGridNo / mapCols);
+	int sXPos = sGridNo - (sYPos * mapCols);
+
+	return sXPos;
+    }
+
+    @Override
+    public int GridNoToCellY(int sGridNo) {
+	int sYPos = (sGridNo / mapCols);
+
+	return sYPos;
+    }    
 
     protected void setLayerSize(int mapCols, int mapRows) {
 	this.mapCols = mapCols;

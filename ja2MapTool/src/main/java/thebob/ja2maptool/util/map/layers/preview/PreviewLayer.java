@@ -1,7 +1,7 @@
 /* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,10 +31,9 @@ import java.util.Map;
 import thebob.assetloader.map.core.components.IndexedElement;
 import thebob.assetloader.tileset.Tileset;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
-import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
 import thebob.ja2maptool.util.map.layers.base.TileLayer;
 import thebob.ja2maptool.util.map.layers.base.TileLayerGroup;
-import thebob.ja2maptool.util.map.MapEvent;
+import thebob.ja2maptool.util.map.events.MapEvent;
 import thebob.ja2maptool.util.map.layers.cursor.MapCursor;
 
 /**
@@ -182,18 +181,7 @@ public class PreviewLayer extends TileLayerGroup {
 
     }
 
-    public int GridNoToCellX(int sGridNo) {
-	int sYPos = (sGridNo / mapCols);
-	int sXPos = sGridNo - (sYPos * mapCols);
 
-	return sXPos;
-    }
-
-    public int GridNoToCellY(int sGridNo) {
-	int sYPos = (sGridNo / mapCols);
-
-	return sYPos;
-    }
 
     @Override
     public String toString() {

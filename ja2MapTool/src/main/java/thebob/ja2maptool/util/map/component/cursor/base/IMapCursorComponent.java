@@ -1,7 +1,7 @@
-/*
+/* 
  * The MIT License
  *
- * Copyright 2017 maste_000.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,28 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.controller.placement.clipboard;
+package thebob.ja2maptool.util.map.component.cursor.base;
 
-import thebob.ja2maptool.util.compositor.SelectedTiles;
-import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
+import thebob.assetloader.map.core.components.IndexedElement;
+import thebob.ja2maptool.util.map.component.cursor.cursors.base.ICursorController;
 import thebob.ja2maptool.util.map.controller.base.IMapController;
+import thebob.ja2maptool.util.map.layers.cursor.MapCursor;
 
 /**
  *
- * @author maste_000
+ * @author the_bob
  */
-public interface IMapClipboardController extends IMapController {
-    boolean hasContents();
-    
-    SelectedTiles getContents();
-    void setContents(SelectedTiles clipboardContents);
-    void emptyContents();
-    
-    boolean canPaste();
-    boolean canCopy();
-    boolean canCut();
-    
-    boolean copy();
-    boolean cut();
-    boolean paste(SelectionPlacementOptions options);
+public interface IMapCursorComponent extends IMapController {
+
+    void setCursor(ICursorController cursor);
+
+    int getMouseCellX();
+
+    int getMouseCellY();
+
+    int getMouseCell();
+
+    double getLastCursorX();
+
+    double getLastCursorY();
+
+    boolean isControlDown();
+
+    boolean isShiftDown();
+
+    boolean isAltDown();
+
+    MapCursor getMapCursor();
+
+    MapCursor getMapCursor(int x, int y, IndexedElement cursor);
+
+    MapCursor getMapCursor(double x, double y, IndexedElement cursor);
 }

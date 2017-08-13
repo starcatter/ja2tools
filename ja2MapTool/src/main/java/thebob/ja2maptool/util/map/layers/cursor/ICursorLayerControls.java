@@ -1,7 +1,7 @@
 /* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -66,7 +66,7 @@ public interface ICursorLayerControls {
      */
     void placeCursorCenterRect(int layer, int cursorX, int cursorY, int cursorWidth, int cursorHeight, IndexedElement cursor, CursorFillMode mode);
 
-    int[] getCellNumbersForRadius(int layer, int cursorX, int cursorY, int cursorWidth, int cursorHeight, CursorFillMode mode);
-    int[] getCellNumbersForRect(int layer, int startX, int startY, int endX, int endY, CursorFillMode mode);
+    int[] getCellNumbersForRadius(int cursorX, int cursorY, int cursorWidth, int cursorHeight, CursorFillMode mode);
+    int[] getCellNumbersForRect(int startX, int startY, int endX, int endY, CursorFillMode mode);
 
 }

@@ -1,7 +1,7 @@
 /* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ import javafx.scene.input.MouseButton;
 import thebob.assetloader.map.core.components.IndexedElement;
 import thebob.assetloader.tileset.Tileset;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
-import thebob.ja2maptool.util.map.MapEvent;
+import thebob.ja2maptool.util.map.events.MapEvent;
 import static thebob.ja2maptool.util.map.MapUtils.screenXYtoCellX;
 import static thebob.ja2maptool.util.map.MapUtils.screenXYtoCellY;
 import thebob.ja2maptool.util.map.layers.base.TileLayer;
@@ -207,7 +207,7 @@ public class CursorLayerOld extends TileLayerGroup { //implements ICursorLayerMa
 
 	    if (preview != null) {
 		if (button == MouseButton.PRIMARY) {
-		    notifySubscribers(new MapEvent(MapEvent.ChangeType.PLACEMENT_TOGGLE));
+//		    notifySubscribers(new MapEvent(MapEvent.ChangeType.PLACEMENT_TOGGLE));
 		}
 		if (button == MouseButton.SECONDARY) {
 		    movePlacementCursor();
@@ -216,10 +216,10 @@ public class CursorLayerOld extends TileLayerGroup { //implements ICursorLayerMa
 		clearPlacementCursor();
 
 		if (button == MouseButton.PRIMARY) {
-		    notifySubscribers(new MapEvent(MapEvent.ChangeType.PLACEMENT_PICK));
+		    notifySubscribers(new MapEvent(MapEvent.ChangeType.PLACEMENT_PICKED));
 		}
 		if (button == MouseButton.SECONDARY) {
-		    notifySubscribers(new MapEvent(MapEvent.ChangeType.PLACEMENT_DELETE));
+		    notifySubscribers(new MapEvent(MapEvent.ChangeType.PLACEMENT_DELETED));
 		}
 
 	    }
@@ -340,16 +340,16 @@ public class CursorLayerOld extends TileLayerGroup { //implements ICursorLayerMa
     
     private void movePlacementCursor() {
 	if (placementLocation == null) {
-	    notifySubscribers(new MapEvent(MapEvent.ChangeType.PLACEMENT_CURSOR_ADDED));
+//	    notifySubscribers(new MapEvent(MapEvent.ChangeType.PLACEMENT_CURSOR_ADDED));
 	}
 	placementLocation = new MapCursor(cursors[0], PLACEMENT_CURSOR);
-	notifySubscribers(new MapEvent(MapEvent.ChangeType.PLACEMENT_CURSOR_MOVED));
+//	notifySubscribers(new MapEvent(MapEvent.ChangeType.PLACEMENT_CURSOR_MOVED));
 
     }
 
     private void clearPlacementCursor() {
 	if (placementLocation != null) {
-	    notifySubscribers(new MapEvent(MapEvent.ChangeType.PLACEMENT_CURSOR_REMOVED));
+//	    notifySubscribers(new MapEvent(MapEvent.ChangeType.PLACEMENT_CURSOR_REMOVED));
 	}
 	placementLocation = null;
     }

@@ -1,7 +1,7 @@
 /* 
  * The MIT License
  *
- * Copyright 2017 the_bob.
+ * Copyright 2017 starcatter.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@
  */
 package thebob.ja2maptool.util.compositor;
 
-import thebob.ja2maptool.util.compositor.SelectedTiles;
+import thebob.ja2maptool.util.map.layers.cursor.MapCursor;
 
 /**
  *
@@ -35,6 +35,59 @@ public class SnippetPlacement {
     int cellY;
     int cell;
     SelectedTiles snippet;
-    boolean[] enabledLayers = new boolean[5];
-    
+    boolean[] enabledLayers;
+
+    public SnippetPlacement(MapCursor placement, SelectedTiles source) {
+        this.cellX = placement.getCellX();
+        this.cellY = placement.getCellY();
+        this.cell = placement.getCell();
+        this.snippet = source;
+        this.enabledLayers = null;
+    }
+
+    public SnippetPlacement(int cellX, int cellY, int cell, SelectedTiles snippet, boolean[] enabledLayers) {
+        this.cellX = cellX;
+        this.cellY = cellY;
+        this.cell = cell;
+        this.snippet = snippet;
+        this.enabledLayers = enabledLayers;
+    }
+
+    public int getCellX() {
+        return cellX;
+    }
+
+    public int getCellY() {
+        return cellY;
+    }
+
+    public int getCell() {
+        return cell;
+    }
+
+    public void setCellX(int cellX) {
+        this.cellX = cellX;
+    }
+
+    public void setCellY(int cellY) {
+        this.cellY = cellY;
+    }
+
+    public void setCell(int cell) {
+        this.cell = cell;
+    }
+
+    public SelectedTiles getSnippet() {
+        return snippet;
+    }
+
+    public boolean[] getEnabledLayers() {
+        return enabledLayers;
+    }
+
+    @Override
+    public String toString() {
+        return "SnippetPlacement{" + "cellX=" + cellX + ", cellY=" + cellY + ", snippet=" + snippet + '}';
+    }
+
 }

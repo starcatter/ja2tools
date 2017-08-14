@@ -39,7 +39,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javax.inject.Inject;
 import thebob.ja2maptool.scopes.view.StiViewerScope;
-import thebob.ja2maptool.ui.tabs.convert.IntroTabViewModel;
 import thebob.ja2maptool.ui.tabs.viewers.sti.StiViewerTabView;
 import thebob.ja2maptool.ui.tabs.viewers.sti.StiViewerTabViewModel;
 

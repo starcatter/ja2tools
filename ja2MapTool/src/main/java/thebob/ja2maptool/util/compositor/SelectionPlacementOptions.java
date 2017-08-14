@@ -39,6 +39,17 @@ public class SelectionPlacementOptions {
     private final boolean place_land_floors;
     private final boolean place_structures_walls;
 
+    public SelectionPlacementOptions(SelectionPlacementOptions that) {
+	this.place_land =            that.place_land;
+        this.place_objects = that.place_objects;
+        this.place_structures = that.place_structures;
+        this.place_shadows = that.place_shadows;
+        this.place_roofs = that.place_roofs;
+        this.place_onRoof = that.place_onRoof;
+        this.place_land_floors = that.place_land_floors;
+        this.place_structures_walls = that. place_structures_walls;        
+    }
+    
     public SelectionPlacementOptions(boolean place_land, boolean place_objects, boolean place_structures, boolean place_shadows, boolean place_roofs, boolean place_onRoof, boolean place_land_floors, boolean place_structures_walls) {
 	this.place_land = place_land;
 	this.place_objects = place_objects;

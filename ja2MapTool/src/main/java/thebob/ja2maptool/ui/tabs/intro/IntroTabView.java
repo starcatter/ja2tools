@@ -33,12 +33,19 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javax.inject.Inject;
+import thebob.assetloader.map.core.MapData;
+import thebob.assetmanager.AssetManager;
+import thebob.ja2maptool.scopes.VfsAssetScope;
+import thebob.ja2maptool.scopes.map.MapCompositorScope;
+import thebob.ja2maptool.scopes.map.MapScope;
 import thebob.ja2maptool.scopes.view.StiViewerScope;
+import thebob.ja2maptool.ui.tabs.compositor.CompositorTabView;
 import thebob.ja2maptool.ui.tabs.viewers.sti.StiViewerTabView;
 import thebob.ja2maptool.ui.tabs.viewers.sti.StiViewerTabViewModel;
 
@@ -58,33 +65,66 @@ public class IntroTabView implements FxmlView<IntroTabViewModel>, Initializable 
 
     @FXML
     void intro_config_click(MouseEvent event) {
-	viewModel.goToConfigSetupTab();
+        viewModel.goToConfigSetupTab();
     }
 
     @FXML
     void intro_convert_click(MouseEvent event) {
-	viewModel.goToConvertSetupTab();
+        viewModel.goToConvertSetupTab();
     }
 
     @FXML
     void intro_map_click(MouseEvent event) {
-	viewModel.goToMapSetupTab();
+        viewModel.goToMapSetupTab();
     }
 
     private void showLogo() {
-	intro_pane.getChildren().clear();
+        AnchorPane pane = intro_pane;
+        pane.getChildren().clear();
 
-	StiViewerScope scope = new StiViewerScope();
-	scope.setFilePath("..\\..\\JA113.data\\gameData\\Data\\Interface\\SIRTECHSPLASH.STI");
+        StiViewerScope scope = new StiViewerScope();
+        scope.setFilePath("..\\..\\JA113.data\\gameData\\Data\\Interface\\SIRTECHSPLASH.STI");
 
-	ViewTuple<StiViewerTabView, StiViewerTabViewModel> selectorTouple = FluentViewLoader.fxmlView(StiViewerTabView.class)
-		.context(context)
-		.providedScopes(scope)
-		.load();
+        ViewTuple<StiViewerTabView, StiViewerTabViewModel> selectorTouple = FluentViewLoader.fxmlView(StiViewerTabView.class)
+                .context(context)
+                .providedScopes(scope)
+                .load();
 
-	intro_pane.getChildren().add(
-		selectorTouple.getView()
-	);
+        pane.getChildren().add(
+                selectorTouple.getView()
+        );
+    }
+
+    private void showCompositor() {
+
+        VfsAssetScope vfsAssets = viewModel.getVfsAssets();
+
+        MapCompositorScope scope = new MapCompositorScope();
+
+        ViewTuple tabTouple = FluentViewLoader.fxmlView(CompositorTabView.class)
+                .context(context) // VfsAssetScope, MainScope
+                .providedScopes(scope)
+                .load();
+
+        AnchorPane pane = intro_pane;
+        Parent compositor = tabTouple.getView();
+        pane.getChildren().clear();
+        pane.getChildren().add(compositor);
+
+        AnchorPane.setBottomAnchor(compositor, 0d);
+        AnchorPane.setTopAnchor(compositor, 0d);
+        AnchorPane.setLeftAnchor(compositor, 0d);
+        AnchorPane.setRightAnchor(compositor, 0d);
+
+        AssetManager assets = vfsAssets.getOrLoadAssetManager("../../JA113.data/gameData", "vfs_config.JA2Vanilla.ini");
+        MapData mapData = assets.getMaps().loadMap("\\maps\\a3.dat");
+        scope.getMap().setMapName("test map");
+        scope.getMap().setMapAssets(assets);
+        scope.getMap().setTilesetId(mapData.getSettings().iTilesetID);
+        scope.getMap().setTileset(assets.getTilesets().getTileset(mapData.getSettings().iTilesetID));
+        scope.getMap().setMapData(mapData);
+        scope.getMap().publish(MapScope.MAP_UPDATED);
+
     }
 
     // MVVMFX inject
@@ -99,7 +139,8 @@ public class IntroTabView implements FxmlView<IntroTabViewModel>, Initializable 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-	//showLogo();
+        //showLogo();
+        showCompositor();
     }
 
 }

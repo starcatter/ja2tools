@@ -26,6 +26,7 @@ package thebob.ja2maptool.scopes.map;
 import de.saxsys.mvvmfx.Scope;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import thebob.ja2maptool.ui.tabs.compositor.CompositorTabViewModel;
 import thebob.ja2maptool.util.compositor.SnippetPlacement;
 
 public class MapCompositorScope implements Scope {
@@ -33,10 +34,15 @@ public class MapCompositorScope implements Scope {
     public static final String PLACEMENT_PICKED = "PLACEMENT_PICKED";
     public static final String PLACEMENT_HOVER_ON = "PLACEMENT_HOVER_ON";
     public static final String PLACEMENT_HOVER_OFF = "PLACEMENT_HOVER_OFF";
+    public static final String PLACEMENT_SELECT = "PLACEMENT_SELECT";
+    public static final String PLACEMENT_LAYERS_CHANGED = "PLACEMENT_LAYERS_CHANGED";
+    public static final String PLACEMENT_LAYER_SWITCHED = "PLACEMENT_LAYER_SWITCHED";
+    public static final String PLACEMENT_LIST_CHANGED = "PLACEMENT_LIST_CHANGED";
 
     MapScope map = new MapScope();
     MapSnippetScope loadedSnippets = null;
     ObservableList<SnippetPlacement> placedSnippets = FXCollections.observableArrayList();
+    CompositorTabViewModel viewModel = null;
 
     public MapScope getMap() {
         return map;
@@ -46,6 +52,14 @@ public class MapCompositorScope implements Scope {
         this.map = map;
     }
 
+    public CompositorTabViewModel getViewModel() {
+        return viewModel;
+    }
+
+    public void setViewModel(CompositorTabViewModel viewModel) {
+        this.viewModel = viewModel;
+    }    
+    
     public MapSnippetScope getLoadedSnippets() {
         return loadedSnippets;
     }
@@ -87,6 +101,24 @@ public class MapCompositorScope implements Scope {
         } else {
             publish(PLACEMENT_HOVER_OFF);
         }
+    }
+
+    public void selectPlacement(SnippetPlacement placement) {
+        if (placement != null) {
+            publish(PLACEMENT_SELECT, placement);
+        }
+    }
+
+    public void updateLayers() {
+        publish(PLACEMENT_LAYERS_CHANGED);
+    }
+
+    public void updateList() {
+        publish(PLACEMENT_LIST_CHANGED);
+    }
+
+    public void layerSwitched() {
+        publish(PLACEMENT_LAYER_SWITCHED);
     }
 
 }

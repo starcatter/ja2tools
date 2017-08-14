@@ -75,7 +75,6 @@ public class MapInteractionComponent extends MapControllerBase implements IMapIn
                 layerMap.put(cell, layer);
             });
         });
-        System.out.println("thebob.ja2maptool.util.map.component.interaction.MapInteractionComponent.refreshLayers()");
     }
 
     @Override

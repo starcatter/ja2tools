@@ -35,17 +35,25 @@ public class SnippetPlacement {
     int cellY;
     int cell;
     SelectedTiles snippet;
-    boolean[] enabledLayers;
+    SelectionPlacementOptions enabledLayers;
 
-    public SnippetPlacement(MapCursor placement, SelectedTiles source) {
+    public SnippetPlacement(SnippetPlacement cpy) {
+        this.cellX = cpy.getCellX();
+        this.cellY = cpy.getCellY();
+        this.cell = cpy.getCell();
+        this.snippet = cpy.snippet;
+        this.enabledLayers = new SelectionPlacementOptions(cpy.enabledLayers);
+    }
+
+    public SnippetPlacement(MapCursor placement, SelectedTiles source, SelectionPlacementOptions enabledLayers) {
         this.cellX = placement.getCellX();
         this.cellY = placement.getCellY();
         this.cell = placement.getCell();
         this.snippet = source;
-        this.enabledLayers = null;
+        this.enabledLayers = enabledLayers;
     }
 
-    public SnippetPlacement(int cellX, int cellY, int cell, SelectedTiles snippet, boolean[] enabledLayers) {
+    public SnippetPlacement(int cellX, int cellY, int cell, SelectedTiles snippet, SelectionPlacementOptions enabledLayers) {
         this.cellX = cellX;
         this.cellY = cellY;
         this.cell = cell;
@@ -81,13 +89,17 @@ public class SnippetPlacement {
         return snippet;
     }
 
-    public boolean[] getEnabledLayers() {
+    public SelectionPlacementOptions getEnabledLayers() {
         return enabledLayers;
+    }
+
+    public void setEnabledLayers(SelectionPlacementOptions enabledLayers) {
+        this.enabledLayers = enabledLayers;
     }
 
     @Override
     public String toString() {
-        return "SnippetPlacement{" + "cellX=" + cellX + ", cellY=" + cellY + ", snippet=" + snippet + '}';
-    }
+        return "SnippetPlacement{" + "cellX=" + cellX + ", cellY=" + cellY + ", cell=" + cell + ", snippet=" + snippet + ", enabledLayers=" + enabledLayers + '}';
+    }    
 
 }

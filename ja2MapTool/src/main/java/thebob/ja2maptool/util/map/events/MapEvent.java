@@ -24,6 +24,9 @@
 package thebob.ja2maptool.util.map.events;
 
 /**
+ * MapEvents carry state change information between map controllers and
+ * components. They can also carry a payload, in case just the type of change
+ * isn't enough information
  *
  * @author the_bob
  */
@@ -41,14 +44,20 @@ public class MapEvent {
         // Clipboard controller events
         CLIPBOARD_PLACED, CLIPBOARD_FILLED, CLIPBOARD_EMPTIED,
         // placement management
-        PLACEMENT_ADDED, PLACEMENT_DELETED, PLACEMENT_PICKED, PLACEMENT_HOVERED,PLACEMENT_CANCELED, PLACEMENT_SELECTED, PLACEMENT_DESELECTED
+        PLACEMENT_ADDED, PLACEMENT_DELETED,
+        PLACEMENT_PICKED, PLACEMENT_CANCELED, // picking a placement either ends in deleting the original and adding a new one or canceling
+        PLACEMENT_HOVERED,
+        PLACEMENT_SELECTED, PLACEMENT_DESELECTED,
+        PLACEMENT_LAYER_SWITCHED, PLACEMENT_LAYER_DELETED, PLACEMENT_LAYER_ADDED, PLACEMENT_LAYER_MOVED,
+        PLACEMENT_LIST_MOVED // Moved a bunch of selected placements - a hint to update lists and status displays
     }
 
-    ChangeType type;
-    MapEventPayload payload = null;
+    final private ChangeType type;
+    final private MapEventPayload payload;
 
-    public MapEvent(ChangeType type) {
+    public MapEvent(ChangeType type) {        
         this.type = type;
+        this.payload = null;
     }
 
     public MapEvent(ChangeType type, MapEventPayload payload) {
@@ -62,11 +71,11 @@ public class MapEvent {
 
     public MapEventPayload getPayload() {
         return payload;
-    }    
-    
+    }
+
     @Override
     public String toString() {
-        return "TileLayerGroupChange{" + "type=" + type + '}';
+        return "MapEvent{" + "type=" + type + '}';
     }
 
 }

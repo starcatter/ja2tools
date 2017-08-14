@@ -23,13 +23,15 @@
  */
 package thebob.ja2maptool.util.map.component.placement.snippets;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import javafx.application.Platform;
 import javafx.scene.input.MouseButton;
 import thebob.assetloader.map.core.components.IndexedElement;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
+import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
 import thebob.ja2maptool.util.compositor.SnippetPlacement;
 import thebob.ja2maptool.util.map.component.interaction.IMapInteractionComponent;
 import thebob.ja2maptool.util.map.component.interaction.data.MapInteractionData;
@@ -53,6 +55,7 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
     private static final IndexedElement PLACEMENT_TILES_CURSOR = new IndexedElement(131, 7);
     private static final IndexedElement PLACEMENT_TILES_ACTIVE_CURSOR = new IndexedElement(131, 2);
     private static final IndexedElement PLACEMENT_CURSOR = new IndexedElement(131, 16);
+    private SelectionPlacementOptions snippetPlacementOptions;
 
     public enum PlacementMode {
         Single, // can place the payload once
@@ -69,18 +72,117 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
     private final PreviewLayer previewLayer;
     private final IMapInteractionComponent activeCells;
 
-    private Map<Integer, SnippetPlacement> placements = new HashMap<Integer, SnippetPlacement>();
+    // initialize the default snippet layer
+    private MapSnippetPlacementLayer currentLayer = new MapSnippetPlacementLayer("Default");
+    private Map<Integer, SnippetPlacement> placements = currentLayer.getPlacements();
+    private List<MapSnippetPlacementLayer> layers = new ArrayList<MapSnippetPlacementLayer>();
 
     public MapSnippetPlacementComponent(ITileRendererManager renderer, IMapLayerManager map, ICursorLayerManager cursorLayer, PreviewLayer previewLayer, IMapInteractionComponent cells) {
         super(renderer, map);
         this.cursorLayer = cursorLayer;
         this.previewLayer = previewLayer;
         this.activeCells = cells;
+
+        layers.add(currentLayer);
     }
 
-    // -------------------------
+    public MapSnippetPlacementLayer addPlacementLayer(String name) {
+        MapSnippetPlacementLayer newLayer = new MapSnippetPlacementLayer(name);
+        layers.add(newLayer);
+        notifyObservers(new MapEvent(MapEvent.ChangeType.PLACEMENT_LAYER_ADDED));
+        return newLayer;
+    }
+
+    @Override
+    public void movePlacementLayer(MapSnippetPlacementLayer selectedItem, int i) {
+        int index = layers.indexOf(selectedItem);
+        int targetIndex = index + i;
+        if (targetIndex > 0 && targetIndex < layers.size()) {
+            Collections.swap(layers, index, targetIndex);
+        }
+        notifyObservers(new MapEvent(MapEvent.ChangeType.PLACEMENT_LAYER_MOVED));
+    }
+
+    @Override
+    public void copyPlacementLayer(MapSnippetPlacementLayer selectedItem) {
+        MapSnippetPlacementLayer copy = new MapSnippetPlacementLayer(selectedItem);
+        layers.add(layers.indexOf(selectedItem) + 1, copy);
+        notifyObservers(new MapEvent(MapEvent.ChangeType.PLACEMENT_LAYER_ADDED));
+    }
+
+    @Override
+    public void deletePlacementLayer(MapSnippetPlacementLayer layer) {
+        if (layers.size() < 2) {
+            return;
+        }
+        if (currentLayer == layer) {
+            if (layers.get(0) != layer) {
+                setCurrentLayer(layers.get(0));
+            } else {
+                setCurrentLayer(layers.get(1));
+            }
+        }
+        layers.remove(layer);
+
+        notifyObservers(new MapEvent(MapEvent.ChangeType.PLACEMENT_LAYER_DELETED));
+    }
+
+    @Override
+    public List<MapSnippetPlacementLayer> getLayers() {
+        return layers;
+    }
+
+    @Override
+    public void setCurrentLayer(MapSnippetPlacementLayer layer) {
+        if (layer == null) {
+            return;
+        }
+        // clean up the old layer
+        placements.forEach((cell, placement) -> {
+            previewLayer.removePlacement(cell);
+        });
+
+        // switch layers
+        currentLayer = layer;
+        placements = currentLayer.getPlacements();
+
+        if (!currentLayer.getPlacements().isEmpty()) // add previews
+        {
+            placements.forEach((cell, placement) -> {
+                previewLayer.addPlacement(cell, placement);
+            });
+        }
+
+        notifyObservers(new MapEvent(MapEvent.ChangeType.PLACEMENT_LAYER_SWITCHED));
+
+        // update state
+        updateStateLayer();
+        updateVisibleLayers();
+    }
+
+    @Override
+    public void updateVisibleLayers() {
+        layers.forEach(layer -> {
+            if (layer.isVisible()) {
+                layer.getPlacements().forEach((cell, placement) -> {
+                    previewLayer.addPlacement(cell, placement);
+                });
+            } else {
+                layer.getPlacements().forEach((cell, placement) -> {
+                    previewLayer.removePlacement(cell);
+                });
+            }
+        });
+    }
+
+    @Override
+    public MapSnippetPlacementLayer getCurrentLayer() {
+        return currentLayer;
+    }
+
+    // --------------------------------------------------
     // IMapPlacementComponent
-    // -------------------------
+    // --------------------------------------------------
     @Override
     public void setPlacementLocation(MapCursor placementLocation) {
         super.setPlacementLocation(placementLocation);
@@ -89,7 +191,8 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
         if (getPayload() != null && placementLocation != null) {
 
             if (!placements.containsKey(placementLocation.getCell())) {
-                put(new SnippetPlacement(placementLocation, getPayload()));
+                SelectionPlacementOptions options = selectedPlacement != null ? selectedPlacement.getEnabledLayers() : snippetPlacementOptions;
+                put(new SnippetPlacement(placementLocation, getPayload(), options));
             } else if (pickedPlacement != null) {
                 pick_cancel();
             }
@@ -112,9 +215,9 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
         return null;
     }
 
-    // -------------------------
+    // --------------------------------------------------
     // IMapSnippetPlacementComponent
-    // -------------------------
+    // --------------------------------------------------
     @Override
     public void setContents(SelectedTiles preview) {
         setPayload(preview);
@@ -125,9 +228,24 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
         return getPayload() != null;
     }
 
-    // -------------------------
+    @Override
+    public void selectPlacement(SnippetPlacement selectedItem) {
+        select(selectedItem);
+    }
+
+    @Override
+    public Map<Integer, SnippetPlacement> getPlacements() {
+        return placements;
+    }
+
+    @Override
+    public void setPlacementVisibility(SelectionPlacementOptions snippetLayers) {
+        snippetPlacementOptions = snippetLayers;
+    }
+
+    // --------------------------------------------------
     // Internal action implementations
-    // -------------------------
+    // --------------------------------------------------
     SnippetPlacement selectedPlacement = null;
 
     private void deselect() {
@@ -136,6 +254,9 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
     }
 
     private void select(SnippetPlacement placement) {
+        if (selectedPlacement == placement) {
+            return;
+        }
         if (selectedPlacement != null) {
             deselect();
         }
@@ -149,8 +270,7 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
         setMode(PlacementMode.Single);
         pickedPlacement = placement;
 
-        System.out.println("thebob.ja2maptool.util.map.component.placement.snippets.MapSnippetPlacementComponent.pick()");
-
+        // System.out.println("thebob.ja2maptool.util.map.component.placement.snippets.MapSnippetPlacementComponent.pick()");
         //placements.remove(pickedPlacement.getCell());
         //previewLayer.removePlacement(pickedPlacement.getCell());
         notifyObservers(new MapEvent(MapEvent.ChangeType.PLACEMENT_PICKED, new MapPlacementEventPayload(placement)));
@@ -161,8 +281,7 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
         setMode(PlacementMode.Multi);
         pickedPlacement = null;
 
-        System.out.println("thebob.ja2maptool.util.map.component.placement.snippets.MapSnippetPlacementComponent.pick_cancel()");
-
+        // System.out.println("thebob.ja2maptool.util.map.component.placement.snippets.MapSnippetPlacementComponent.pick_cancel()");
         //placements.put(pickedPlacement.getCell(),pickedPlacement);
         //previewLayer.addPlacement(pickedPlacement.getCell(), pickedPlacement.getSnippet());        
         notifyObservers(new MapEvent(MapEvent.ChangeType.PLACEMENT_CANCELED));
@@ -178,7 +297,7 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
         placements.put(added.getCell(), added);
 
         // add snippet display
-        previewLayer.addPlacement(added.getCell(), getPayload());
+        previewLayer.addPlacement(added.getCell(), added);
 
         if (pickedPlacement != null) {
             remove(pickedPlacement);
@@ -214,23 +333,29 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
         }
     }
 
-    // -------------------------
+    // --------------------------------------------------
     // updates placement display and interaction status
-    // -------------------------
+    // --------------------------------------------------
     private void updateStateLayer() {
+        final int marginX = 0;
+        final int marginY = 0;
+
         MapInteractionLayer activeCellLayer = activeCells.getLayer(this);
 
         cursorLayer.clearLayer(LAYER_STATE);
         activeCellLayer.clear();
 
         placements.forEach((cell, placement) -> {
+            // int marginX = placement.getSnippet().getWidth()< 3 ? 2 : 0;
+            // int marginY = placement.getSnippet().getHeight() < 3 ? 2 : 0;
+
             if (placement != selectedPlacement) {
                 cursorLayer.placeCursorCenterRect(LAYER_STATE, placement.getCellX(), placement.getCellY(), placement.getSnippet().getWidth(), placement.getSnippet().getHeight(), PLACEMENT_TILES_CURSOR, CursorFillMode.Corners);
             } else {
                 cursorLayer.placeCursorCenterRect(LAYER_STATE, placement.getCellX(), placement.getCellY(), placement.getSnippet().getWidth(), placement.getSnippet().getHeight(), PLACEMENT_TILES_CURSOR, CursorFillMode.Border);
             }
 
-            int[] cells = cursorLayer.getCellNumbersForRadius(placement.getCellX(), placement.getCellY(), placement.getSnippet().getWidth() + 2, placement.getSnippet().getHeight() + 2, CursorFillMode.Full);
+            int[] cells = cursorLayer.getCellNumbersForRadius(placement.getCellX(), placement.getCellY(), placement.getSnippet().getWidth() + marginX, placement.getSnippet().getHeight() + marginY, CursorFillMode.Full);
             activeCellLayer.registerCells(cells, new PlacementInteractionData(placement));
         });
 
@@ -244,6 +369,8 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
         Platform.runLater(() -> {
             updateStateLayer();
         });
+
+        notifyObservers(new MapEvent(MapEvent.ChangeType.PLACEMENT_LIST_MOVED));
     }
 
     public void movePlacement(int placementCell, int deltaX, int deltaY) {
@@ -259,16 +386,16 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
             hoveredPlacement = activePlacement.getCell();
             placements.put(activePlacement.getCell(), activePlacement);
 
-            previewLayer.addPlacement(activePlacement.getCell(), activePlacement.getSnippet());
+            previewLayer.addPlacement(activePlacement.getCell(), activePlacement);
 
             cursorLayer.clearLayer(LAYER_ACTION);
             cursorLayer.placeCursorCenterRect(LAYER_ACTION, activePlacement.getCellX(), activePlacement.getCellY(), activePlacement.getSnippet().getWidth(), activePlacement.getSnippet().getHeight(), PLACEMENT_TILES_ACTIVE_CURSOR, CursorFillMode.Full);
         }
     }
 
-    // --------------------------
+    // ---------------------------------------------------
     // interaction component interface
-    // --------------------------
+    // ---------------------------------------------------
     @Override
     public boolean hoverCell(int cell, MapInteractionData data) {
         PlacementInteractionData placementData = (PlacementInteractionData) data.getUserdata();
@@ -342,16 +469,13 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
         }
     }
 
+    // --------------------------------------------------
     public PlacementMode getMode() {
         return mode;
     }
 
     public void setMode(PlacementMode mode) {
         this.mode = mode;
-    }
-
-    public Map<Integer, SnippetPlacement> getPlacements() {
-        return placements;
     }
 
     @Override

@@ -29,10 +29,13 @@ import thebob.ja2maptool.scopes.MainScope;
 import static thebob.ja2maptool.scopes.MainScope.TabTypes.TAB_CONVERT;
 import static thebob.ja2maptool.scopes.MainScope.TabTypes.TAB_MAPPING_SETUP;
 import static thebob.ja2maptool.scopes.MainScope.TabTypes.TAB_VFS_SETUP;
+import thebob.ja2maptool.scopes.VfsAssetScope;
 
 public class IntroTabViewModel implements ViewModel {
     @InjectScope
     MainScope mainScreen;
+    @InjectScope
+    VfsAssetScope vfsAssets;
     
     public void goToConfigSetupTab() {
 	mainScreen.publish(mainScreen.GOTO_TAB, TAB_VFS_SETUP);
@@ -46,4 +49,14 @@ public class IntroTabViewModel implements ViewModel {
 	mainScreen.publish(mainScreen.GOTO_TAB, TAB_MAPPING_SETUP);
     }
 
+    public MainScope getMainScreen() {
+        return mainScreen;
+    }
+
+    public VfsAssetScope getVfsAssets() {
+        return vfsAssets;
+    }
+
+    
+    
 }

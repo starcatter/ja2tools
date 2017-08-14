@@ -23,6 +23,11 @@
  */
 package thebob.ja2maptool.util.map;
 
+import java.util.Arrays;
+import thebob.assetloader.map.core.components.IndexedElement;
+import thebob.ja2maptool.util.compositor.SelectedTiles;
+import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
+
 /**
  *
  * @author the_bob
@@ -45,4 +50,71 @@ public class MapUtils {
         return sCellX + sCellY;
     }
 
+    public static boolean isFloor(IndexedElement elem) {
+	return elem.type == 60 || elem.type == 61 || elem.type == 62 || elem.type == 63;
+    }
+
+    public static boolean isWall(IndexedElement elem) {
+	return elem.type == 36 || elem.type == 37 || elem.type == 38 || elem.type == 39;
+    }
+    
+    public static boolean checkContentFilters(int layer, SelectedTiles selection, SelectionPlacementOptions options) {
+	final int LAND_LAYER = 0;
+	final int STRUCT_LAYER = 2;
+
+	if (layer == LAND_LAYER && options.isPlace_land_floors()) {
+	    System.out.println("thebob.ja2maptool.util.renderer.map.MapLayer.checkContentFilters() - leaving floors");
+
+	    IndexedElement[][] remappedLayer = selection.getLayers()[layer];
+
+	    for (int j = 0; j < remappedLayer.length; j++) {
+		IndexedElement[] tiles = remappedLayer[j];
+
+		int savedTiles = 0;
+		IndexedElement[] savedList = new IndexedElement[16];
+
+		for (IndexedElement elem : tiles) {
+		    if (isFloor(elem)) {
+			savedList[savedTiles++] = elem;
+		    }
+		}
+
+		if (savedTiles > 0) {
+		    remappedLayer[j] = Arrays.copyOfRange(savedList, 0, savedTiles);
+		} else {
+		    remappedLayer[j] = null;
+		}
+	    }
+
+	    return true;
+	} else if (layer == STRUCT_LAYER && options.isPlace_structures_walls()) {
+	    System.out.println("thebob.ja2maptool.util.renderer.map.MapLayer.checkContentFilters() - leaving walls");
+
+	    IndexedElement[][] remappedLayer = selection.getLayers()[layer];
+
+	    for (int j = 0; j < remappedLayer.length; j++) {
+		IndexedElement[] tiles = remappedLayer[j];
+
+		int savedTiles = 0;
+		IndexedElement[] savedList = new IndexedElement[16];
+
+		for (IndexedElement elem : tiles) {
+		    if (isWall(elem)) {
+			savedList[savedTiles++] = elem;
+		    }
+		}
+
+		if (savedTiles > 0) {
+		    remappedLayer[j] = Arrays.copyOfRange(savedList, 0, savedTiles);
+		} else {
+		    remappedLayer[j] = null;
+		}
+	    }
+
+	    return true;
+	} else {
+	    return false;
+	}
+    }
+    
 }

@@ -31,56 +31,60 @@ import java.util.Map;
 import thebob.assetloader.map.core.components.IndexedElement;
 import thebob.assetloader.tileset.Tileset;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
+import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
+import thebob.ja2maptool.util.compositor.SnippetPlacement;
+import static thebob.ja2maptool.util.map.MapUtils.checkContentFilters;
+import thebob.ja2maptool.util.map.events.MapEvent;
 import thebob.ja2maptool.util.map.layers.base.TileLayer;
 import thebob.ja2maptool.util.map.layers.base.TileLayerGroup;
-import thebob.ja2maptool.util.map.events.MapEvent;
 import thebob.ja2maptool.util.map.layers.cursor.MapCursor;
 
 /**
  * TODO: decide if this layer needs interfaces, like map/cursor.
  *
- * So far it seems it should be internal to the renderer, so no real need for organizing access, but a *Manager interface might be nice regardless
+ * So far it seems it should be internal to the renderer, so no real need for
+ * organizing access, but a *Manager interface might be nice regardless
  *
  * @author the_bob
  */
 public class PreviewLayer extends TileLayerGroup {
 
-    SelectedTiles previewTiles = null;
+    SnippetPlacement previewTiles = null;
     MapCursor lastPlacement = null;
 
     List<TileLayer> layers = new ArrayList<>();
-    Map<Integer, SelectedTiles> placements = new HashMap<Integer, SelectedTiles>();
+    Map<Integer, SnippetPlacement> placements = new HashMap<Integer, SnippetPlacement>();
 
     @Override
     public Iterator<TileLayer> iterator() {
-	return layers.iterator();
+        return layers.iterator();
     }
 
     public PreviewLayer() {
     }
 
     public void init(int mapRows, int mapCols, Tileset tileset) {
-	setLayerSize(mapCols, mapRows);
-	setTileset(tileset);
+        setLayerSize(mapCols, mapRows);
+        setTileset(tileset);
 
-	layers.clear();
-	// create empty space	
-	layers.add(new TileLayer(true, 0, 0, new IndexedElement[mapSize][0]));
-	layers.add(new TileLayer(true, 0, 0, new IndexedElement[mapSize][0]));
-	layers.add(new TileLayer(true, 0, 0, new IndexedElement[mapSize][0]));
-	layers.add(new TileLayer(true, 0, 0, new IndexedElement[mapSize][0]));
-	layers.add(new TileLayer(true, 0, -50, new IndexedElement[mapSize][0]));
-	layers.add(new TileLayer(true, 0, -50, new IndexedElement[mapSize][0]));
+        layers.clear();
+        // create empty space	
+        layers.add(new TileLayer(true, 0, 0, new IndexedElement[mapSize][0]));
+        layers.add(new TileLayer(true, 0, 0, new IndexedElement[mapSize][0]));
+        layers.add(new TileLayer(true, 0, 0, new IndexedElement[mapSize][0]));
+        layers.add(new TileLayer(true, 0, 0, new IndexedElement[mapSize][0]));
+        layers.add(new TileLayer(true, 0, -50, new IndexedElement[mapSize][0]));
+        layers.add(new TileLayer(true, 0, -50, new IndexedElement[mapSize][0]));
     }
 
     public void hidePreview() {
-	/*
+        /*
 	for (TileLayer layer : layers) {
 	    layer.setTiles(new IndexedElement[mapSize][0]);
 	}*/
 
-	previewTiles = null;
-	lastPlacement = null;
+        previewTiles = null;
+        lastPlacement = null;
     }
 
     // manipulation methods
@@ -90,14 +94,14 @@ public class PreviewLayer extends TileLayerGroup {
      * @param cell
      * @param tiles
      */
-    public void addPlacement(int cell, SelectedTiles tiles) {
-	placements.put(cell, tiles);
-	bakePreviewLayer();
+    public void addPlacement(int cell, SnippetPlacement tiles) {
+        placements.put(cell, tiles);
+        bakePreviewLayer();
     }
 
     public void removePlacement(int cell) {
-	placements.remove(cell);
-	bakePreviewLayer();
+        placements.remove(cell);
+        bakePreviewLayer();
     }
 
     /**
@@ -106,9 +110,13 @@ public class PreviewLayer extends TileLayerGroup {
      * @param previewTiles
      */
     public void setPreview(SelectedTiles previewTiles) {
-	this.previewTiles = previewTiles;
+        if (previewTiles != null) {
+            this.previewTiles = new SnippetPlacement(0, 0, 0, previewTiles, null);
+        } else {
+            this.previewTiles = null;
+        }
 
-	bakePreviewLayer();
+        bakePreviewLayer();
     }
 
     /**
@@ -117,75 +125,107 @@ public class PreviewLayer extends TileLayerGroup {
      * @param placement
      */
     public void placePreview(MapCursor placement) {
-	lastPlacement = placement;
-	bakePreviewLayer();
+        lastPlacement = placement;
+        bakePreviewLayer();
     }
 
     // -----------------
     // "rendering" methods
     private void bakePlacements() {
-	for (int cell : placements.keySet()) {
-	    addPreviewToLayers(placements.get(cell), cell);
-	}
+        for (int cell : placements.keySet()) {
+            addPreviewToLayers(placements.get(cell), cell);
+        }
     }
 
     private void bakePreview() {
-	addPreviewToLayers(previewTiles, lastPlacement.getCell());
+        addPreviewToLayers(previewTiles, lastPlacement.getCell());
     }
 
     private void bakePreviewLayer() {
-	for (TileLayer layer : layers) {
-	    layer.setTiles(new IndexedElement[mapSize][0]);
-	}
+        for (TileLayer layer : layers) {
+            layer.setTiles(new IndexedElement[mapSize][0]);
+        }
 
-	if (lastPlacement != null && previewTiles != null) {
-	    bakePreview();
-	}
+        if (lastPlacement != null && previewTiles != null) {
+            bakePreview();
+        }
 
-	if (placements.size() > 0) {
-	    bakePlacements();
-	}
+        if (placements.size() > 0) {
+            bakePlacements();
+        }
 
-	notifySubscribers(new MapEvent(MapEvent.ChangeType.LAYER_ALTERED));
+        notifySubscribers(new MapEvent(MapEvent.ChangeType.LAYER_ALTERED));
     }
 
-    private void addPreviewToLayers(SelectedTiles previewTiles, int cell) {
-	int cellX = GridNoToCellX(cell);
-	int cellY = GridNoToCellY(cell);
+    private void addPreviewToLayers(SnippetPlacement previewTilesPlacement, int cell) {
+        SelectedTiles previewTiles = previewTilesPlacement.getSnippet();
+        int cellX = GridNoToCellX(cell);
+        int cellY = GridNoToCellY(cell);
 
-	int cursorWidth = previewTiles.getWidth();
-	int cursorHeight = previewTiles.getHeight();
+        int cursorWidth = previewTiles.getWidth();
+        int cursorHeight = previewTiles.getHeight();
 
-	int selectionSize = cursorWidth * cursorHeight;
-	int[] targetCells = new int[selectionSize];
+        int selectionSize = cursorWidth * cursorHeight;
+        int[] targetCells = new int[selectionSize];
 
-	int startX = cellX - cursorWidth / 2;
-	int startY = cellY - cursorHeight / 2;
+        int startX = cellX - cursorWidth / 2;
+        int startY = cellY - cursorHeight / 2;
 
-	for (int L = 0; L < layers.size(); L++) {
+        if (previewTilesPlacement.getEnabledLayers() != null) {
 
-	    int i = 0;
-	    for (int x = startX; x < startX + cursorWidth; x++) {
-		for (int y = startY; y < startY + cursorHeight; y++) {
-		    int targetCell = rowColToPos(y, x);
-		    targetCells[i] = targetCell;
+            SelectedTiles previewTilesCopy = new SelectedTiles(previewTiles);
 
-		    if (previewTiles.getLayers()[L][i] != null) {
-			layers.get(L).getTiles()[targetCell] = previewTiles.getLayers()[L][i];
-		    }
+            SelectionPlacementOptions options = previewTilesPlacement.getEnabledLayers();
+            boolean[] placementOptions = options.getAsArray();
 
-		    i++;
-		}
-	    }
-	}
+            for (int L = 0; L < layers.size(); L++) {
+
+                if (placementOptions[L] == false) {
+                    if (checkContentFilters(L, previewTilesCopy, options) == false) {
+                        continue;
+                    }
+                }
+
+                int i = 0;
+                for (int x = startX; x < startX + cursorWidth; x++) {
+                    for (int y = startY; y < startY + cursorHeight; y++) {
+                        int targetCell = rowColToPos(y, x);
+                        targetCells[i] = targetCell;
+
+                        if (previewTilesCopy.getLayers()[L][i] != null) {
+                            layers.get(L).getTiles()[targetCell] = previewTilesCopy.getLayers()[L][i];
+                        }
+
+                        i++;
+                    }
+                }
+            }
+
+        } else {
+            // simply paste the layers over
+            for (int L = 0; L < layers.size(); L++) {
+                int i = 0;
+                for (int x = startX; x < startX + cursorWidth; x++) {
+                    for (int y = startY; y < startY + cursorHeight; y++) {
+                        int targetCell = rowColToPos(y, x);
+                        targetCells[i] = targetCell;
+
+                        if (previewTiles.getLayers()[L][i] != null) {
+                            layers.get(L).getTiles()[targetCell] = previewTiles.getLayers()[L][i];
+                        }
+
+                        i++;
+                    }
+                }
+            }
+
+        }
 
     }
-
-
 
     @Override
     public String toString() {
-	return "PreviewLayer{" + super.toString() + '}';
+        return "PreviewLayer{" + super.toString() + '}';
     }
 
 }

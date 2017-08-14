@@ -32,6 +32,11 @@ import java.util.Map;
 import java.util.Set;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
@@ -48,6 +53,7 @@ import thebob.ja2maptool.util.MapTransformer;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
 import thebob.ja2maptool.util.compositor.SnippetPlacement;
+import thebob.ja2maptool.util.map.component.placement.snippets.MapSnippetPlacementLayer;
 import thebob.ja2maptool.util.map.controller.editors.compositor.IMapCompositorController;
 
 @ScopeProvider(scopes = {MapScope.class})   // we need to provide the scope for the map viewer to load, it will be replaced once setPreviewModel() is called
@@ -56,265 +62,546 @@ public class CompositorTabViewModel implements ViewModel {
     public static final String TREE_UPDATED = "TREE_UPDATED";
 
     @InjectScope
-    VfsAssetScope vfsAssets;
+    protected VfsAssetScope vfsAssets;
 
     @InjectScope
-    MainScope mainScreen;
+    protected MainScope mainScreen;
 
     @InjectScope
-    MapCompositorScope compositorScope;
+    protected MapCompositorScope compositorScope;
 
-    TreeItem<String> root = new TreeItem<String>("Snippet sources");
-    Map<TreeItem<String>, SelectedTiles> treeItemMap = new HashMap<TreeItem<String>, SelectedTiles>();
-    Set<ConvertMapScope> subbedScopes = new HashSet<ConvertMapScope>();	// keep track of what we're subscribed to, it's easier than dealing with unsubscribing
+    // observed converters
+    protected Set<ConvertMapScope> subbedScopes = new HashSet<ConvertMapScope>();	// keep track of what we're subscribed to, it's easier than dealing with unsubscribing
 
-    MapViewerTabViewModel mapViewer = null;
-    IMapCompositorController compositor = null;
+    protected TreeItem<String> selectedItem = null;
+    protected SelectedTiles selectedSnippet = null;
 
-    // checkboxes
-    BooleanProperty snippet_land = new SimpleBooleanProperty(true);
-    BooleanProperty snippet_objects = new SimpleBooleanProperty(true);
-    BooleanProperty snippet_structures = new SimpleBooleanProperty(true);
-    BooleanProperty snippet_shadows = new SimpleBooleanProperty(true);
-    BooleanProperty snippet_roofs = new SimpleBooleanProperty(true);
-    BooleanProperty snippet_onRoof = new SimpleBooleanProperty(true);
+    // map window
+    protected MapViewerTabViewModel mapViewer = null;
+    // compositor backend
+    protected IMapCompositorController compositor = null;
 
-    BooleanProperty snippet_land_floors = new SimpleBooleanProperty(true);
-    BooleanProperty snippet_structures_walls = new SimpleBooleanProperty(true);
+    // snippet list root
+    protected TreeItem<String> root = new TreeItem<String>("Snippet sources");
+    // snippet list map to snippets
+    protected Map<TreeItem<String>, SelectedTiles> treeItemMap = new HashMap<TreeItem<String>, SelectedTiles>();
+
+    // snippet checkboxes
+    protected BooleanProperty snippet_land = new SimpleBooleanProperty(true);
+    protected BooleanProperty snippet_objects = new SimpleBooleanProperty(true);
+    protected BooleanProperty snippet_structures = new SimpleBooleanProperty(true);
+    protected BooleanProperty snippet_shadows = new SimpleBooleanProperty(true);
+    protected BooleanProperty snippet_roofs = new SimpleBooleanProperty(true);
+    protected BooleanProperty snippet_onRoof = new SimpleBooleanProperty(true);
+    protected BooleanProperty snippet_land_floors = new SimpleBooleanProperty(true);
+    protected BooleanProperty snippet_structures_walls = new SimpleBooleanProperty(true);
+
+    // snippet checkbox change listener
+    protected ChangeListener<Boolean> snippetVisibilityListener = new ChangeListener<Boolean>() {
+        @Override
+        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+            updateSnippetVisibility();
+        }
+    };
+
+    // placement layers
+    protected ObservableList<MapSnippetPlacementLayer> layersList = FXCollections.observableArrayList();
+
+    // placement checkboxes
+    protected BooleanProperty placement_land = new SimpleBooleanProperty(true);
+    protected BooleanProperty placement_objects = new SimpleBooleanProperty(true);
+    protected BooleanProperty placement_structures = new SimpleBooleanProperty(true);
+    protected BooleanProperty placement_shadows = new SimpleBooleanProperty(true);
+    protected BooleanProperty placement_roofs = new SimpleBooleanProperty(true);
+    protected BooleanProperty placement_onRoof = new SimpleBooleanProperty(true);
+    protected BooleanProperty placement_land_floors = new SimpleBooleanProperty(true);
+    protected BooleanProperty placement_structures_walls = new SimpleBooleanProperty(true);
+
+    // snippet checkbox change listener
+    protected ChangeListener<Boolean> placementVisibilityListener = new ChangeListener<Boolean>() {
+        @Override
+        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+            updatePlacementVisibility();
+        }
+    };
+
+    // placement texts
+    protected StringProperty placement_name = new SimpleStringProperty("not selected");
+    protected StringProperty placement_location = new SimpleStringProperty("not selected");
+    protected StringProperty placement_size = new SimpleStringProperty("not selected");
 
     public void initialize() {
-	// hook up all of the current converters
-	updateConverterSubscriptions();
+        // hook up all of the current converters
+        updateConverterSubscriptions();
 
-	// and subscribe to hook up all the future ones
-	mainScreen.getActiveMapConversions().addListener((ListChangeListener.Change<? extends ConvertMapScope> c) -> {
-	    updateConverterSubscriptions();
-	});
+        // and subscribe to hook up all the future ones
+        mainScreen.getActiveMapConversions().addListener((ListChangeListener.Change<? extends ConvertMapScope> c) -> {
+            updateConverterSubscriptions();
+        });
 
-	// hook up the map scope (map is not loaded at this time but the scope should be ready for setup)
-	compositorScope.getMap().subscribe(MapScope.MAP_UPDATED, (key, values) -> {
-	    updateRenderer(true);
-	    mainScreen.publish(UPDATE_SCOPES);
-	});
+        // hook up the map scope (map is not loaded at this time but the scope should be ready for setup)
+        compositorScope.setViewModel(this);
+        compositorScope.getMap().subscribe(MapScope.MAP_UPDATED, (key, values) -> {
+            updateRenderer(true);
+            mainScreen.publish(UPDATE_SCOPES);
+        });
+
+        addPropertyListeners();
+    }
+
+    private void addPropertyListeners() {
+        // snippet checkboxes
+        snippet_land.addListener(snippetVisibilityListener);
+        snippet_objects.addListener(snippetVisibilityListener);
+        snippet_structures.addListener(snippetVisibilityListener);
+        snippet_shadows.addListener(snippetVisibilityListener);
+        snippet_roofs.addListener(snippetVisibilityListener);
+        snippet_onRoof.addListener(snippetVisibilityListener);
+        snippet_land_floors.addListener(snippetVisibilityListener);
+        snippet_structures_walls.addListener(snippetVisibilityListener);
+
+        // placement checkboxes
+        placement_land.addListener(placementVisibilityListener);
+        placement_objects.addListener(placementVisibilityListener);
+        placement_structures.addListener(placementVisibilityListener);
+        placement_shadows.addListener(placementVisibilityListener);
+        placement_roofs.addListener(placementVisibilityListener);
+        placement_onRoof.addListener(placementVisibilityListener);
+        placement_land_floors.addListener(placementVisibilityListener);
+        placement_structures_walls.addListener(placementVisibilityListener);
     }
 
     /**
-     * Subscribes to every ConvertMapScope's snippet list
-     * Also keeps track of who we've already subscribed to, otherwise we'd get their events twice!
+     * Subscribes to every ConvertMapScope's snippet list Also keeps track of
+     * who we've already subscribed to, otherwise we'd get their events twice!
      */
     void updateConverterSubscriptions() {
-	for (ConvertMapScope converter : mainScreen.getActiveMapConversions()) {
-	    if (!subbedScopes.contains(converter)) {
-		subbedScopes.add(converter);
+        for (ConvertMapScope converter : mainScreen.getActiveMapConversions()) {
+            if (!subbedScopes.contains(converter)) {
+                subbedScopes.add(converter);
 
-		converter.subscribe(ConvertMapScope.SNIPPETS_UPDATED, (key, value) -> {
-		    updateTree();
-		    updateSnippetSelection();
-		});
-	    }
-	}
-	updateTree();
+                converter.subscribe(ConvertMapScope.SNIPPETS_UPDATED, (key, value) -> {
+                    updateTree();
+                    updateSnippetSelection();
+                });
+            }
+        }
+        updateTree();
     }
 
     /**
      * Connects this viewModel to the viewmodel of the map viewer we're using.
-     * Also injects our mapScope and registers the compositor component with the DisplayManager
-     * @param viewModel 
+     * Also injects our mapScope and registers the compositor component with the
+     * DisplayManager
+     *
+     * @param viewModel
      */
     void setPreviewModel(MapViewerTabViewModel viewModel) {
-	mapViewer = viewModel;
-	mapViewer.setMapScope(compositorScope.getMap());
-	mapViewer.setViewerMode(MapViewerTabViewModel.MapViewerMode.Editor);
-	mapViewer.initialize();
-	
-	
-	// registers the map compositor interface with the renderer
-	compositor = mapViewer.getRenderer().connectCompositor(compositorScope);
+        mapViewer = viewModel;
+        mapViewer.setMapScope(compositorScope.getMap());
+        mapViewer.setViewerMode(MapViewerTabViewModel.MapViewerMode.Editor);
+        mapViewer.initialize();
+
+        // registers the map compositor interface with the renderer
+        compositor = mapViewer.getRenderer().connectCompositor(compositorScope);
     }
 
     // preview window renderer handlers
     public void updateRenderer(boolean centerMap) {
-	if (compositorScope.getMap() == null || compositorScope.getMap().getMapData() == null) {
-	    return;
-	}
+        if (compositorScope.getMap() == null || compositorScope.getMap().getMapData() == null) {
+            return;
+        }
 
-	mapViewer.updateRenderer(centerMap);
-	publish(MAP_LOADED);
+        mapViewer.updateRenderer(centerMap);
+        publish(MAP_LOADED);
     }
 
     MapScope getMapScope() {
-	return compositorScope.getMap();
+        return compositorScope.getMap();
     }
 
+    MapCompositorScope getMapCompositorScope() {
+        return compositorScope;
+    }
+
+    // -------------------------
+    // save map
+    // -------------------------
+    void saveMap(String path) {
+        compositorScope.getMap().getMapData().saveMap(path);
+    }
+
+    // -------------------------------------------------------------------------
+    // -- Snippets tab
+    // -------------------------------------------------------------------------
+    protected void updateSnippetVisibility() {
+        compositor.setPlacementVisibility(getSnippetPlacementOptions());
+    }
+
+    public SelectionPlacementOptions getSnippetPlacementOptions() {
+        return new SelectionPlacementOptions(
+                snippet_land.get(),
+                snippet_objects.get(),
+                snippet_structures.get(),
+                snippet_shadows.get(),
+                snippet_roofs.get(),
+                snippet_onRoof.get(),
+                snippet_land_floors.get(),
+                snippet_structures_walls.get()
+        );
+    }
+
+    // -------------------------
+    // snippet list
+    // -------------------------
     TreeItem<String> getListRoot() {
-	return root;
+        return root;
     }
 
     public void updateTree() {
-	root.getChildren().clear();
-	root.setExpanded(true);
-	treeItemMap.clear();
+        root.getChildren().clear();
+        root.setExpanded(true);
+        treeItemMap.clear();
 
-	if (compositorScope.getLoadedSnippets() != null) {
-	    TreeItem<String> copyNode = new TreeItem<String>("Clipboard");
-	    copyNode.setExpanded(true);
+        if (compositorScope.getLoadedSnippets() != null) {
+            TreeItem<String> copyNode = new TreeItem<String>("Clipboard");
+            copyNode.setExpanded(true);
 
-	    for (SelectedTiles snippet : compositorScope.getLoadedSnippets().getSnippets()) {
-		TreeItem<String> snippetNode = new TreeItem<String>("Snippet: " + snippet);
-		treeItemMap.put(snippetNode, snippet);
-		copyNode.getChildren().add(snippetNode);
-	    }
-	    root.getChildren().add(copyNode);
-	}
+            for (SelectedTiles snippet : compositorScope.getLoadedSnippets().getSnippets()) {
+                TreeItem<String> snippetNode = new TreeItem<String>("Snippet: " + snippet);
+                treeItemMap.put(snippetNode, snippet);
+                copyNode.getChildren().add(snippetNode);
+            }
+            root.getChildren().add(copyNode);
+        }
 
-	for (ConvertMapScope converter : mainScreen.getActiveMapConversions()) {
-	    String converterName = "Converter ( " + (converter.getMap().getMapName() == null ? "no map loaded" : converter.getMap().getMapName()) + " )";
-	    TreeItem<String> convertNode = new TreeItem<String>(converterName);
-	    convertNode.setExpanded(true);
+        for (ConvertMapScope converter : mainScreen.getActiveMapConversions()) {
+            String converterName = "Converter ( " + (converter.getMap().getMapName() == null ? "no map loaded" : converter.getMap().getMapName()) + " )";
+            TreeItem<String> convertNode = new TreeItem<String>(converterName);
+            convertNode.setExpanded(true);
 
-	    System.out.println("thebob.ja2maptool.ui.tabs.compositor.CompositorTabViewModel.updateTree():\t" + converterName);
+            System.out.println("thebob.ja2maptool.ui.tabs.compositor.CompositorTabViewModel.updateTree():\t" + converterName);
 
-	    if (converter.getMap() != null && converter.hasSelection()) {
-		SelectedTiles selection = converter.getSelection();
-		TreeItem<String> selectionNode = new TreeItem<String>("Selection: " + selection);
-		treeItemMap.put(selectionNode, selection);
-		convertNode.getChildren().add(selectionNode);
+            if (converter.getMap() != null && converter.hasSelection()) {
+                SelectedTiles selection = converter.getSelection();
+                TreeItem<String> selectionNode = new TreeItem<String>("Selection: " + selection);
+                treeItemMap.put(selectionNode, selection);
+                convertNode.getChildren().add(selectionNode);
 
-		System.out.println("thebob.ja2maptool.ui.tabs.compositor.CompositorTabViewModel.updateTree():\t\tselection:" + selection + ")");
-	    }
-	    if (converter.getSnippets() != null) {
-		for (SelectedTiles snippet : converter.getSnippets().getSnippets()) {
-		    String snippetName = ( snippet.getName() == null ? snippet.toString() : snippet.getName() );
-		    TreeItem<String> snippetNode = new TreeItem<String>("Snippet: " + snippetName);
-		    treeItemMap.put(snippetNode, snippet);
-		    convertNode.getChildren().add(snippetNode);
+                System.out.println("thebob.ja2maptool.ui.tabs.compositor.CompositorTabViewModel.updateTree():\t\tselection:" + selection + ")");
+            }
+            if (converter.getSnippets() != null) {
+                for (SelectedTiles snippet : converter.getSnippets().getSnippets()) {
+                    String snippetName = (snippet.getName() == null ? snippet.toString() : snippet.getName());
+                    TreeItem<String> snippetNode = new TreeItem<String>("Snippet: " + snippetName);
+                    treeItemMap.put(snippetNode, snippet);
+                    convertNode.getChildren().add(snippetNode);
 
-		    System.out.println("thebob.ja2maptool.ui.tabs.compositor.CompositorTabViewModel.updateTree():\t\tsnippet:" + snippetName + ")");
-		}
-	    }
-	    root.getChildren().add(convertNode);
-	}
+                    System.out.println("thebob.ja2maptool.ui.tabs.compositor.CompositorTabViewModel.updateTree():\t\tsnippet:" + snippetName + ")");
+                }
+            }
+            root.getChildren().add(convertNode);
+        }
     }
 
-    TreeItem<String> selectedItem = null;
-    SelectedTiles selectedSnippet = null;
-
     void updateSnippetSelection() {
-	selectedItem = null;
-	selectedSnippet = null;
+        selectedItem = null;
+        selectedSnippet = null;
 
-	System.out.println("thebob.ja2maptool.ui.tabs.compositor.CompositorTabViewModel.updateSnippetSelection(): deselected");
+        System.out.println("thebob.ja2maptool.ui.tabs.compositor.CompositorTabViewModel.updateSnippetSelection(): deselected");
 
-	compositor.setPlacementPreview(null);
+        compositor.setPlacementPreview(null);
 
-	publish(TREE_UPDATED);
+        publish(TREE_UPDATED);
     }
 
     void updateSnippetSelection(TreeItem<String> item) {
-	if (treeItemMap.containsKey(item)) {
-	    selectedItem = item;
-	    selectedSnippet = treeItemMap.get(item);
+        if (treeItemMap.containsKey(item)) {
+            selectedItem = item;
+            selectedSnippet = treeItemMap.get(item);
 
-	    System.out.println("thebob.ja2maptool.ui.tabs.compositor.CompositorTabViewModel.updateSnippetSelection(): " + selectedSnippet);
+            System.out.println("thebob.ja2maptool.ui.tabs.compositor.CompositorTabViewModel.updateSnippetSelection(): " + selectedSnippet);
 
-	    // we might have to remap this snippet
-	    SelectedTiles placedSelection = null;
-	    if (selectedSnippet.getConverter() != null) {
-		placedSelection = new SelectedTiles(selectedSnippet);
-		MapTransformer transformer = new MapTransformer(selectedSnippet.getConverter());
-		transformer.remapSnippet(placedSelection);
-	    } else {
-		placedSelection = selectedSnippet;
-	    }
+            // we might have to remap this snippet
+            SelectedTiles placedSelection = null;
+            if (selectedSnippet.getConverter() != null) {
+                placedSelection = new SelectedTiles(selectedSnippet);
+                MapTransformer transformer = new MapTransformer(selectedSnippet.getConverter());
+                transformer.remapSnippet(placedSelection);
+            } else {
+                placedSelection = selectedSnippet;
+            }
 
-	    compositor.setPlacementPreview(placedSelection);
-	} else {
-	    selectedItem = null;
-	    selectedSnippet = null;
+            compositor.setPlacementPreview(placedSelection);
+        } else {
+            selectedItem = null;
+            selectedSnippet = null;
 
-	    System.out.println("thebob.ja2maptool.ui.tabs.compositor.CompositorTabViewModel.updateSnippetSelection(): deselected");
+            System.out.println("thebob.ja2maptool.ui.tabs.compositor.CompositorTabViewModel.updateSnippetSelection(): deselected");
 
-	    compositor.setPlacementPreview(null);
-	}
+            compositor.setPlacementPreview(null);
+        }
     }
 
     void placeSnippet() {
-	if (selectedSnippet != null) {
-	    SelectionPlacementOptions options = new SelectionPlacementOptions(
-		    snippet_land.get(),
-		    snippet_objects.get(),
-		    snippet_structures.get(),
-		    snippet_shadows.get(),
-		    snippet_roofs.get(),
-		    snippet_onRoof.get(),
-		    snippet_land_floors.get(),
-		    snippet_structures_walls.get()
-	    );
+        if (selectedSnippet != null) {
+            SelectionPlacementOptions options = getSnippetPlacementOptions();
 
-	    // we might have to remap this snippet
-	    SelectedTiles placedSelection = null;
-	    if (selectedSnippet.getConverter() != null) {
-		placedSelection = new SelectedTiles(selectedSnippet);
-		MapTransformer transformer = new MapTransformer(selectedSnippet.getConverter());
-		transformer.remapSnippet(placedSelection);
-	    } else {
-		placedSelection = selectedSnippet;
-	    }
+            // we might have to remap this snippet
+            SelectedTiles placedSelection = null;
+            if (selectedSnippet.getConverter() != null) {
+                placedSelection = new SelectedTiles(selectedSnippet);
+                MapTransformer transformer = new MapTransformer(selectedSnippet.getConverter());
+                transformer.remapSnippet(placedSelection);
+            } else {
+                placedSelection = selectedSnippet;
+            }
 
-	    compositor.placeSelection(placedSelection, options);
-	}
+            compositor.placeSelection(placedSelection, options);
+        }
     }
 
     void copySnippet() {
-	SelectedTiles selection = compositor.getSelection();
-	if (selection != null) {
-	    if (compositorScope.getLoadedSnippets() == null) {
-		compositorScope.setLoadedSnippets(new MapSnippetScope());
-	    }
+        SelectedTiles selection = compositor.getSelection();
+        if (selection != null) {
+            if (compositorScope.getLoadedSnippets() == null) {
+                compositorScope.setLoadedSnippets(new MapSnippetScope());
+            }
 
-	    compositorScope.getLoadedSnippets().getSnippets().add(selection);
-	    updateTree();
-	}
+            compositorScope.getLoadedSnippets().getSnippets().add(selection);
+            updateTree();
+        }
     }
 
-    void saveMap(String path) {
-	compositorScope.getMap().getMapData().saveMap(path);
+    // -------------------------------------------------------------------------
+    // -- Placement tab
+    // -------------------------------------------------------------------------
+    public SelectionPlacementOptions getPlacementLayerOptions() {
+        return new SelectionPlacementOptions(
+                placement_land.get(),
+                placement_objects.get(),
+                placement_structures.get(),
+                placement_shadows.get(),
+                placement_roofs.get(),
+                placement_onRoof.get(),
+                placement_land_floors.get(),
+                placement_structures_walls.get()
+        );
     }
 
+    protected void updatePlacementVisibility() {
+        if (selectedPlacement != null) {
+            selectedPlacement.setEnabledLayers(getPlacementLayerOptions());
+        }
+        compositor.updateVisibleLayers();
+    }
+
+    // --------------------------------------------------
+    // Placement layers
+    // --------------------------------------------------
+    ObservableList<MapSnippetPlacementLayer> getPlacementLayerListContents() {
+        return layersList;
+    }
+
+    void updateLayersList() {
+        layersList.setAll(compositor.getLayers());
+    }
+
+    void updateVisibleLayers(ObservableList<MapSnippetPlacementLayer> checkedItems) {
+        for (MapSnippetPlacementLayer layer : compositor.getLayers()) {
+            if (checkedItems.indexOf(layer) == -1) {
+                layer.setVisible(false);
+            } else {
+                layer.setVisible(true);
+            }
+        }
+        compositor.updateVisibleLayers();
+    }
+
+    void selectPlacementLayer(MapSnippetPlacementLayer selectedItem) {
+        compositor.setActiveLayer(selectedItem);
+    }
+
+    // -------------------------
+    // load/save layers
+    // -------------------------
+    void loadPlacementLayers(String path) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    void savePlacementLayers(String path) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    // -------------------------
+    // add/del/copy/move layers
+    // -------------------------
+    void deletePlacementLayer(MapSnippetPlacementLayer selectedItem) {
+        compositor.deletePlacementLayer(selectedItem);
+    }
+
+    void addPlacementLayer() {
+        compositor.addPlacementLayer("Layer");
+    }
+
+    void movePlacementLayer(MapSnippetPlacementLayer selectedItem, int i) {
+        compositor.movePlacementLayer(selectedItem, i);
+    }
+
+    void copyPlacementLayer(MapSnippetPlacementLayer selectedItem) {
+        compositor.copyPlacementLayer(selectedItem);
+    }
+
+    // --------------------------------------------------
+    // Placements
+    // --------------------------------------------------
+    ObservableList<SnippetPlacement> getPlacementListContents() {
+        return compositorScope.getPlacedSnippets();
+    }
+
+    SnippetPlacement selectedPlacement = null;
+
+    void updatePlacementList() {
+        MapSnippetPlacementLayer layer = compositor.getActiveLayer();
+        ObservableList<SnippetPlacement> list = compositorScope.getPlacedSnippets();
+        list.clear();
+        layer.getPlacements().forEach((cell, placement) -> {
+            list.add(placement);
+        });
+    }
+
+    void selectPlacement(SnippetPlacement selectedItem) {
+        if (selectedItem == null) {
+            selectedPlacement = null;
+            return;
+        }
+
+        selectedPlacement = selectedItem;
+
+        SelectedTiles snip = selectedItem.getSnippet();
+        placement_name.set(snip.getName());
+        placement_location.set("(" + selectedItem.getCellX() + "," + selectedItem.getCellY() + "), cell " + selectedItem.getCell());
+        placement_size.set(snip.getWidth() + "x" + snip.getHeight() + " (" + (snip.getWidth() * snip.getHeight()) + " tiles)");
+        if (selectedItem.getEnabledLayers() != null) {
+            setPlacementProperties(selectedItem.getEnabledLayers());
+        }
+
+        compositor.selectPlacement(selectedItem);
+    }
+
+    void setPlacementProperties(SelectionPlacementOptions options) {
+        boolean[] layerOpts = options.getAsArray();
+        placement_land.set(layerOpts[0]);
+        placement_objects.set(layerOpts[1]);
+        placement_structures.set(layerOpts[2]);
+        placement_shadows.set(layerOpts[3]);
+        placement_roofs.set(layerOpts[4]);
+        placement_onRoof.set(layerOpts[5]);
+        placement_land_floors.set(options.isPlace_land_floors());
+        placement_structures_walls.set(options.isPlace_structures_walls());
+    }
+
+    // -------------------------
+    // load/save placements
+    // -------------------------
+    void loadPlacements(String path) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    void savePlacements(String path) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    // -------------------------
+    // commit changes to map
+    // -------------------------
+    void pastePlacements() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    // -------------------------
+    // snippet placement props
+    // -------------------------
     public BooleanProperty getSnippet_land() {
-	return snippet_land;
+        return snippet_land;
     }
 
     public BooleanProperty getSnippet_objects() {
-	return snippet_objects;
+        return snippet_objects;
     }
 
     public BooleanProperty getSnippet_structures() {
-	return snippet_structures;
+        return snippet_structures;
     }
 
     public BooleanProperty getSnippet_shadows() {
-	return snippet_shadows;
+        return snippet_shadows;
     }
 
     public BooleanProperty getSnippet_roofs() {
-	return snippet_roofs;
+        return snippet_roofs;
     }
 
     public BooleanProperty getSnippet_onRoof() {
-	return snippet_onRoof;
+        return snippet_onRoof;
     }
 
     public BooleanProperty getSnippet_land_floors() {
-	return snippet_land_floors;
+        return snippet_land_floors;
     }
 
     public BooleanProperty getSnippet_structures_walls() {
-	return snippet_structures_walls;
+        return snippet_structures_walls;
     }
 
-    ObservableList<SnippetPlacement> getPlacementListContents() {
-        return compositorScope.getPlacedSnippets();
+    // -------------------------
+    // placement props
+    // -------------------------
+    public BooleanProperty getPlacement_land() {
+        return placement_land;
+    }
+
+    public BooleanProperty getPlacement_objects() {
+        return placement_objects;
+    }
+
+    public BooleanProperty getPlacement_structures() {
+        return placement_structures;
+    }
+
+    public BooleanProperty getPlacement_shadows() {
+        return placement_shadows;
+    }
+
+    public BooleanProperty getPlacement_roofs() {
+        return placement_roofs;
+    }
+
+    public BooleanProperty getPlacement_onRoof() {
+        return placement_onRoof;
+    }
+
+    public BooleanProperty getPlacement_land_floors() {
+        return placement_land_floors;
+    }
+
+    public BooleanProperty getPlacement_structures_walls() {
+        return placement_structures_walls;
+    }
+
+    // -------------------------
+    // placement text props
+    // -------------------------
+    public StringProperty getPlacement_name() {
+        return placement_name;
+    }
+
+    public StringProperty getPlacement_location() {
+        return placement_location;
+    }
+
+    public StringProperty getPlacement_size() {
+        return placement_size;
     }
 
 }

@@ -190,12 +190,14 @@ public class MapSelectionComponent extends MapControllerBase implements IMapSele
 
             // placement selection
             if (placements != null) {
-                selectedPlacements.clear();
-                int[] cells = cursorLayer.getCellNumbersForRect(rectStartX, rectStartY, rectEndX, rectEndY, CursorLayer.CursorFillMode.Full);
-                for (int cell : cells) {
-                    SnippetPlacement placement = placements.getPlacements().get(cell);
-                    if (placement != null) {
-                        selectedPlacements.add(placement);
+                if (!dragging) {
+                    selectedPlacements.clear();
+                    int[] cells = cursorLayer.getCellNumbersForRect(rectStartX, rectStartY, rectEndX, rectEndY, CursorLayer.CursorFillMode.Full);
+                    for (int cell : cells) {
+                        SnippetPlacement placement = placements.getPlacements().get(cell);
+                        if (placement != null) {
+                            selectedPlacements.add(placement);
+                        }
                     }
                 }
             }
@@ -221,13 +223,15 @@ public class MapSelectionComponent extends MapControllerBase implements IMapSele
     private void refreshSelectionGridDisplay(SelectionMode mode) {
         cursorLayer.clearLayer(LAYER_ACTION);
 
+        CursorLayer.CursorFillMode fillMode = dragging ? CursorLayer.CursorFillMode.Border : CursorLayer.CursorFillMode.Full;
+
         switch (mode) {
             case CellRect:
-                cursorLayer.placeCursorRect(LAYER_ACTION, selectionStartX, selectionStartY, selectionEndX, selectionEndY, SELECTED_TILES_CURSOR, CursorLayer.CursorFillMode.Full);
+                cursorLayer.placeCursorRect(LAYER_ACTION, selectionStartX, selectionStartY, selectionEndX, selectionEndY, SELECTED_TILES_CURSOR, fillMode);
                 break;
 
             case CellRectRadius:
-                cursorLayer.placeCursorCenterRect(LAYER_ACTION, selectionStartX, selectionStartY, Math.abs(selectionEndX - selectionStartX) * 2, Math.abs(selectionEndY - selectionStartY) * 2, SELECTED_TILES_CURSOR, CursorLayer.CursorFillMode.Full);
+                cursorLayer.placeCursorCenterRect(LAYER_ACTION, selectionStartX, selectionStartY, Math.abs(selectionEndX - selectionStartX) * 2, Math.abs(selectionEndY - selectionStartY) * 2, SELECTED_TILES_CURSOR, fillMode);
                 break;
         }
     }
@@ -236,7 +240,12 @@ public class MapSelectionComponent extends MapControllerBase implements IMapSele
     // mouse interaction support (drag selection)
     // --------------------------------
     int x = 0, y = 0;
+
+    int deltaXSum = 0;
+    int deltaYSum = 0;
+
     boolean hovered = false;
+    boolean dragging = false;
 
     @Override
     public boolean hoverCell(int cell, MapInteractionData data) {
@@ -259,6 +268,9 @@ public class MapSelectionComponent extends MapControllerBase implements IMapSele
 
         if (data.getButton() == MouseButton.PRIMARY) {
             if (deltaX != 0 || deltaY != 0) {
+                if (!dragging) {
+                    dragStart();
+                }
 
                 selectionStartX += deltaX;
                 selectionStartY += deltaY;
@@ -269,9 +281,13 @@ public class MapSelectionComponent extends MapControllerBase implements IMapSele
                 selectionStartCell = cursorLayer.rowColToPos(selectionStartY, selectionStartX);
                 selectionEndCell = cursorLayer.rowColToPos(selectionEndY, selectionEndX);
 
+                /*
                 if (placements != null && selectedPlacements.isEmpty() == false) {
                     placements.movePlacementList(selectedPlacements, deltaX, deltaY);
                 }
+                 */
+                deltaXSum += deltaX;
+                deltaYSum += deltaY;
 
                 notifyObservers(new MapEvent(MapEvent.ChangeType.SELECTION_CHANGED));
             }
@@ -287,6 +303,19 @@ public class MapSelectionComponent extends MapControllerBase implements IMapSele
         return true;
     }
 
+    void dragStart() {
+        dragging = true;
+        deltaXSum = 0;
+        deltaYSum = 0;
+    }
+
+    void dragEnd() {
+        dragging = false;
+        if (placements != null && selectedPlacements.isEmpty() == false) {
+            placements.movePlacementList(selectedPlacements, deltaXSum, deltaYSum);
+        }
+    }
+
     @Override
     public void hoverOff() {
         if (hovered) {
@@ -299,7 +328,10 @@ public class MapSelectionComponent extends MapControllerBase implements IMapSele
     public boolean activateCell(int cell, MapInteractionData data) {
         x = data.getMouseCellX();
         y = data.getMouseCellY();
-        return false;
+        if (dragging) {
+            dragEnd();
+        }
+        return true;
     }
 
     // --------------------------------

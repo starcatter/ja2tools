@@ -24,7 +24,6 @@
 package thebob.ja2maptool.util.map.layers.map;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -33,12 +32,13 @@ import javafx.beans.property.BooleanProperty;
 import thebob.assetloader.map.core.MapData;
 import thebob.assetloader.map.core.components.IndexedElement;
 import thebob.assetloader.tileset.Tileset;
-import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
+import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
+import static thebob.ja2maptool.util.map.MapUtils.checkContentFilters;
+import thebob.ja2maptool.util.map.events.MapEvent;
 import thebob.ja2maptool.util.map.layers.base.TileLayer;
 import thebob.ja2maptool.util.map.layers.base.TileLayerGroup;
 import thebob.ja2maptool.util.map.layers.cursor.MapCursor;
-import thebob.ja2maptool.util.map.events.MapEvent;
 
 /**
  *
@@ -120,73 +120,6 @@ public class MapLayer extends TileLayerGroup implements IMapLayerManager {
 		lastRoomNumber = n;
 		System.out.println("thebob.ja2maptool.util.renderer.map.MapLayer.scanRoomNumbers(): " + n);
 	    }
-	}
-    }
-
-    boolean isFloor(IndexedElement elem) {
-	return elem.type == 60 || elem.type == 61 || elem.type == 62 || elem.type == 63;
-    }
-
-    boolean isWall(IndexedElement elem) {
-	return elem.type == 36 || elem.type == 37 || elem.type == 38 || elem.type == 39;
-    }
-
-    boolean checkContentFilters(int L, SelectedTiles selection, SelectionPlacementOptions options) {
-	final int LAND_LAYER = 0;
-	final int STRUCT_LAYER = 2;
-
-	if (L == LAND_LAYER && options.isPlace_land_floors()) {
-	    System.out.println("thebob.ja2maptool.util.renderer.map.MapLayer.checkContentFilters() - leaving floors");
-
-	    IndexedElement[][] remappedLayer = selection.getLayers()[L];
-
-	    for (int j = 0; j < remappedLayer.length; j++) {
-		IndexedElement[] tiles = remappedLayer[j];
-
-		int savedTiles = 0;
-		IndexedElement[] savedList = new IndexedElement[16];
-
-		for (IndexedElement elem : tiles) {
-		    if (isFloor(elem)) {
-			savedList[savedTiles++] = elem;
-		    }
-		}
-
-		if (savedTiles > 0) {
-		    remappedLayer[j] = Arrays.copyOfRange(savedList, 0, savedTiles);
-		} else {
-		    remappedLayer[j] = null;
-		}
-	    }
-
-	    return true;
-	} else if (L == STRUCT_LAYER && options.isPlace_structures_walls()) {
-	    System.out.println("thebob.ja2maptool.util.renderer.map.MapLayer.checkContentFilters() - leaving walls");
-
-	    IndexedElement[][] remappedLayer = selection.getLayers()[L];
-
-	    for (int j = 0; j < remappedLayer.length; j++) {
-		IndexedElement[] tiles = remappedLayer[j];
-
-		int savedTiles = 0;
-		IndexedElement[] savedList = new IndexedElement[16];
-
-		for (IndexedElement elem : tiles) {
-		    if (isWall(elem)) {
-			savedList[savedTiles++] = elem;
-		    }
-		}
-
-		if (savedTiles > 0) {
-		    remappedLayer[j] = Arrays.copyOfRange(savedList, 0, savedTiles);
-		} else {
-		    remappedLayer[j] = null;
-		}
-	    }
-
-	    return true;
-	} else {
-	    return false;
 	}
     }
 

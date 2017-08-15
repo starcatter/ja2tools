@@ -24,15 +24,12 @@
 package thebob.ja2maptoolpackage;
 
 import de.saxsys.mvvmfx.FluentViewLoader;
-import de.saxsys.mvvmfx.ViewModel;
-import de.saxsys.mvvmfx.ViewTuple;
 import de.saxsys.mvvmfx.guice.MvvmfxGuiceApplication;
 import static javafx.application.Application.launch;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import thebob.ja2maptool.ui.main.MainScreenView;
-import thebob.ja2maptool.ui.main.MainScreenViewModel;
 
 
 public class MainApp extends MvvmfxGuiceApplication {
@@ -49,7 +46,7 @@ public class MainApp extends MvvmfxGuiceApplication {
 	    final Scene scene = new Scene(view);
 	    
 	    stage.setScene(scene);
-	    stage.setTitle("JA2 1.13 Map Tool (Alpha6)");
+	    stage.setTitle("JA2 1.13 Map Tool (Alpha7)");
 	    stage.show();
 	}
 

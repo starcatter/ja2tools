@@ -94,6 +94,8 @@ public interface ITileLayerGroup extends Iterable<TileLayer> {
 
     void setTileset(Tileset tileset);
 
+    public void setBatchMode(boolean batchMode);
+    
     // observable implementation TODO: to be deleted and replaced by default
     <T extends MapEvent> void notifySubscribers(T message);
 

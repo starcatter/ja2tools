@@ -155,8 +155,10 @@ public abstract class MapCursorComponentBase extends MapControllerBase implement
     protected void updateState(double dx, double dy, boolean controlDown, boolean shiftDown, boolean altDown, MouseButton button) {
         saveCursorEventData(dx, dy, controlDown, shiftDown, altDown, button);
         if (processCursorEventData()) {
+            cursors.setBatchMode(true);
             updateCursor();
             cells.hoverCell(getMouseCell(), new MapInteractionData(getMouseCellX(), getMouseCellY(), getMouseCell(), isShiftDown(), isControlDown(), isAltDown(), getButton()));
+            cursors.setBatchMode(false);
         }
     }
 

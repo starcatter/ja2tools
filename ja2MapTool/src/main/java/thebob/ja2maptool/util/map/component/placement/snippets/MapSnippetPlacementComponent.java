@@ -173,9 +173,11 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
 
         if (!currentLayer.getPlacements().isEmpty()) // add previews
         {
+            previewLayer.setBatchMode(true);
             placements.forEach((cell, placement) -> {
                 previewLayer.addPlacement(cell, placement);
             });
+            previewLayer.setBatchMode(false);
         }
 
         notifyObservers(new MapEvent(MapEvent.ChangeType.PLACEMENT_LAYER_SWITCHED));
@@ -187,6 +189,7 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
 
     @Override
     public void updateVisibleLayers() {
+        previewLayer.setBatchMode(true);
         layers.forEach(layer -> {
             if (layer.isVisible()) {
                 layer.getPlacements().forEach((cell, placement) -> {
@@ -198,6 +201,7 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
                 });
             }
         });
+        previewLayer.setBatchMode(false);
     }
 
     @Override
@@ -245,6 +249,7 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
     // --------------------------------------------------
     @Override
     public void placeAll() {
+        getMap().setBatchMode(true);
         for (MapSnippetPlacementLayer layer : layers) {
             //System.out.println("Placing layer " + layer.getName());
             layer.getPlacements().forEach((cell, placement) -> {
@@ -257,7 +262,7 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
             });
             layer.setVisible(false);
         }
-
+        getMap().setBatchMode(false);
         updateVisibleLayers();
     }
 
@@ -396,13 +401,11 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
 
         MapInteractionLayer activeCellLayer = activeCells.getLayer(this);
 
+        cursorLayer.setBatchMode(true);
         cursorLayer.clearLayer(LAYER_STATE);
         activeCellLayer.clear();
 
         placements.forEach((cell, placement) -> {
-            // int marginX = placement.getSnippet().getWidth()< 3 ? 2 : 0;
-            // int marginY = placement.getSnippet().getHeight() < 3 ? 2 : 0;
-
             if (placement != selectedPlacement) {
                 cursorLayer.placeCursorCenterRect(LAYER_STATE, placement.getCellX(), placement.getCellY(), placement.getSnippet().getWidth(), placement.getSnippet().getHeight(), PLACEMENT_TILES_CURSOR, CursorFillMode.Corners);
             } else {
@@ -413,6 +416,7 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
             activeCellLayer.registerCells(cells, new PlacementInteractionData(placement));
         });
 
+        cursorLayer.setBatchMode(false);
         activeCells.refreshLayers();
     }
 

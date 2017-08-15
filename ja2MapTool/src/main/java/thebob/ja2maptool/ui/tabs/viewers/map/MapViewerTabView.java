@@ -42,6 +42,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import javax.inject.Inject;
 import static thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabViewModel.VIEWER_MODE_SET;
 
 /**
@@ -91,26 +94,26 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
     boolean toolbarVisible = false;
 
     void toggleToolbars() {
-	if (toolbarVisible == false) {
-	    preview_wrapper.setRight(preview_controls_right);
-	    toolbarVisible = true;
-	} else {
-	    preview_wrapper.setRight(null);
-	    toolbarVisible = false;
-	}
+        if (toolbarVisible == false) {
+            preview_wrapper.setRight(preview_controls_right);
+            toolbarVisible = true;
+        } else {
+            preview_wrapper.setRight(null);
+            toolbarVisible = false;
+        }
     }
 
     @FXML
     void prev_window_click(MouseEvent event) {
 
-	prev_window.requestFocus();
+        prev_window.requestFocus();
 
-	double dx = event.getX();
-	double dy = event.getY();
+        double dx = event.getX();
+        double dy = event.getY();
 
-	if (event.getButton() == MouseButton.MIDDLE) {
-	    toggleToolbars();
-	}/* else if (event.getButton() == MouseButton.PRIMARY) {
+        if (event.getButton() == MouseButton.MIDDLE) {
+            toggleToolbars();
+        }/* else if (event.getButton() == MouseButton.PRIMARY) {
 
 	    // move the window toward the click location
 	    double wx = prev_window.getWidth() / 2d;
@@ -124,24 +127,24 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
 
 	    viewModel.scrollPreview((int) (transX * 10d), (int) (transY * 10d));
 	}
-	 */
+         */
     }
 
     @FXML
     void prev_window_scroll(ScrollEvent event) {
 
-	double scrolled = event.getDeltaY() / event.getMultiplierY();
-	double zoom = viewModel.getViewer().getScale();
-	double newZoom = zoom + scrolled * zoomFactor;
-	if (newZoom < minZoom) {
-	    newZoom = minZoom;
-	}
-	if (newZoom > maxZoom) {
-	    newZoom = maxZoom;
-	}
-	if (zoom != newZoom) {
-	    viewModel.getViewer().setScale(newZoom);
-	}
+        double scrolled = event.getDeltaY() / event.getMultiplierY();
+        double zoom = viewModel.getViewer().getScale();
+        double newZoom = zoom + scrolled * zoomFactor;
+        if (newZoom < minZoom) {
+            newZoom = minZoom;
+        }
+        if (newZoom > maxZoom) {
+            newZoom = maxZoom;
+        }
+        if (zoom != newZoom) {
+            viewModel.getViewer().setScale(newZoom);
+        }
 
     }
 
@@ -167,22 +170,22 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
 
     @FXML
     void prev_window_key_press(KeyEvent event) {
-	event.consume();
+        event.consume();
     }
 
     @FXML
     void prev_window_key_release(KeyEvent event) {
-	event.consume();
+        event.consume();
     }
 
     @FXML
     void prev_window_key_typed(KeyEvent event) {
-	event.consume();
+        event.consume();
     }
 
     @FXML
     void prev_window_moved(MouseEvent event) {
-	/*
+        /*
 	if (event.isControlDown()) {
 	    if (!cursorInViewer) {
 		prev_window.setCursor(Cursor.NONE);
@@ -201,7 +204,7 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
 
 	    cursorInViewer = false;
 	}	
-	 */
+         */
     }
 
     @FXML
@@ -228,73 +231,81 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
     @InjectViewModel
     private MapViewerTabViewModel viewModel;
 
+    @Inject
+    private Stage primaryStage;
+
     boolean cursorInViewer = false;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-	// setup canvas autosize
-	StackPane parent = (StackPane) prev_window.getParent();
-	prev_window.heightProperty().bind(parent.heightProperty().subtract(5));
-	prev_window.widthProperty().bind(parent.widthProperty().subtract(5));
+        // setup canvas autosize
+        StackPane parent = (StackPane) prev_window.getParent();
+        prev_window.heightProperty().bind(parent.heightProperty().subtract(5));
+        prev_window.widthProperty().bind(parent.widthProperty().subtract(5));
 
-	prev_window.heightProperty().addListener(event -> {
-	    viewModel.getRenderer().setCanvas(prev_window);
-	});
+        prev_window.heightProperty().addListener(event -> {
+            viewModel.getRenderer().setCanvas(prev_window);
+        });
 
-	prev_window.widthProperty().addListener(event -> {
-	    viewModel.getRenderer().setCanvas(prev_window);
-	});
+        prev_window.widthProperty().addListener(event -> {
+            viewModel.getRenderer().setCanvas(prev_window);
+        });
 
-	// hide right toolbar
-	preview_wrapper.setRight(null);
+        // hide right toolbar
+        preview_wrapper.setRight(null);
 
-	// setup renderer
-	viewModel.getRenderer().setCanvas(prev_window);
+        // setup renderer
+        viewModel.getRenderer().setCanvas(prev_window);
 
-	// bind map name
-	map_name.textProperty().bind(viewModel.getMapNameProperty());
+        // bind map name
+        map_name.textProperty().bind(viewModel.getMapNameProperty());
 
-	// layer buttons
-	BooleanProperty[] viewerButtons = new BooleanProperty[]{
-	    layer_land.selectedProperty(),
-	    layer_object.selectedProperty(),
-	    layer_struct.selectedProperty(),
-	    layer_shadow.selectedProperty(),
-	    layer_roof.selectedProperty(),
-	    layer_onroof.selectedProperty()
-	};
+        // layer buttons
+        BooleanProperty[] viewerButtons = new BooleanProperty[]{
+            layer_land.selectedProperty(),
+            layer_object.selectedProperty(),
+            layer_struct.selectedProperty(),
+            layer_shadow.selectedProperty(),
+            layer_roof.selectedProperty(),
+            layer_onroof.selectedProperty()
+        };
 
-	viewModel.setLayerButtons(viewerButtons);
+        viewModel.setLayerButtons(viewerButtons);
 
-	// events
-	viewModel.subscribe(MapViewerTabViewModel.TOOLBAR_SWITCH, (key, value) -> {
-	    toggleToolbars();
-	});
-        
-	viewModel.subscribe(MapViewerTabViewModel.FOCUS_WINDOW, (key, value) -> {
-	    prev_window.requestFocus();
-	});
-	
-	viewModel.subscribe(VIEWER_MODE_SET, (key, value) -> {
-	    MapViewerTabViewModel.MapViewerMode mode = (MapViewerTabViewModel.MapViewerMode) value[0];
-	    switch (mode) {
-		case Browser:
-		    prev_window.setCursor(Cursor.MOVE);
-		    break;
-		case Editor:
-		    prev_window.setCursor(Cursor.NONE);
-		    break;
-		default:
-		    throw new AssertionError(mode.name());
-	    }
-	});
+        // events
+        viewModel.subscribe(MapViewerTabViewModel.TOOLBAR_SWITCH, (key, value) -> {
+            toggleToolbars();
+        });
 
-	// ready to go!
-	viewModel.updateRenderer(true);
+        viewModel.subscribe(MapViewerTabViewModel.FOCUS_WINDOW, (key, value) -> {
+            prev_window.requestFocus();
+        });
+
+        viewModel.subscribe(VIEWER_MODE_SET, (key, value) -> {
+            MapViewerTabViewModel.MapViewerMode mode = (MapViewerTabViewModel.MapViewerMode) value[0];
+            switch (mode) {
+                case Browser:
+                    prev_window.setCursor(Cursor.MOVE);
+                    break;
+                case Editor:
+                    prev_window.setCursor(Cursor.NONE);
+                    break;
+                default:
+                    throw new AssertionError(mode.name());
+            }
+        });
+
+        // ready to go!
+        viewModel.updateRenderer(true);
+
+        primaryStage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, event -> {
+            System.out.println("thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabView.initialize() shutdown renderer...");
+            viewModel.shutdownRenderer();
+        });
     }
 
     public MapViewerTabViewModel getViewModel() {
-	return viewModel;
+        return viewModel;
     }
 
 }

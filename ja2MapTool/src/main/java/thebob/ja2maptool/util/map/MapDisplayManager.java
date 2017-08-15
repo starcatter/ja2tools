@@ -23,7 +23,6 @@
  */
 package thebob.ja2maptool.util.map;
 
-import thebob.ja2maptool.util.map.events.MapEvent;
 import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.MutableClassToInstanceMap;
 import java.util.Observable;
@@ -38,28 +37,32 @@ import thebob.ja2maptool.scopes.map.ConvertMapScope;
 import thebob.ja2maptool.scopes.map.MapCompositorScope;
 import thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabViewModel;
 import thebob.ja2maptool.util.map.controller.base.IMapController;
-import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
-import thebob.ja2maptool.util.map.renderer.TileRenderer;
-import thebob.ja2maptool.util.map.controller.editors.compositor.MapCompositorController;
-import thebob.ja2maptool.util.map.controller.editors.converter.MapConverterController;
-import thebob.ja2maptool.util.map.layers.map.IMapLayerManager;
-import thebob.ja2maptool.util.map.layers.map.MapLayer;
 import thebob.ja2maptool.util.map.controller.editors.compositor.IMapCompositorController;
+import thebob.ja2maptool.util.map.controller.editors.compositor.MapCompositorController;
 import thebob.ja2maptool.util.map.controller.editors.converter.IMapConverterController;
-import thebob.ja2maptool.util.map.controller.viewer.base.IMapViewerController;
+import thebob.ja2maptool.util.map.controller.editors.converter.MapConverterController;
 import thebob.ja2maptool.util.map.controller.viewer.MapBrowserViewerController;
 import thebob.ja2maptool.util.map.controller.viewer.MapEditorViewerController;
+import thebob.ja2maptool.util.map.controller.viewer.base.IMapViewerController;
+import thebob.ja2maptool.util.map.events.MapEvent;
+import thebob.ja2maptool.util.map.layers.map.IMapLayerManager;
+import thebob.ja2maptool.util.map.layers.map.MapLayer;
+import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
+import thebob.ja2maptool.util.map.renderer.TileRenderer;
 
 /**
- * MapDisplayManager is the replacement for OldMapRenderer, intended to structure its functionality a bit better.
+ * MapDisplayManager is the replacement for OldMapRenderer, intended to
+ * structure its functionality a bit better.
  *
  * Currently its major components are:
  *
- * - the TileRenderer, responsible for moving around the view window and displaying stuff
+ * - the TileRenderer, responsible for moving around the view window and
+ * displaying stuff
  *
  * - the MapLayer, responsible for loading and manipulating the map data
  *
- * MapDisplayManager uses controllers (IMapController) to provide access to most of its functionality.
+ * MapDisplayManager uses controllers (IMapController) to provide access to most
+ * of its functionality.
  *
  * @author the_bob
  */
@@ -74,87 +77,90 @@ public class MapDisplayManager implements IMapDisplayManager, Observer {
     private final ClassToInstanceMap<IMapController> controllers = MutableClassToInstanceMap.create();
 
     public MapDisplayManager() {
-	renderer.addObserver(this);
-	map.subscribe(this);
+        renderer.addObserver(this);
+        map.subscribe(this);
 
-	renderer.addRenderLayer(map);
+        renderer.addRenderLayer(map);
     }
 
     // -------------------    
     @Override
     public void update(Observable o, Object arg) {
-	if (arg == null || !(arg instanceof MapEvent)) {
-	    System.out.println("thebob.ja2maptool.util.map.MapDisplayManager.update() got weird message from " + o);
-	    return;
-	}
+        if (arg == null || !(arg instanceof MapEvent)) {
+            System.out.println("thebob.ja2maptool.util.map.MapDisplayManager.update() got weird message from " + o);
+            return;
+        }
     }
 
     // -- renderer controls
     @Override
     public void setCanvas(Canvas canvas) {
-	if (canvas != this.canvas) {
-	    this.canvas = canvas;
-	    canvas.addEventFilter(MouseEvent.ANY, event -> {
-		controllers.forEach((t, c) -> {
-		    c.mouseEvent(event);
-		});
-	    });
-	    canvas.addEventFilter(KeyEvent.ANY, event -> {
-		controllers.forEach((t, c) -> {
-		    c.keyEvent(event);
-		});
-	    });
-	}
-	renderer.setCanvas(canvas);
+        if (canvas != this.canvas) {
+            this.canvas = canvas;
+            canvas.addEventFilter(MouseEvent.ANY, event -> {
+                controllers.forEach((t, c) -> {
+                    c.mouseEvent(event);
+                });
+            });
+            canvas.addEventFilter(KeyEvent.ANY, event -> {
+                controllers.forEach((t, c) -> {
+                    c.keyEvent(event);
+                });
+            });
+        }
+        renderer.setCanvas(canvas);
     }
 
     // -- map layer controls
     @Override
     public void loadMap(MapData mapData) {
-	map.loadMap(mapData);
+        map.loadMap(mapData);
     }
 
     @Override
     public void setMapTileset(Tileset tileset) {
-	map.setMapTileset(tileset);
+        map.setMapTileset(tileset);
     }
 
     @Override
     public void setMapLayerButtons(BooleanProperty[] viewerButtons) {
-	map.setMapLayerButtons(viewerButtons);
+        map.setMapLayerButtons(viewerButtons);
     }
 
     // -- controller access
     private <E extends IMapController> E registerController(E controller, Class controllerType) {
-	if (controllers.containsKey(controllerType)) {
-	    controllers.remove(controllerType).disconnect();
-	}
+        if (controllers.containsKey(controllerType)) {
+            controllers.remove(controllerType).disconnect();
+        }
 
-	controllers.put(controllerType, controller);
-	return controller;
+        controllers.put(controllerType, controller);
+        return controller;
     }
 
     // viewers
-    
     @Override
     public IMapViewerController connectBasicViewer(MapViewerTabViewModel viewWindow) {
-	return registerController(new MapBrowserViewerController(renderer, map, viewWindow), IMapViewerController.class);
+        return registerController(new MapBrowserViewerController(renderer, map, viewWindow), IMapViewerController.class);
     }
 
     public IMapViewerController connectEditorViewer(MapViewerTabViewModel viewWindow) {
-	return registerController(new MapEditorViewerController(renderer, map, viewWindow), IMapViewerController.class);
+        return registerController(new MapEditorViewerController(renderer, map, viewWindow), IMapViewerController.class);
     }
 
     // editors
-    
     @Override
     public IMapCompositorController connectCompositor(MapCompositorScope compositor) {
-	return registerController(new MapCompositorController(renderer, map, compositor), IMapCompositorController.class);
+        return registerController(new MapCompositorController(renderer, map, compositor), IMapCompositorController.class);
     }
 
     @Override
     public IMapConverterController connectConverter(ConvertMapScope converter) {
-	return registerController(new MapConverterController(renderer, map, converter), IMapConverterController.class);
+        return registerController(new MapConverterController(renderer, map, converter), IMapConverterController.class);
+    }
+
+    @Override
+    public void shutdown() {
+        renderer.shutdown();
     }
 
 }

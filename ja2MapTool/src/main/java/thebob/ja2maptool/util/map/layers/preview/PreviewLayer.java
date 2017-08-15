@@ -77,6 +77,15 @@ public class PreviewLayer extends TileLayerGroup {
         layers.add(new TileLayer(true, 0, -50, new IndexedElement[mapSize][0]));
     }
 
+    @Override
+    public void setBatchMode(boolean batchMode) {
+        this.batchMode = batchMode;
+        if (batchMode == false) {
+            bakePreviewLayer();
+        }
+        super.setBatchMode(batchMode);
+    }
+
     public void hidePreview() {
         /*
 	for (TileLayer layer : layers) {
@@ -142,6 +151,10 @@ public class PreviewLayer extends TileLayerGroup {
     }
 
     private void bakePreviewLayer() {
+        if (batchMode) {
+            return;
+        }
+
         for (TileLayer layer : layers) {
             layer.setTiles(new IndexedElement[mapSize][0]);
         }

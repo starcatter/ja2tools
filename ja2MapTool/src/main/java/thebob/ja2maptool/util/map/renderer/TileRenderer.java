@@ -176,13 +176,61 @@ public class TileRenderer extends Observable implements ITileRendererManager {
         }
     }
 
-    protected void renderMapLayers() {
-        for (ITileLayerGroup layer : renderLayers) {
-            renderLayerGroup(layer);
-        }
+    // experimental multi threaded rendering
+    /*
+    ExecutorService rendererThreads = new ThreadPoolExecutor(4, 32, 250, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(64));
+
+    public void shutdown() {
+        rendererThreads.shutdownNow();
     }
 
+    protected void renderMapLayers() {
+        try {
+            rendererThreads.invokeAll(
+                    renderLayers
+                            .stream()
+                            .map((layer) -> {
+                                return (Callable<Integer>) () -> {
+                                    renderLayerGroup(layer);
+                                    return 0;
+                                };
+                            })
+                            .collect(Collectors.toList())
+            );
+        } catch (InterruptedException ex) {
+            Logger.getLogger(TileRenderer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    */
+
+    public void shutdown() {
+        // nothing to do!
+    }
+    
+    protected void renderMapLayers() {
+        renderLayers.forEach(layer -> {
+            renderLayerGroup(layer);
+        });
+    }
+
+    /*
+    long startTime = 0;
+    int fps = 0;
+     */
     protected void renderLayerGroup(ITileLayerGroup layerGroup) {
+        /*
+        long endTime = System.nanoTime();
+        if (endTime > startTime + 1_000_000_000) {
+            long timeDiff = endTime - startTime;
+            System.out.println("thebob.ja2maptool.util.map.renderer.TileRenderer.renderLayerGroup() " + (timeDiff / 1_000_000_000d) + ": " + fps + " FPS");
+            startTime = System.nanoTime();
+            fps = 0;
+        } else if (fps > 600) {
+            return;
+        } else {
+            fps++;
+        }
+         */
         int cell = 0;
 
         int displayX = 0;
@@ -249,7 +297,7 @@ public class TileRenderer extends Observable implements ITileRendererManager {
                 continue;
             }
 
-            layerTargetContext.setGlobalAlpha(tileLayer.getOpacity());	    
+            layerTargetContext.setGlobalAlpha(tileLayer.getOpacity());
             int layerOffsetX = tileLayer.getDisplayOffsetX();
             int layerOffsetY = tileLayer.getDisplayOffsetY();
 

@@ -178,8 +178,16 @@ public class MapSelectionComponent extends MapControllerBase implements IMapSele
     // --------------------------------
     List<SnippetPlacement> selectedPlacements = new ArrayList<SnippetPlacement>();
 
+    // remember last selected cells. Looks like something is redrawing the selection every pixel moved instrad of every cell.
+    Integer lastSelectionStartCell = null;
+    Integer lastSelectionEndCell = null;
+
     private void updateSelectionGrids(SelectionMode mode) {
-        if (selectionStartCell != null && selectionEndCell != null) {
+        if (selectionStartCell != null && selectionEndCell != null && (lastSelectionStartCell != selectionStartCell || lastSelectionEndCell != selectionEndCell || dragging)) {
+
+            lastSelectionStartCell = selectionStartCell;
+            lastSelectionEndCell = lastSelectionEndCell;
+
             rectStartX = selectionStartX < selectionEndX ? selectionStartX : selectionEndX;
             rectEndX = selectionStartX > selectionEndX ? selectionStartX : selectionEndX;
             rectStartY = selectionStartY < selectionEndY ? selectionStartY : selectionEndY;
@@ -281,11 +289,6 @@ public class MapSelectionComponent extends MapControllerBase implements IMapSele
                 selectionStartCell = cursorLayer.rowColToPos(selectionStartY, selectionStartX);
                 selectionEndCell = cursorLayer.rowColToPos(selectionEndY, selectionEndX);
 
-                /*
-                if (placements != null && selectedPlacements.isEmpty() == false) {
-                    placements.movePlacementList(selectedPlacements, deltaX, deltaY);
-                }
-                 */
                 deltaXSum += deltaX;
                 deltaYSum += deltaY;
 
@@ -293,8 +296,13 @@ public class MapSelectionComponent extends MapControllerBase implements IMapSele
             }
         }
 
+        final int deltaXf = deltaX;
+        final int deltaYf = deltaY;
+
         Platform.runLater(() -> {
-            updateSelectionGrids(selMode);
+            if (deltaXf != 0 || deltaYf != 0) {
+                updateSelectionGrids(selMode);
+            }
             if (x > rectStartX - 1 && x < rectEndX + 1 && y > rectStartY - 1 && y < rectEndY + 1) {
                 cursorLayer.placeCursorRect(LAYER_ACTION, rectStartX - 1, rectStartY - 1, rectEndX + 1, rectEndY + 1, SELECTED_TILES_HOVER_CURSOR, CursorLayer.CursorFillMode.Corners);
             }

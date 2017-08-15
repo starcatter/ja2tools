@@ -25,7 +25,6 @@ package thebob.ja2maptool.util.map.renderer;
 
 import java.util.List;
 import java.util.Observer;
-import thebob.ja2maptool.util.map.controller.base.MapControllerBase;
 import thebob.ja2maptool.util.map.renderer.renderlayer.OverlaySettings;
 import thebob.ja2maptool.util.map.layers.base.ITileLayerGroup;
 
@@ -102,4 +101,6 @@ public interface ITileRendererManager extends ITileRendererControls, Observer {
 
     public void addObserver(Observer aThis);
     public void deleteObserver(Observer aThis);
+
+    public void shutdown();
 }

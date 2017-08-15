@@ -53,6 +53,10 @@ public class MapViewerTabViewModel implements ViewModel {
 
     StringProperty mapNameProperty = new SimpleStringProperty();
 
+    public void shutdownRenderer() {
+        renderer.shutdown();
+    }
+
     public enum MapViewerMode {
 	Browser,
 	Editor

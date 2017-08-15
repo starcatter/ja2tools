@@ -27,8 +27,8 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import thebob.assetloader.map.core.components.IndexedElement;
 import thebob.ja2maptool.util.map.component.cursor.cursors.base.CursorControllerBase;
-import static thebob.ja2maptool.util.map.layers.cursor.CursorLayer.LAYER_CURSOR;
 import thebob.ja2maptool.util.map.component.selection.IMapSelectionComponent;
+import static thebob.ja2maptool.util.map.layers.cursor.CursorLayer.LAYER_CURSOR;
 
 /**
  *
@@ -51,13 +51,19 @@ public class SelectionCursorController extends CursorControllerBase {
         super.mouseEvent(e);
         if (e.getEventType() == MouseEvent.MOUSE_CLICKED || e.getEventType() == MouseEvent.MOUSE_DRAGGED) {
             if (e.getButton() == MouseButton.PRIMARY) {
+                getCursors().setBatchMode(true);
                 selection.placeMarker(getMouseCellX(), getMouseCellY());
+                updateCursor();
+                getCursors().setBatchMode(false);
             } else if (e.getButton() == MouseButton.SECONDARY) {
+                getCursors().setBatchMode(true);
                 selection.clearSelection();
+                updateCursor();
+                getCursors().setBatchMode(false);
             } else if (e.getButton() == MouseButton.MIDDLE) {
                 // TODO: change selection mode
             }
-            updateCursor();
+            
         }
     }
 

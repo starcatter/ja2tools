@@ -52,6 +52,7 @@ public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
         Corners
     }
 
+    
     protected List<TileLayer> layers = new ArrayList<>();
 
     @Override
@@ -128,7 +129,7 @@ public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
     public void placeCursorCenterRect(int layer, int cursorX, int cursorY, int cursorWidth, int cursorHeight, IndexedElement cursor, CursorFillMode mode) {
         int[] cells = getCellNumbersForRadius(cursorX, cursorY, cursorWidth, cursorHeight, mode);
         for (int cell : cells) {
-            placeCursor(layer, cell, cursor);
+            placeCursorInternal(layer, cell, cursor);
         }
         notifySubscribers(new MapEvent(MapEvent.ChangeType.LAYER_ALTERED));
     }
@@ -137,7 +138,7 @@ public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
     public void placeCursorRect(int layer, int startX, int startY, int endX, int endY, IndexedElement cursor, CursorFillMode mode) {
         int[] cells = getCellNumbersForRect(startX, startY, endX, endY, mode);
         for (int cell : cells) {
-            placeCursor(layer, cell, cursor);
+            placeCursorInternal(layer, cell, cursor);
         }
         notifySubscribers(new MapEvent(MapEvent.ChangeType.LAYER_ALTERED));
     }

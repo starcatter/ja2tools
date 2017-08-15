@@ -29,9 +29,12 @@ import thebob.assetloader.tileset.Tileset;
 import thebob.ja2maptool.util.map.events.MapEvent;
 
 /**
- * The TileLayerGroup is meant to be a wrapper around content displayed in the renderer - maps, cursors, previews, overlays.
+ * The TileLayerGroup is meant to be a wrapper around content displayed in the
+ * renderer - maps, cursors, previews, overlays.
  *
- * Layer groups are supposed to be supplying the content - the map layer getting it from map files while the cursor layer generates its content based on mouse input and whatever settings it gets.
+ * Layer groups are supposed to be supplying the content - the map layer getting
+ * it from map files while the cursor layer generates its content based on mouse
+ * input and whatever settings it gets.
  *
  * @author the_bob
  */
@@ -45,85 +48,95 @@ public abstract class TileLayerGroup extends Observable implements ITileLayerGro
     // ------------------------------
     // Tile coordinate transformation
     // ------------------------------
-    
     @Override
     public int rowColToPos(int y, int x) {
-	return ((y) * mapCols + (x));
+        return ((y) * mapCols + (x));
     }
-    
+
     @Override
     public int GridNoToCellX(int sGridNo) {
-	int sYPos = (sGridNo / mapCols);
-	int sXPos = sGridNo - (sYPos * mapCols);
+        int sYPos = (sGridNo / mapCols);
+        int sXPos = sGridNo - (sYPos * mapCols);
 
-	return sXPos;
+        return sXPos;
     }
 
     @Override
     public int GridNoToCellY(int sGridNo) {
-	int sYPos = (sGridNo / mapCols);
+        int sYPos = (sGridNo / mapCols);
 
-	return sYPos;
-    }    
+        return sYPos;
+    }
 
     protected void setLayerSize(int mapCols, int mapRows) {
-	this.mapCols = mapCols;
-	this.mapRows = mapRows;
-	mapSize = mapCols * mapRows;
+        this.mapCols = mapCols;
+        this.mapRows = mapRows;
+        mapSize = mapCols * mapRows;
     }
 
     @Override
     public void init(int mapRows, int mapCols, Tileset tileset) {
         setLayerSize(mapCols, mapRows);
-        setTileset(tileset);        
+        setTileset(tileset);
     }
-    
+
     @Override
     public int getMapCols() {
-	return mapCols;
+        return mapCols;
     }
 
     @Override
     public int getMapRows() {
-	return mapRows;
+        return mapRows;
     }
 
     @Override
     public int getMapSize() {
-	return mapSize;
+        return mapSize;
     }
 
     @Override
     public Tileset getTileset() {
-	return tileset;
+        return tileset;
     }
 
     @Override
     public void setTileset(Tileset tileset) {
-	this.tileset = tileset;
+        this.tileset = tileset;
+    }
+
+    protected boolean batchMode = false;
+
+    public void setBatchMode(boolean batchMode) {
+        this.batchMode = batchMode;
+        if (batchMode == false) {
+            notifySubscribers(new MapEvent(MapEvent.ChangeType.LAYER_ALTERED));
+        }
     }
 
     // basic observable functionality
     // not sure why not just use the standard observable, considering we can't easily hide all the methods anyway
     @Override
-    public <T extends MapEvent> void notifySubscribers(T message) {		
-	setChanged();
-	notifyObservers(message);
+    public <T extends MapEvent> void notifySubscribers(T message) {
+        if (!batchMode) {
+            setChanged();
+            notifyObservers(message);
+        }
     }
 
     @Override
     public synchronized void unsubscribe(Observer o) {
-	deleteObserver(o);
+        deleteObserver(o);
     }
 
     @Override
     public synchronized void subscribe(Observer o) {
-	addObserver(o);
+        addObserver(o);
     }
 
     @Override
     public String toString() {
-	return "TileLayerGroup{" + "mapCols=" + mapCols + ", mapRows=" + mapRows + ", tileset=" + tileset + '}';
-    }    
-    
+        return "TileLayerGroup{" + "mapCols=" + mapCols + ", mapRows=" + mapRows + ", tileset=" + tileset + '}';
+    }
+
 }

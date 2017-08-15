@@ -23,16 +23,10 @@
  */
 package thebob.ja2maptool.util.map;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.scene.input.MouseButton;
-import thebob.assetloader.tileset.Tileset;
 import thebob.ja2maptool.scopes.map.ConvertMapScope;
 import thebob.ja2maptool.scopes.map.MapCompositorScope;
 import thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabViewModel;
-import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
-import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.map.renderer.ITileRendererControls;
-import thebob.ja2maptool.util.map.layers.cursor.ICursorLayerControls;
 import thebob.ja2maptool.util.map.layers.map.IMapLayerControls;
 import thebob.ja2maptool.util.map.controller.editors.compositor.IMapCompositorController;
 import thebob.ja2maptool.util.map.controller.editors.converter.IMapConverterController;
@@ -65,5 +59,10 @@ public interface IMapDisplayManager extends ITileRendererControls, IMapLayerCont
      * @return 
      */
     IMapConverterController connectConverter(ConvertMapScope converter);
+
+    /**
+     * shutdown the renderer's executor service
+     */
+    public void shutdown();
 
 }

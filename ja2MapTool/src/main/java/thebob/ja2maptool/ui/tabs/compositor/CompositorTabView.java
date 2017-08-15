@@ -388,6 +388,5 @@ public class CompositorTabView implements FxmlView<CompositorTabViewModel>, Init
 
         placement_land_floors.selectedProperty().bindBidirectional(viewModel.getPlacement_land_floors());
         placement_structures_walls.selectedProperty().bindBidirectional(viewModel.getPlacement_structures_walls());
-
     }
 }

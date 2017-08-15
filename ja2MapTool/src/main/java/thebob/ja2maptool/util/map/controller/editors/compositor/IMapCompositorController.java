@@ -24,6 +24,7 @@
 package thebob.ja2maptool.util.map.controller.editors.compositor;
 
 import java.util.List;
+import java.util.Map;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
 import thebob.ja2maptool.util.compositor.SnippetPlacement;
@@ -35,6 +36,11 @@ import thebob.ja2maptool.util.map.controller.base.IMapController;
  * @author the_bob
  */
 public interface IMapCompositorController extends IMapController {
+
+    /**
+     * Places all placements on the map
+     */
+    public void commitChangesToMap();
 
     /**
      * returns currently selected tiles
@@ -93,5 +99,9 @@ public interface IMapCompositorController extends IMapController {
     public void movePlacementLayer(MapSnippetPlacementLayer selectedItem, int i);
 
     public void copyPlacementLayer(MapSnippetPlacementLayer selectedItem);
+
+    public void appendPlacementsToCurrentLayer(Map<Integer, SnippetPlacement> placements);
+
+    public void setLayers(List<MapSnippetPlacementLayer> layers);
 
 }

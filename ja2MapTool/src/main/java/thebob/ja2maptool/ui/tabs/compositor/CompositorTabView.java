@@ -197,7 +197,7 @@ public class CompositorTabView implements FxmlView<CompositorTabViewModel>, Init
 
     @FXML
     void load_placements(ActionEvent event) {
-        String path = FileSelectorWrapper.openDialog("Save converted map as...", "map files", "*.dat", save_map_btn.getScene().getWindow());
+        String path = FileSelectorWrapper.openDialog("Load placement list", "Placement list files", "*.plist", save_map_btn.getScene().getWindow());
         if (path != null) {
             viewModel.loadPlacements(path);
         }
@@ -205,7 +205,7 @@ public class CompositorTabView implements FxmlView<CompositorTabViewModel>, Init
 
     @FXML
     void save_placements(ActionEvent event) {
-        String path = FileSelectorWrapper.saveDialog("Save converted map as...", "map files", "*.dat", save_map_btn.getScene().getWindow());
+        String path = FileSelectorWrapper.saveDialog("Save placement list as...", "Placement list files", "*.plist", save_map_btn.getScene().getWindow());
         if (path != null) {
             viewModel.savePlacements(path);
         }
@@ -270,7 +270,7 @@ public class CompositorTabView implements FxmlView<CompositorTabViewModel>, Init
     
     @FXML
     void layers_load(ActionEvent event) {
-        String path = FileSelectorWrapper.openDialog("Save converted map as...", "map files", "*.dat", save_map_btn.getScene().getWindow());
+        String path = FileSelectorWrapper.openDialog("Load placement layers...", "Placement layer group", "*.plgroup", save_map_btn.getScene().getWindow());
         if (path != null) {
             viewModel.loadPlacementLayers(path);
         }
@@ -278,7 +278,7 @@ public class CompositorTabView implements FxmlView<CompositorTabViewModel>, Init
 
     @FXML
     void layers_save(ActionEvent event) {
-        String path = FileSelectorWrapper.saveDialog("Save converted map as...", "map files", "*.dat", save_map_btn.getScene().getWindow());
+        String path = FileSelectorWrapper.saveDialog("Save placement layers as...", "Placement layer group", "*.plgroup", save_map_btn.getScene().getWindow());
         if (path != null) {
             viewModel.savePlacementLayers(path);
         }

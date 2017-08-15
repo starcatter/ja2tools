@@ -50,6 +50,8 @@ public class SelectedTiles {
 
     // deep copy constructor for remapping selection contents
     public SelectedTiles(SelectedTiles source) {
+	this.name = source.name;
+        
 	this.tilesetId = source.tilesetId;
 	this.width = source.width;
 	this.height = source.height;

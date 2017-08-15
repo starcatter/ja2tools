@@ -23,10 +23,13 @@
  */
 package thebob.ja2maptool.scopes.map;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 import de.saxsys.mvvmfx.Scope;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import thebob.ja2maptool.ui.tabs.compositor.CompositorTabViewModel;
+import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.compositor.SnippetPlacement;
 
 public class MapCompositorScope implements Scope {
@@ -42,6 +45,8 @@ public class MapCompositorScope implements Scope {
     MapScope map = new MapScope();
     MapSnippetScope loadedSnippets = null;
     ObservableList<SnippetPlacement> placedSnippets = FXCollections.observableArrayList();
+    ListMultimap<String, SelectedTiles> loadedSnippetLibs = ArrayListMultimap.create();
+
     CompositorTabViewModel viewModel = null;
 
     public MapScope getMap() {
@@ -58,10 +63,14 @@ public class MapCompositorScope implements Scope {
 
     public void setViewModel(CompositorTabViewModel viewModel) {
         this.viewModel = viewModel;
-    }    
-    
+    }
+
     public MapSnippetScope getLoadedSnippets() {
         return loadedSnippets;
+    }
+
+    public ListMultimap<String, SelectedTiles> getLoadedSnippetLibs() {
+        return loadedSnippetLibs;
     }
 
     public void setLoadedSnippets(MapSnippetScope loadedSnippets) {

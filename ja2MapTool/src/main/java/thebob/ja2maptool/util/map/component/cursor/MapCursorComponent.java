@@ -46,6 +46,7 @@ public class MapCursorComponent extends MapCursorComponentBase {
     public void setCursor(ICursorController cursorController) {
         this.cursor = cursorController;
         cursorController.setController(this);
+        cursor.updateCursor();
     }
 
     @Override

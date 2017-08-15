@@ -24,9 +24,11 @@
 package thebob.ja2maptool.util.map.controller.editors.compositor;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import thebob.ja2maptool.scopes.map.MapCompositorScope;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
@@ -193,6 +195,12 @@ public class MapCompositorController extends MapControllerBase implements IMapCo
     @Override
     public void mouseEvent(MouseEvent e) {
         cursors.mouseEvent(e);
+        if(e.isConsumed() == false && e.getEventType() == MouseEvent.MOUSE_CLICKED && e.getButton() == MouseButton.SECONDARY){
+            //if( clipboard.hasContents() == false && placements.hasContents() == true ){                
+            clipboard.setContents(null);
+            placements.setContents(null);
+            updateCursor();
+        }
     }
 
     @Override
@@ -219,7 +227,9 @@ public class MapCompositorController extends MapControllerBase implements IMapCo
     public SelectedTiles getSelection() {
         if (clipboard.canCopy()) {
             clipboard.copy();
-            return clipboard.getContents();
+            SelectedTiles stuff =  clipboard.getContents();
+            clipboard.emptyContents();
+            return stuff;
         }
         return null;
     }
@@ -252,6 +262,11 @@ public class MapCompositorController extends MapControllerBase implements IMapCo
         placements.setPlacementVisibility(snippetLayers);
     }
 
+    @Override
+    public void commitChangesToMap() {
+        placements.placeAll();
+    }      
+
     // ----------------------------
     // -- Placement Layers
     // ----------------------------
@@ -275,6 +290,11 @@ public class MapCompositorController extends MapControllerBase implements IMapCo
         placements.updateVisibleLayers();
     }
 
+    @Override
+    public void appendPlacementsToCurrentLayer(Map<Integer, SnippetPlacement> placements) {
+        this.placements.appendPlacementsToCurrentLayer(placements);
+    }    
+
     // ----------------------------
     // -- Placement Layer management
     // ----------------------------
@@ -295,6 +315,11 @@ public class MapCompositorController extends MapControllerBase implements IMapCo
     @Override
     public void copyPlacementLayer(MapSnippetPlacementLayer selectedItem) {
         placements.copyPlacementLayer(selectedItem);
+    }
+    
+    @Override
+    public void setLayers(List<MapSnippetPlacementLayer> layers){
+        placements.setLayers(layers);
     }
 
     // -------------    

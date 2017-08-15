@@ -63,6 +63,11 @@ public interface IMapSnippetPlacementComponent extends IMapController {
     // placement actions
     // ----------------------------
     /**
+     * Places all placement layers on the map
+     */
+    public void placeAll();
+
+    /**
      * Sets a placement as selected and makes it look that way in the map
      * window.
      *
@@ -107,6 +112,8 @@ public interface IMapSnippetPlacementComponent extends IMapController {
     MapSnippetPlacementLayer getCurrentLayer();
 
     public void updateVisibleLayers();
+    
+    public void appendPlacementsToCurrentLayer(Map<Integer, SnippetPlacement> placements);
     // ----------------------------
     // layer manipulation
     // ----------------------------
@@ -115,6 +122,8 @@ public interface IMapSnippetPlacementComponent extends IMapController {
 
     public void movePlacementLayer(MapSnippetPlacementLayer selectedItem, int i);
 
-    public void copyPlacementLayer(MapSnippetPlacementLayer selectedItem);
+    public void copyPlacementLayer(MapSnippetPlacementLayer selectedItem);    
+
+    public void setLayers(List<MapSnippetPlacementLayer> layers);
 
 }

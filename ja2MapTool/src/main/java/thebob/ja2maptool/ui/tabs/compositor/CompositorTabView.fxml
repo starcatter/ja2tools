@@ -331,6 +331,9 @@ THE SOFTWARE.
                                                       <Label fx:id="placement_size" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                       <Label fx:id="placement_location" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                                    </children>
+                                                   <BorderPane.margin>
+                                                      <Insets left="5.0" />
+                                                   </BorderPane.margin>
                                                 </GridPane>
                                              </center>
                                           </BorderPane>

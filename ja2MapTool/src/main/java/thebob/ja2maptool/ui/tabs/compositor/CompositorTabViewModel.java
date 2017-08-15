@@ -26,8 +26,10 @@ package thebob.ja2maptool.ui.tabs.compositor;
 import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ScopeProvider;
 import de.saxsys.mvvmfx.ViewModel;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javafx.beans.property.BooleanProperty;
@@ -50,6 +52,7 @@ import thebob.ja2maptool.scopes.map.MapSnippetScope;
 import static thebob.ja2maptool.ui.tabs.convert.ConvertMapTabViewModel.MAP_LOADED;
 import thebob.ja2maptool.ui.tabs.viewers.map.MapViewerTabViewModel;
 import thebob.ja2maptool.util.MapTransformer;
+import thebob.ja2maptool.util.compositor.PlacementIO;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
 import thebob.ja2maptool.util.compositor.SnippetPlacement;
@@ -263,6 +266,7 @@ public class CompositorTabViewModel implements ViewModel {
         root.setExpanded(true);
         treeItemMap.clear();
 
+        // stuff obtained via clipboard
         if (compositorScope.getLoadedSnippets() != null) {
             TreeItem<String> copyNode = new TreeItem<String>("Clipboard");
             copyNode.setExpanded(true);
@@ -275,6 +279,25 @@ public class CompositorTabViewModel implements ViewModel {
             root.getChildren().add(copyNode);
         }
 
+        // stuff loaded with snippet placement lists/groups
+        if (compositorScope.getLoadedSnippetLibs() != null && compositorScope.getLoadedSnippetLibs().size() > 0) {
+            TreeItem<String> copyNode = new TreeItem<String>("Loaded libraries");
+            copyNode.setExpanded(true);
+
+            compositorScope.getLoadedSnippetLibs().asMap().forEach((source, snippets) -> {
+                TreeItem<String> copyNode2 = new TreeItem<String>(source);
+                for (SelectedTiles snippet : snippets) {
+                    TreeItem<String> snippetNode = new TreeItem<String>(snippet.toString());
+                    treeItemMap.put(snippetNode, snippet);
+                    copyNode2.getChildren().add(snippetNode);
+                }
+                copyNode.getChildren().add(copyNode2);
+            });
+
+            root.getChildren().add(copyNode);
+        }
+
+        // stuff from converters
         for (ConvertMapScope converter : mainScreen.getActiveMapConversions()) {
             String converterName = "Converter ( " + (converter.getMap().getMapName() == null ? "no map loaded" : converter.getMap().getMapName()) + " )";
             TreeItem<String> convertNode = new TreeItem<String>(converterName);
@@ -405,6 +428,7 @@ public class CompositorTabViewModel implements ViewModel {
 
     void updateLayersList() {
         layersList.setAll(compositor.getLayers());
+        updatePlacementList();
     }
 
     void updateVisibleLayers(ObservableList<MapSnippetPlacementLayer> checkedItems) {
@@ -426,11 +450,24 @@ public class CompositorTabViewModel implements ViewModel {
     // load/save layers
     // -------------------------
     void loadPlacementLayers(String path) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<MapSnippetPlacementLayer> layers = PlacementIO.loadPlacementListGroup(path);
+
+        // add the snippets from this filr to the snippet tree
+        Set<SelectedTiles> snippetLib = new HashSet<>();
+        for (MapSnippetPlacementLayer layer : layers) {
+            for (SnippetPlacement placement : layer.getPlacements().values()) {
+                snippetLib.add(placement.getSnippet());
+            }
+        }
+        compositorScope.getLoadedSnippetLibs().putAll(Paths.get(path).getFileName().toString(), snippetLib);
+        updateTree();
+
+        compositor.setLayers(layers);
+        updateLayersList();
     }
 
     void savePlacementLayers(String path) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        PlacementIO.savePlacementListGroup(path, compositor.getLayers());
     }
 
     // -------------------------
@@ -505,18 +542,30 @@ public class CompositorTabViewModel implements ViewModel {
     // load/save placements
     // -------------------------
     void loadPlacements(String path) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Map<Integer, SnippetPlacement> placements = PlacementIO.loadPlacementList(path);
+        
+        // add the snippets from this filr to the snippet tree
+        Set<SelectedTiles> snippetLib = new HashSet<>();        
+        for (SnippetPlacement placement : placements.values()) {
+            snippetLib.add(placement.getSnippet());
+        }        
+        compositorScope.getLoadedSnippetLibs().putAll(Paths.get(path).getFileName().toString(), snippetLib);
+        updateTree();
+        
+        compositor.appendPlacementsToCurrentLayer(placements);
+        updatePlacementList();
     }
 
     void savePlacements(String path) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        MapSnippetPlacementLayer layer = compositor.getActiveLayer();
+        PlacementIO.savePlacementList(path, layer.getPlacements());
     }
 
     // -------------------------
     // commit changes to map
     // -------------------------
     void pastePlacements() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        compositor.commitChangesToMap();
     }
 
     // -------------------------

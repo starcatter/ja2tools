@@ -122,6 +122,13 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
                 setCurrentLayer(layers.get(1));
             }
         }
+
+        // clean up the old layer
+        if (layer.isVisible()) {
+            layer.getPlacements().forEach((cell, placement) -> {
+                previewLayer.removePlacement(cell);
+            });
+        }
         layers.remove(layer);
 
         notifyObservers(new MapEvent(MapEvent.ChangeType.PLACEMENT_LAYER_DELETED));
@@ -130,6 +137,24 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
     @Override
     public List<MapSnippetPlacementLayer> getLayers() {
         return layers;
+    }
+
+    @Override
+    public void setLayers(List<MapSnippetPlacementLayer> newLayers) {
+        for (MapSnippetPlacementLayer layer : layers) {
+            layer.getPlacements().forEach((cell, placement) -> {
+                previewLayer.removePlacement(cell);
+            });
+        }
+
+        layers.clear();
+        placements.clear();
+
+        notifyObservers(new MapEvent(MapEvent.ChangeType.PLACEMENT_LAYER_DELETED));
+        layers.addAll(newLayers);
+        notifyObservers(new MapEvent(MapEvent.ChangeType.PLACEMENT_LAYER_ADDED));
+
+        setCurrentLayer(layers.get(0));
     }
 
     @Override
@@ -219,7 +244,28 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
     // IMapSnippetPlacementComponent
     // --------------------------------------------------
     @Override
+    public void placeAll() {
+        for (MapSnippetPlacementLayer layer : layers) {
+            //System.out.println("Placing layer " + layer.getName());
+            layer.getPlacements().forEach((cell, placement) -> {
+                MapCursor placementCursor = cursorLayer.getCursor(placement.getCellX(), placement.getCellY(), null);
+                SelectedTiles snippet = placement.getSnippet();
+                SelectionPlacementOptions options = placement.getEnabledLayers();
+
+                //System.out.println("\t" + placement);
+                getMap().appendTiles(placementCursor, snippet, options);
+            });
+            layer.setVisible(false);
+        }
+
+        updateVisibleLayers();
+    }
+
+    @Override
     public void setContents(SelectedTiles preview) {
+        if (pickedPlacement != null) {
+            pick_cancel();
+        }
         setPayload(preview);
     }
 
@@ -241,6 +287,11 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
     @Override
     public void setPlacementVisibility(SelectionPlacementOptions snippetLayers) {
         snippetPlacementOptions = snippetLayers;
+    }
+
+    @Override
+    public void appendPlacementsToCurrentLayer(Map<Integer, SnippetPlacement> placements) {
+        this.placements.putAll(placements);
     }
 
     // --------------------------------------------------
@@ -277,9 +328,10 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
     }
 
     private void pick_cancel() {
-        setContents(null);
+        pickedPlacement = null;        
         setMode(PlacementMode.Multi);
-        pickedPlacement = null;
+        setContents(null);  // make sure to set pickedPlacement to null first!
+        
 
         // System.out.println("thebob.ja2maptool.util.map.component.placement.snippets.MapSnippetPlacementComponent.pick_cancel()");
         //placements.put(pickedPlacement.getCell(),pickedPlacement);
@@ -304,10 +356,11 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
         }
         if (mode == PlacementMode.Single) {
             setContents(null);
-            setMode(PlacementMode.Multi);
+            setMode(PlacementMode.Multi);            
         }
 
-        updateStateLayer();
+        //updateStateLayer();   // just select the new thing, it will update the state
+        select(added);
         notifyObservers(new MapEvent(MapEvent.ChangeType.PLACEMENT_ADDED, new MapPlacementEventPayload(added)));
     }
 

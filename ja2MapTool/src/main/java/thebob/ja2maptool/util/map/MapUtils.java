@@ -63,7 +63,7 @@ public class MapUtils {
 	final int STRUCT_LAYER = 2;
 
 	if (layer == LAND_LAYER && options.isPlace_land_floors()) {
-	    System.out.println("thebob.ja2maptool.util.renderer.map.MapLayer.checkContentFilters() - leaving floors");
+	    //System.out.println("thebob.ja2maptool.util.renderer.map.MapLayer.checkContentFilters() - leaving floors");
 
 	    IndexedElement[][] remappedLayer = selection.getLayers()[layer];
 
@@ -88,7 +88,7 @@ public class MapUtils {
 
 	    return true;
 	} else if (layer == STRUCT_LAYER && options.isPlace_structures_walls()) {
-	    System.out.println("thebob.ja2maptool.util.renderer.map.MapLayer.checkContentFilters() - leaving walls");
+	    //System.out.println("thebob.ja2maptool.util.renderer.map.MapLayer.checkContentFilters() - leaving walls");
 
 	    IndexedElement[][] remappedLayer = selection.getLayers()[layer];
 

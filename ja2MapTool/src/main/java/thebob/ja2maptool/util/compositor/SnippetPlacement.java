@@ -99,7 +99,8 @@ public class SnippetPlacement {
 
     @Override
     public String toString() {
-        return "SnippetPlacement{" + "cellX=" + cellX + ", cellY=" + cellY + ", cell=" + cell + ", snippet=" + snippet + ", enabledLayers=" + enabledLayers + '}';
+        return snippet.getName() + " @( "+cellX+","+cellY+" )";
+        
     }    
 
 }

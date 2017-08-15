@@ -55,7 +55,7 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
     private static final IndexedElement PLACEMENT_TILES_CURSOR = new IndexedElement(131, 7);
     private static final IndexedElement PLACEMENT_TILES_ACTIVE_CURSOR = new IndexedElement(131, 2);
     private static final IndexedElement PLACEMENT_CURSOR = new IndexedElement(131, 16);
-    private SelectionPlacementOptions snippetPlacementOptions;
+    private SelectionPlacementOptions snippetPlacementOptions = new SelectionPlacementOptions(true,true,true,true,true,true,true,true);
 
     public enum PlacementMode {
         Single, // can place the payload once

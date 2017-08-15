@@ -209,6 +209,7 @@ public class CompositorTabViewModel implements ViewModel {
 
         // registers the map compositor interface with the renderer
         compositor = mapViewer.getRenderer().connectCompositor(compositorScope);
+        updateSnippetVisibility();
     }
 
     // preview window renderer handlers

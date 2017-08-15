@@ -140,7 +140,7 @@ public class IntroTabView implements FxmlView<IntroTabViewModel>, Initializable 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         //showLogo();
-        showCompositor();
+        //showCompositor();
     }
 
 }

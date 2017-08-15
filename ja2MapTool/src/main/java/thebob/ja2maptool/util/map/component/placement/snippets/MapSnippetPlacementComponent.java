@@ -216,7 +216,7 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
         if (getPayload() != null && placementLocation != null) {
 
             if (!placements.containsKey(placementLocation.getCell())) {
-                SelectionPlacementOptions options = selectedPlacement != null ? selectedPlacement.getEnabledLayers() : snippetPlacementOptions;
+                SelectionPlacementOptions options = pickedPlacement != null ? pickedPlacement.getEnabledLayers() : snippetPlacementOptions;
                 put(new SnippetPlacement(placementLocation, getPayload(), options));
             } else if (pickedPlacement != null) {
                 pick_cancel();
@@ -351,6 +351,8 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
         // add snippet display
         previewLayer.addPlacement(added.getCell(), added);
 
+        notifyObservers(new MapEvent(MapEvent.ChangeType.PLACEMENT_ADDED, new MapPlacementEventPayload(added)));
+        
         if (pickedPlacement != null) {
             remove(pickedPlacement);
         }
@@ -360,8 +362,7 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
         }
 
         //updateStateLayer();   // just select the new thing, it will update the state
-        select(added);
-        notifyObservers(new MapEvent(MapEvent.ChangeType.PLACEMENT_ADDED, new MapPlacementEventPayload(added)));
+        select(added);        
     }
 
     private void remove(SnippetPlacement deleted) {

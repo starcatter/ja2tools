@@ -350,6 +350,7 @@ public class CompositorTabView implements FxmlView<CompositorTabViewModel>, Init
         // ----------------------------------------------------------
         // setup layers list        
         layers_list.setItems(viewModel.getPlacementLayerListContents());
+        viewModel.registerLayerCheckboxes(layers_list.getCheckModel());
         viewModel.updateLayersList();
 
         // setup placement layer notifications

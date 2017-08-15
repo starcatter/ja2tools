@@ -27,6 +27,7 @@ import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ScopeProvider;
 import de.saxsys.mvvmfx.ViewModel;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,6 +43,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
+import org.controlsfx.control.IndexedCheckModel;
 import thebob.ja2maptool.scopes.MainScope;
 import static thebob.ja2maptool.scopes.MainScope.UPDATE_SCOPES;
 import thebob.ja2maptool.scopes.VfsAssetScope;
@@ -287,7 +289,7 @@ public class CompositorTabViewModel implements ViewModel {
             compositorScope.getLoadedSnippetLibs().asMap().forEach((source, snippets) -> {
                 TreeItem<String> copyNode2 = new TreeItem<String>(source);
                 for (SelectedTiles snippet : snippets) {
-                    TreeItem<String> snippetNode = new TreeItem<String>(snippet.toString());
+                    TreeItem<String> snippetNode = new TreeItem<String>(snippet.getName() + " (" + snippet.getWidth() + "x" + snippet.getHeight() + ")");
                     treeItemMap.put(snippetNode, snippet);
                     copyNode2.getChildren().add(snippetNode);
                 }
@@ -422,22 +424,36 @@ public class CompositorTabViewModel implements ViewModel {
     // --------------------------------------------------
     // Placement layers
     // --------------------------------------------------
+    IndexedCheckModel<MapSnippetPlacementLayer> checkModel = null;
+
+    void registerLayerCheckboxes(IndexedCheckModel<MapSnippetPlacementLayer> checkModel) {
+        this.checkModel = checkModel;
+    }
+
     ObservableList<MapSnippetPlacementLayer> getPlacementLayerListContents() {
         return layersList;
     }
 
     void updateLayersList() {
-        layersList.setAll(compositor.getLayers());
+        List<MapSnippetPlacementLayer> layers = compositor.getLayers();
+        List<Integer> visible = new ArrayList<>();        
+                
+        layersList.clear();
+        for (int i = 0; i < layers.size(); i++) {
+            MapSnippetPlacementLayer layer = layers.get(i);
+            layersList.add(layer);
+            if (layer.isVisible()) {
+                visible.add(i);
+            }
+        }
+
+        checkModel.checkIndices(visible.stream().mapToInt(i->i).toArray());               
         updatePlacementList();
     }
 
     void updateVisibleLayers(ObservableList<MapSnippetPlacementLayer> checkedItems) {
         for (MapSnippetPlacementLayer layer : compositor.getLayers()) {
-            if (checkedItems.indexOf(layer) == -1) {
-                layer.setVisible(false);
-            } else {
-                layer.setVisible(true);
-            }
+            layer.setVisible( checkModel.isChecked(layer) );
         }
         compositor.updateVisibleLayers();
     }
@@ -543,15 +559,15 @@ public class CompositorTabViewModel implements ViewModel {
     // -------------------------
     void loadPlacements(String path) {
         Map<Integer, SnippetPlacement> placements = PlacementIO.loadPlacementList(path);
-        
+
         // add the snippets from this filr to the snippet tree
-        Set<SelectedTiles> snippetLib = new HashSet<>();        
+        Set<SelectedTiles> snippetLib = new HashSet<>();
         for (SnippetPlacement placement : placements.values()) {
             snippetLib.add(placement.getSnippet());
-        }        
+        }
         compositorScope.getLoadedSnippetLibs().putAll(Paths.get(path).getFileName().toString(), snippetLib);
         updateTree();
-        
+
         compositor.appendPlacementsToCurrentLayer(placements);
         updatePlacementList();
     }

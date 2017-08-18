@@ -94,6 +94,7 @@ public class ItemManager extends VFSContextBoundManager {
     public boolean init() {
 	XmlLoader xml = context.getXml();
 	if (xml == null) {
+            System.err.println("[ItemManager]\t xml context is null!");
 	    return false;
 	}
 
@@ -102,6 +103,7 @@ public class ItemManager extends VFSContextBoundManager {
 
 	ITEMLIST itemList = xml.getItems();
 	if (itemList == null) {
+            System.err.println("[ItemManager]\t itemList is null!");
 	    return false;
 	}
 	for (ITEMTYPE itemDef : itemList.getITEM()) {
@@ -114,6 +116,7 @@ public class ItemManager extends VFSContextBoundManager {
 	    items.put(item.getId(), item);
 	}
 	if (items.size() < 1) {
+            System.err.println("[ItemManager]\t no items loaded!");
 	    return false;
 	}
 

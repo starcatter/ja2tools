@@ -55,6 +55,7 @@ public class AssetManager {
         for (VFSContextBoundManager manager : new VFSContextBoundManager[]{maps, tilesets, items}) {
             // System.out.println("AssetManager loading: "+manager+'\n');
 	    if (!manager.init()) {
+                System.err.println("VFSContext failed to init manager: " + manager);
                 throw new RuntimeException("VFSContext failed to init manager: " + manager);
             }
 	    // System.out.println("\nAssetManager done: "+manager);

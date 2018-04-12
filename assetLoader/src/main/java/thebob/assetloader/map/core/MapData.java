@@ -23,11 +23,6 @@
  */
 package thebob.assetloader.map.core;
 
-import thebob.assetloader.map.helpers.GridPos;
-import thebob.assetloader.map.core.components.MapLayers;
-import thebob.assetloader.map.core.components.MapSettings;
-import thebob.assetloader.map.core.components.MapActors;
-import thebob.assetloader.map.core.components.MapContentInfo;
 import java.io.RandomAccessFile;
 import static java.lang.System.gc;
 import static java.lang.System.runFinalization;
@@ -35,10 +30,14 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.Arrays;
 import java.util.Formatter;
 import javolution.text.TextBuilder;
 import thebob.assetloader.map.MapLoader;
+import thebob.assetloader.map.core.components.MapActors;
+import thebob.assetloader.map.core.components.MapContentInfo;
+import thebob.assetloader.map.core.components.MapLayers;
+import thebob.assetloader.map.core.components.MapSettings;
+import thebob.assetloader.map.helpers.GridPos;
 import thebob.assetloader.xml.XmlLoader;
 
 public class MapData {
@@ -243,7 +242,7 @@ public class MapData {
             //Ambient light levels are only saved in underground levels
             settings.gfBasement = byteBuffer.get() > 0;
             settings.gfCaves = byteBuffer.get() > 0;
-            int ubAmbientLightLevel = byteBuffer.get() & 0xFF; // TODO: sort this out somehow
+            ubAmbientLightLevel = byteBuffer.get() & 0xFF;
             if (MapLoader.logFileIO) {
                 System.out.println("loader.core.MapData.loadData(): load ambient Light level END @" + byteBuffer.position());
             }

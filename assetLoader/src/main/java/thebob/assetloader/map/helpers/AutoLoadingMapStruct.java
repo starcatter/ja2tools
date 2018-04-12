@@ -25,7 +25,6 @@ package thebob.assetloader.map.helpers;
 
 import javolution.io.Struct;
 import thebob.assetloader.common.AutoLoadingStruct;
-import thebob.assetloader.map.helpers.GridPos;
 import thebob.assetloader.map.structures.legacy.OLD_OBJECTTYPE_101;
 
 /**

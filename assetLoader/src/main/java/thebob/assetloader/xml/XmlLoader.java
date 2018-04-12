@@ -37,8 +37,6 @@ import ja2.xml.items.magazines.MAGAZINELIST;
 import ja2.xml.items.weapons.WEAPONLIST;
 import ja2.xml.lookup.weapontype.JA2Data;
 import ja2.xml.tilesets.JA2SET;
-import ja2.xml.tilesets.TilesetDef;
-import ja2.xml.tilesets.TilesetList;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;

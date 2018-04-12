@@ -327,7 +327,7 @@ public class VFSConfig {
     }
 
     public boolean getUseXmlTileset() {
-        return (useXmlTileset == null ? false : useXmlTileset);
+        return useXmlTileset != null && useXmlTileset;
     }
 
 }

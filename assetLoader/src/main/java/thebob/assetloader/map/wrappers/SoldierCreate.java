@@ -56,7 +56,6 @@ public class SoldierCreate extends MapLoaderWrapperBase {
     private BASIC_SOLDIERCREATE_STRUCT getBasicStruct(ByteBuffer source) {
         if(MapLoader.logFileIO) System.out.println("loader.wrappers.SoldierCreate.getBasicStruct(): start @ "+source.position());
         float dMajorMapVersion = map.getSettings().dMajorMapVersion;
-        int ubMinorMapVersion = map.getSettings().ubMinorMapVersion;
 
         BASIC_SOLDIERCREATE_STRUCT soldier = new BASIC_SOLDIERCREATE_STRUCT();
         if (dMajorMapVersion < 7.0) {

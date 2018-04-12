@@ -107,7 +107,7 @@ public class ItemManager extends VFSContextBoundManager {
 	    return false;
 	}
 	for (ITEMTYPE itemDef : itemList.getITEM()) {
-	    Item item = new Item(itemDef.getUiIndex(), itemDef.getSzItemName(), itemDef.getUsItemClass(), itemDef.getUbClassIndex(), itemDef.getUbGraphicType(), itemDef.getUbGraphicNum() , itemDef.getUbCoolness() );
+	    Item item = new Item(itemDef.getUiIndex(), itemDef.getSzItemName(), itemDef.getUsItemClass(), itemDef.getUbClassIndex(), itemDef.getUbGraphicType(), itemDef.getUbGraphicNum() , itemDef.getUbCoolness(), itemDef.getNasAttachmentClass() );
 
 	    item.setFoodType(itemDef.getFoodType());
 	    item.setDrugType(itemDef.getDrugType());
@@ -127,7 +127,7 @@ public class ItemManager extends VFSContextBoundManager {
 	categories = new ItemCategoryModel(xml, items);
 	categories.buildCategoryTree();
 	
-	// System.out.println("thebob.assetmanager.managers.ItemManager.init() " + categories.getRootNode());
+	//System.out.println("thebob.assetmanager.managers.ItemManager.init() " + categories.getRootNode());
 
 	return true;
     }

@@ -89,7 +89,8 @@ public class AssetManager {
     public static void main(String[] args) {
         VirtualFileSystem vfs = new VirtualFileSystem("../../JA113.data/gameData");
         //for (String configName : vfs.getConfigNames()) {
-            VFSConfig config = vfs.getConfig("vfs_config.JA2113-Metavira.ini");
+            //VFSConfig config = vfs.getConfig("vfs_config.JA2113-Metavira.ini");
+            VFSConfig config = vfs.getConfig("vfs_config.JA2Vanilla.ini");
             //System.out.println("\n\n\nthebob.assetmanager.AssetManager.main() LOADING: " + configName + "\n");
             AssetManager am = new AssetManager(config);
             return;

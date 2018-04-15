@@ -25,6 +25,7 @@ package thebob.assetmanager.managers.items;
 
 import ja2.xml.ammo.calibers.AMMO;
 import ja2.xml.ammo.types.AMMOTYPELIST;
+import ja2.xml.items.ITEMTYPE;
 import ja2.xml.items.armor.ARMOURLIST;
 import ja2.xml.items.drugs.DRUGSLIST.DRUG;
 import ja2.xml.items.explosives.EXPLOSIVELIST;
@@ -35,6 +36,7 @@ import ja2.xml.items.weapons.WEAPONLIST;
 import javafx.scene.image.Image;
 import thebob.assetloader.common.ImageAdapter;
 import thebob.assetloader.sti.StiLoader;
+import thebob.assetmanager.managers.items.categories.ItemCategory;
 
 /**
  *
@@ -68,6 +70,8 @@ public class Item {
 	LOADBEARINGEQUIPMENTLIST.LOADBEARINGEQUIPMENT lbeData = null;
 
 	StiLoader loader = null;
+	ITEMTYPE itemDef = null;
+	private ItemCategory parentCategory;
 	
 
 	Item(int uiIndex, String szItemName) {
@@ -84,6 +88,19 @@ public class Item {
 		this.imageId = imageId;
 		this.coolness = coolness;
 		this.nasAttachmentClass = nasAttachmentClass;
+	}
+
+	public Item(ITEMTYPE itemDef) {
+		this(itemDef.getUiIndex(), 
+			itemDef.getSzLongItemName(), 
+			itemDef.getUsItemClass(), 
+			itemDef.getUbClassIndex(), 
+			itemDef.getUbGraphicType(), 
+			itemDef.getUbGraphicNum(), 
+			itemDef.getUbCoolness(), 
+			itemDef.getNasAttachmentClass());
+		
+		this.itemDef = itemDef;
 	}
 
 	public Image getImage() {
@@ -265,6 +282,29 @@ public class Item {
 
 	public void setNasAttachmentClass(int nasAttachmentClass) {
 		this.nasAttachmentClass = nasAttachmentClass;
+	}
+
+	// ---
+	
+	public ITEMTYPE getItemDef() {
+		return itemDef;
+	}
+
+	public void setItemDef(ITEMTYPE itemDef) {
+		this.itemDef = itemDef;
+	}
+
+	public ItemCategory getParentCategory() {
+		return parentCategory;
+	}
+
+	public void setParentCategory(ItemCategory aThis) {
+		parentCategory = aThis;
+	}
+
+	@Override
+	public String toString() {
+		return "Item{" + "id=" + id + ", name=" + name + ", parentCategory=" + parentCategory.getName() + '}';
 	}
 
 	

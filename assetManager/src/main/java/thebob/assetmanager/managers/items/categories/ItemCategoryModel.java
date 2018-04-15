@@ -56,6 +56,8 @@ public class ItemCategoryModel {
 
 	XmlLoader xml;
 	Map<Integer, Item> items;
+	Map<String, ItemCategory> categories = new HashMap<>();
+	
 	ItemCategory root = new ItemCategory("Items", null);
 	Map<Long, JA2Data.ItemClass> itemclass = new HashMap<Long, JA2Data.ItemClass>();
 
@@ -149,6 +151,7 @@ public class ItemCategoryModel {
 	public void buildCategoryTree() {
 		buildCategories();
 		populateCategories();
+		buildCategoryMap(root);
 	}
 
 	private void buildCategories() {
@@ -328,4 +331,14 @@ public class ItemCategoryModel {
 		return root;
 	}
 
+	private void buildCategoryMap(ItemCategory node) {
+		categories.put(node.getUcid(), node);
+		node.categoryIterator().forEachRemaining(this::buildCategoryMap);
+	}
+
+	public Map<String, ItemCategory> getCategories() {
+		return categories;
+	}
+
+	
 }

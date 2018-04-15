@@ -21,14 +21,49 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.component.interaction.data;
+package thebob.ja2maptool.util.map.component.base;
+
+import java.util.Observer;
+import thebob.ja2maptool.util.map.layers.map.IMapLayerManager;
+import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
 
 /**
- * Superclass for all sorts of userdata components might attach to cells they
- * mark as active.
  *
  * @author starcatter
  */
-public abstract class MapInteractionUserdata {
+public interface IMapComponent {
+
+	/**
+	 * Disconnects the component from the parent map controller and other components it relies on.
+	 */
+	void disconnect();
+
+	/**
+	 * @return the map
+	 */
+	IMapLayerManager getMap();
+
+	/**
+	 * @return the renderer
+	 */
+	ITileRendererManager getRenderer();
+
+	/**
+	 * Adds an observer to the set of observers for this object, provided that it is not the same as some observer
+	 * already in the set. The order in which notifications will be delivered to multiple observers is not specified.
+	 * See the class comment.
+	 *
+	 * @param o an observer to be added.
+	 * @throws NullPointerException if the parameter o is null.
+	 */
+	void addObserver(Observer o);
+
+	/**
+	 * Deletes an observer from the set of observers of this object. Passing <CODE>null</CODE> to this method will have
+	 * no effect.
+	 *
+	 * @param o the observer to be deleted.
+	 */
+	void deleteObserver(Observer o);
 
 }

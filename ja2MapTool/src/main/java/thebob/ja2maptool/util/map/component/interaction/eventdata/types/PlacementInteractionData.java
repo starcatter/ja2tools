@@ -21,10 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.component.interaction.data.types;
+package thebob.ja2maptool.util.map.component.interaction.eventdata.types;
 
 import thebob.ja2maptool.util.compositor.SnippetPlacement;
-import thebob.ja2maptool.util.map.component.interaction.data.MapInteractionUserdata;
+import thebob.ja2maptool.util.map.component.interaction.eventdata.MapInteractionUserdata;
 
 /**
  *

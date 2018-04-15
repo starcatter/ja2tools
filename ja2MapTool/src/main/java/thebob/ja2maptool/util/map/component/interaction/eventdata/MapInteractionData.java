@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.component.interaction.data;
+package thebob.ja2maptool.util.map.component.interaction.eventdata;
 
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;

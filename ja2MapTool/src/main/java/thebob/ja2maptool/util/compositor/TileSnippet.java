@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 starcatter.
@@ -21,40 +21,64 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.component.cursor.base;
+package thebob.ja2maptool.util.compositor;
 
 import thebob.assetloader.map.core.components.IndexedElement;
-import thebob.ja2maptool.util.map.component.base.IMapInteractiveComponent;
-import thebob.ja2maptool.util.map.component.cursor.cursors.base.ICursorController;
-import thebob.ja2maptool.util.map.layers.cursor.MapCursor;
 
 /**
  *
- * @author the_bob
+ * @author starcatter
  */
-public interface IMapCursorComponent extends IMapInteractiveComponent {
+public class TileSnippet {
 
-    void setCursor(ICursorController cursor);
+	final int width;
+	final int height;
+	final int size;
+	final IndexedElement[] tiles;
 
-    int getMouseCellX();
+	public TileSnippet(int width, int height) {
+		this.width = width;
+		this.height = height;
+		size = width * height;
+		this.tiles = new IndexedElement[size];
+	}
 
-    int getMouseCellY();
+	// ---------------------------------
+	// set/get contents
+	// ---------------------------------
+	public void setXY(int x, int y, IndexedElement tile) {
+		tiles[xyToGrid(x, y)] = tile;
+	}
 
-    int getMouseCell();
+	public IndexedElement getXY(int x, int y) {
+		return tiles[xyToGrid(x, y)];
+	}
 
-    double getLastCursorX();
+	// ---------------------------------
+	// Tile coordinate transformations
+	// ---------------------------------
+	public int xyToGrid(int x, int y) {
+		return ((y) * width + (x));
+	}
 
-    double getLastCursorY();
+	public int GridToX(int gridNo) {
+		return gridNo - ((gridNo / width) * width); // so... gridNo%width ?
+	}
 
-    boolean isControlDown();
+	public int GridToY(int gridNo) {
+		return (gridNo / width);
+	}
+	
+	// ---------------------------------
 
-    boolean isShiftDown();
+	public int getWidth() {
+		return width;
+	}
 
-    boolean isAltDown();
+	public int getHeight() {
+		return height;
+	}
 
-    MapCursor getMapCursor();
+	
 
-    MapCursor getMapCursor(int x, int y, IndexedElement cursor);
-
-    MapCursor getMapCursor(double x, double y, IndexedElement cursor);
 }

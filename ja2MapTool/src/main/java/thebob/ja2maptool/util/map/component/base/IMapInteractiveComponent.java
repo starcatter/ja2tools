@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 starcatter.
@@ -23,10 +23,17 @@
  */
 package thebob.ja2maptool.util.map.component.base;
 
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+
 /**
- * TODO: split components from controllers
- * @author the_bob
+ *
+ * @author starcatter
  */
-public class MapComponent {
-    
+public interface IMapInteractiveComponent extends IMapComponent {
+
+	void mouseEvent(MouseEvent e);
+
+	void keyEvent(KeyEvent e);
+
 }

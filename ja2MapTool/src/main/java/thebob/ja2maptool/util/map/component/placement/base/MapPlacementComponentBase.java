@@ -27,7 +27,7 @@ import java.util.Observable;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
-import thebob.ja2maptool.util.map.controller.base.MapControllerBase;
+import thebob.ja2maptool.util.map.component.base.MapComponentBase;
 import thebob.ja2maptool.util.map.layers.cursor.MapCursor;
 import thebob.ja2maptool.util.map.layers.map.IMapLayerManager;
 import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
@@ -36,7 +36,7 @@ import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
  * Base class for controllers putting stuff on the map.
  * @author the_bob
  */
-public abstract class MapPlacementComponentBase extends MapControllerBase implements IMapPlacementComponent {
+public abstract class MapPlacementComponentBase extends MapComponentBase implements IMapPlacementComponent {
 
     protected SelectedTiles payload = null;
     protected MapCursor placementLocation = null;

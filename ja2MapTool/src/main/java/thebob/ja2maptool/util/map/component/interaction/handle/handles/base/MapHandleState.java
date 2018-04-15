@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 starcatter.
@@ -21,40 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.component.cursor.base;
+package thebob.ja2maptool.util.map.component.interaction.handle.handles.base;
 
-import thebob.assetloader.map.core.components.IndexedElement;
-import thebob.ja2maptool.util.map.component.base.IMapInteractiveComponent;
-import thebob.ja2maptool.util.map.component.cursor.cursors.base.ICursorController;
-import thebob.ja2maptool.util.map.layers.cursor.MapCursor;
+import thebob.ja2maptool.util.compositor.TileSnippet;
+import thebob.ja2maptool.util.map.component.interaction.handle.handles.base.MapHandle.HandleStateMode;
+
 
 /**
  *
- * @author the_bob
+ * @author starcatter
  */
-public interface IMapCursorComponent extends IMapInteractiveComponent {
+public abstract class MapHandleState {
 
-    void setCursor(ICursorController cursor);
+	public TileSnippet getState(HandleStateMode mode) {
+		return get(mode);
+	}
 
-    int getMouseCellX();
-
-    int getMouseCellY();
-
-    int getMouseCell();
-
-    double getLastCursorX();
-
-    double getLastCursorY();
-
-    boolean isControlDown();
-
-    boolean isShiftDown();
-
-    boolean isAltDown();
-
-    MapCursor getMapCursor();
-
-    MapCursor getMapCursor(int x, int y, IndexedElement cursor);
-
-    MapCursor getMapCursor(double x, double y, IndexedElement cursor);
+	protected abstract TileSnippet get(HandleStateMode mode);
 }

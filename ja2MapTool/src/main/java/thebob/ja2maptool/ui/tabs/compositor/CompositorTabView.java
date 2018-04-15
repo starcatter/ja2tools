@@ -234,13 +234,12 @@ public class CompositorTabView implements FxmlView<CompositorTabViewModel>, Init
 
     @FXML
     private Button layer_up_btn;
-    
+
     @FXML
     private Button layers_load_btn;
 
     @FXML
     private Button layers_save_btn;
-
 
     @FXML
     void layer_add(ActionEvent event) {
@@ -251,7 +250,6 @@ public class CompositorTabView implements FxmlView<CompositorTabViewModel>, Init
     void layer_del(ActionEvent event) {
         viewModel.deletePlacementLayer(layers_list.getSelectionModel().getSelectedItem());
     }
-
 
     @FXML
     void layer_copy(ActionEvent event) {
@@ -267,7 +265,7 @@ public class CompositorTabView implements FxmlView<CompositorTabViewModel>, Init
     void layer_up(ActionEvent event) {
         viewModel.movePlacementLayer(layers_list.getSelectionModel().getSelectedItem(), -1);
     }
-    
+
     @FXML
     void layers_load(ActionEvent event) {
         String path = FileSelectorWrapper.openDialog("Load placement layers...", "Placement layer group", "*.plgroup", save_map_btn.getScene().getWindow());
@@ -372,6 +370,13 @@ public class CompositorTabView implements FxmlView<CompositorTabViewModel>, Init
         layers_list.getCheckModel().getCheckedItems().addListener((ListChangeListener.Change<? extends MapSnippetPlacementLayer> c) -> {
             viewModel.updateVisibleLayers(layers_list.getCheckModel().getCheckedItems());
         });
+
+        // ----------------------------------------------------------
+        // hook up button disable props
+        layer_del_btn.disableProperty().bind(layers_list.getSelectionModel().selectedIndexProperty().lessThan(0));
+        layer_copy_btn.disableProperty().bind(layers_list.getSelectionModel().selectedIndexProperty().lessThan(0));
+        layer_down_btn.disableProperty().bind(layers_list.getSelectionModel().selectedIndexProperty().lessThan(0));
+        layer_up_btn.disableProperty().bind(layers_list.getSelectionModel().selectedIndexProperty().lessThan(0));
 
         // ----------------------------------------------------------
         // hook up selected placement texts and settings

@@ -39,7 +39,10 @@ public class MapSnippetPlacementLayer {
     boolean visible = true;
 
     public MapSnippetPlacementLayer(MapSnippetPlacementLayer cpy) {
-        this.name = cpy.name + " (copy)";
+        if(cpy == null){
+            throw new RuntimeException("MapSnippetPlacementLayer is null!");
+        }
+        this.name = cpy.name != null ? ( cpy.name + " (copy)" ) : "[unnamed] (copy)";
         visible = cpy.visible;
         cpy.placements.forEach((cell, placement) -> {
             placements.put(cell, new SnippetPlacement(placement));

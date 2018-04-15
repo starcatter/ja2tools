@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 starcatter.
@@ -21,40 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package thebob.ja2maptool.util.map.component.cursor.base;
+package thebob.ja2maptool.util.map.component.interaction.target;
 
-import thebob.assetloader.map.core.components.IndexedElement;
-import thebob.ja2maptool.util.map.component.base.IMapInteractiveComponent;
-import thebob.ja2maptool.util.map.component.cursor.cursors.base.ICursorController;
-import thebob.ja2maptool.util.map.layers.cursor.MapCursor;
+import thebob.ja2maptool.util.map.component.interaction.eventdata.MapInteractionData;
 
 /**
+ * An interface for registering components as interactive on the map surface,
+ * implementing this interface allows a map component to register with the
+ * interaction component and define interactive cells on the map.
  *
- * @author the_bob
+ * @author starcatter
  */
-public interface IMapCursorComponent extends IMapInteractiveComponent {
+public interface IMapInteractionListener {
 
-    void setCursor(ICursorController cursor);
+    /**
+     * triggers a hover event over this cell
+     *
+     * @param cell cell number
+     * @param data optional userdata assigned to this cell
+     * @return true if the event was consumed
+     */
+    boolean hoverCell(int cell, MapInteractionData data);
+    
+    /**
+     * Informs the component the cursor left its registered cells
+     * @return 
+     */
+    void hoverOff();
 
-    int getMouseCellX();
-
-    int getMouseCellY();
-
-    int getMouseCell();
-
-    double getLastCursorX();
-
-    double getLastCursorY();
-
-    boolean isControlDown();
-
-    boolean isShiftDown();
-
-    boolean isAltDown();
-
-    MapCursor getMapCursor();
-
-    MapCursor getMapCursor(int x, int y, IndexedElement cursor);
-
-    MapCursor getMapCursor(double x, double y, IndexedElement cursor);
+    /**
+     * triggers an activation event (probably a click) over this cell
+     *
+     * @param cell cell number
+     * @param data optional userdata assigned to this cell
+     * @return true if the event was consumed
+     */
+    boolean activateCell(int cell, MapInteractionData data);
 }

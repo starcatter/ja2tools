@@ -34,8 +34,21 @@ public class SnippetPlacement {
     int cellX;
     int cellY;
     int cell;
+    boolean dirty = true;
     SelectedTiles snippet;
     SelectionPlacementOptions enabledLayers;
+
+    public boolean isDirty() {
+        return dirty;
+    }
+
+    public void setDirty() {
+        this.dirty = true;
+    }
+
+    public void clearDirty() {
+        this.dirty = false;
+    }
 
     public SnippetPlacement(SnippetPlacement cpy) {
         this.cellX = cpy.getCellX();
@@ -75,14 +88,17 @@ public class SnippetPlacement {
 
     public void setCellX(int cellX) {
         this.cellX = cellX;
+        setDirty();
     }
 
     public void setCellY(int cellY) {
         this.cellY = cellY;
+        setDirty();
     }
 
     public void setCell(int cell) {
         this.cell = cell;
+        setDirty();
     }
 
     public SelectedTiles getSnippet() {
@@ -95,12 +111,13 @@ public class SnippetPlacement {
 
     public void setEnabledLayers(SelectionPlacementOptions enabledLayers) {
         this.enabledLayers = enabledLayers;
+        setDirty();
     }
 
     @Override
     public String toString() {
-        return snippet.getName() + " @( "+cellX+","+cellY+" )";
-        
-    }    
+        return snippet.getName() + " @( " + cellX + "," + cellY + " )";
+
+    }
 
 }

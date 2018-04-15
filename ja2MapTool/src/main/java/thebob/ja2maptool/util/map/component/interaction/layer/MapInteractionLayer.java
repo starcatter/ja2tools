@@ -26,9 +26,9 @@ package thebob.ja2maptool.util.map.component.interaction.layer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import thebob.ja2maptool.util.map.component.interaction.data.MapInteractionData;
-import thebob.ja2maptool.util.map.component.interaction.data.MapInteractionUserdata;
-import thebob.ja2maptool.util.map.component.interaction.target.IMapInteractiveComponent;
+import thebob.ja2maptool.util.map.component.interaction.eventdata.MapInteractionData;
+import thebob.ja2maptool.util.map.component.interaction.eventdata.MapInteractionUserdata;
+import thebob.ja2maptool.util.map.component.interaction.target.IMapInteractionListener;
 
 /**
  * An interaction layer linked to a particular map component.
@@ -40,11 +40,11 @@ public class MapInteractionLayer {
     // keys define active cells, values are optional userdata. Null is fine too.
     Map<Integer, MapInteractionUserdata> cells = new HashMap<Integer, MapInteractionUserdata>();
 
-    IMapInteractiveComponent component;
+    IMapInteractionListener component;
     boolean layerActive = true;
     boolean hovered = true;
 
-    public MapInteractionLayer(IMapInteractiveComponent component) {
+    public MapInteractionLayer(IMapInteractionListener component) {
         this.component = component;
     }
 

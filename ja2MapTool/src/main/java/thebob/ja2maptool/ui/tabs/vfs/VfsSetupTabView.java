@@ -37,12 +37,10 @@ import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
-import static jdk.nashorn.internal.objects.NativeFunction.bind;
 import org.controlsfx.control.CheckTreeView;
 
 /**

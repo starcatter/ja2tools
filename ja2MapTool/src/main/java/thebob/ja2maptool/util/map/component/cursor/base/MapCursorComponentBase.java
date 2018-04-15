@@ -31,8 +31,8 @@ import thebob.assetloader.map.core.components.IndexedElement;
 import static thebob.ja2maptool.util.map.MapUtils.screenXYtoCellX;
 import static thebob.ja2maptool.util.map.MapUtils.screenXYtoCellY;
 import thebob.ja2maptool.util.map.component.interaction.IMapInteractionComponent;
-import thebob.ja2maptool.util.map.component.interaction.data.MapInteractionData;
-import thebob.ja2maptool.util.map.controller.base.MapControllerBase;
+import thebob.ja2maptool.util.map.component.interaction.eventdata.MapInteractionData;
+import thebob.ja2maptool.util.map.component.base.MapComponentBase;
 import thebob.ja2maptool.util.map.events.MapEvent;
 import thebob.ja2maptool.util.map.layers.cursor.ICursorLayerManager;
 import thebob.ja2maptool.util.map.layers.cursor.MapCursor;
@@ -43,7 +43,7 @@ import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
  *
  * @author the_bob
  */
-public abstract class MapCursorComponentBase extends MapControllerBase implements IMapCursorComponent {
+public abstract class MapCursorComponentBase extends MapComponentBase implements IMapCursorComponent {
 
     private ICursorLayerManager cursors;
     private IMapInteractionComponent cells;

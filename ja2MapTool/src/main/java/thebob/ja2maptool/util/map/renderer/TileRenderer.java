@@ -177,41 +177,46 @@ public class TileRenderer extends Observable implements ITileRendererManager {
     }
 
     // experimental multi threaded rendering
-    /*
-    ExecutorService rendererThreads = new ThreadPoolExecutor(4, 32, 250, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(64));
-
-    public void shutdown() {
-        rendererThreads.shutdownNow();
-    }
+    
+//    ExecutorService rendererThreads = new ThreadPoolExecutor(4, 32, 250, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(64));
+//
+//    public void shutdown() {
+//        rendererThreads.shutdownNow();
+//    }
 
     protected void renderMapLayers() {
-        try {
-            rendererThreads.invokeAll(
-                    renderLayers
-                            .stream()
-                            .map((layer) -> {
-                                return (Callable<Integer>) () -> {
-                                    renderLayerGroup(layer);
-                                    return 0;
-                                };
-                            })
-                            .collect(Collectors.toList())
-            );
-        } catch (InterruptedException ex) {
-            Logger.getLogger(TileRenderer.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        long startTime = System.nanoTime();
+        
+//        try {
+//            rendererThreads.invokeAll(
+//                    renderLayers
+//                            .stream()
+//                            .map((layer) -> {
+//                                return (Callable<Integer>) () -> {
+//                                    renderLayerGroup(layer);
+//                                    return 0;
+//                                };
+//                            })
+//                            .collect(Collectors.toList())
+//            );
+//        } catch (InterruptedException ex) {
+//            Logger.getLogger(TileRenderer.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+        
+        renderLayers.forEach(layer -> {
+            renderLayerGroup(layer);
+        });
+        
+//        long endTime = System.nanoTime();
+//        long timeDiff = endTime - startTime;                
+//        System.out.println("thebob.ja2maptool.util.map.renderer.TileRenderer.renderMapLayers() " + (1 / (timeDiff / 1_000_000_000d)) + " FPS" );
     }
-    */
+    
 
     public void shutdown() {
         // nothing to do!
     }
     
-    protected void renderMapLayers() {
-        renderLayers.forEach(layer -> {
-            renderLayerGroup(layer);
-        });
-    }
 
     /*
     long startTime = 0;

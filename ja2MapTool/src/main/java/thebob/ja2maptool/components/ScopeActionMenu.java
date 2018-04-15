@@ -23,13 +23,15 @@
  */
 package thebob.ja2maptool.components;
 
-import com.sun.javafx.scene.control.skin.TabPaneSkin;
 import de.saxsys.mvvmfx.Scope;
 import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import static javafx.scene.input.MouseEvent.MOUSE_CLICKED;
 import thebob.ja2maptool.ui.main.MainScreenView;
 
 /**
@@ -82,8 +84,13 @@ public class ScopeActionMenu<T extends Scope> extends Menu {
 	closeOption = new MenuItem("Discard");
 	closeOption.setOnAction((ActionEvent event) -> {
 	    scopeList.remove(scope);
-	    if (scopeTabParent.getTabPane().getTabs().indexOf(scopeTab) != -1) {
-		((TabPaneSkin) scopeTabParent.getTabPane().getSkin()).getBehavior().closeTab(scopeTab);
+	    if (scopeTabParent.getTabPane().getTabs().indexOf(scopeTab) != -1) {			
+			//TabPane tp = scopeTabParent.getTabPane();
+			//Skin<? extends Skinnable> tps = tp.getSkin();
+			//TabPaneSkin tpss = (TabPaneSkin)tps;
+			//tpss.getBehavior().closeTab(scopeTab);
+			
+			scopeTab.getOnClosed().handle(new MouseEvent(MOUSE_CLICKED, 0, 0, 0, 0, MouseButton.PRIMARY, 0, true, true, true, true, true, true, true, true, true, true, null));											
 	    }
 	});
 	getItems().add(closeOption);

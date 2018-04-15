@@ -24,9 +24,7 @@
 package thebob.ja2maptool.scopes.mapping;
 
 import de.saxsys.mvvmfx.Scope;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -36,84 +34,84 @@ import thebob.ja2maptool.scopes.VfsAssetScope;
 import thebob.ja2maptool.util.mapping.ItemMapping;
 import thebob.ja2maptool.util.mapping.ItemMappingFileData;
 import thebob.ja2maptool.util.mapping.MappingIO;
-import thebob.ja2maptool.util.mapping.TileMappingFileData;
 
 public class ItemMappingScope implements Scope {
 
-    ObservableList<ItemMapping> mappingList = FXCollections.observableArrayList();
-    Map<Integer, ItemMapping> mappingIndex = new HashMap<Integer, ItemMapping>();
-    AssetManager sourceAssets;
-    AssetManager targetAssets;
+	ObservableList<ItemMapping> mappingList = FXCollections.observableArrayList();
+	Map<Integer, ItemMapping> mappingIndex = new HashMap<Integer, ItemMapping>();
+	AssetManager sourceAssets;
+	AssetManager targetAssets;
 
-    public ObservableList<ItemMapping> getMapping() {
-	return mappingList;
-    }
-
-    public Map<Integer, ItemMapping> getMappingIndex() {
-	return mappingIndex;
-    }
-
-    public AssetManager getSourceAssets() {
-	return sourceAssets;
-    }
-
-    public void setSourceAssets(AssetManager sourceAssets) {
-	this.sourceAssets = sourceAssets;
-    }
-
-    public AssetManager getTargetAssets() {
-	return targetAssets;
-    }
-
-    public void setTargetAssets(AssetManager targetAssets) {
-	this.targetAssets = targetAssets;
-    }
-
-    public void mapItems(Item srcItem, Item dstItem) {
-	if (mappingIndex.containsKey(srcItem.getId())) {
-	    ItemMapping mapping = mappingIndex.get(srcItem.getId());
-	    mapping.setDstItem(dstItem);
-	} else {
-	    ItemMapping mapping = new ItemMapping(srcItem, dstItem);
-	    this.mappingList.add(mapping);
-	    mappingIndex.put(srcItem.getId(), mapping);
-	}
-    }
-
-    public Map<Integer, Integer> getMappingAsMap() {
-	Map<Integer, Integer> mappingMap = new HashMap();
-	for (ItemMapping mapping : mappingList) {
-	    mappingMap.put(mapping.getSrcItem().getId(), mapping.getDstItem().getId());
-	}
-	return mappingMap;
-    }
-
-    public static ItemMappingScope loadFromFile(String path, VfsAssetScope vfsAssets) {
-	ItemMappingFileData mappingData = MappingIO.loadItemMapping(path);
-
-	AssetManager sourceAssets = vfsAssets.getOrLoadAssetManager(mappingData.getSrcConfDir(), mappingData.getSrcConf());
-	AssetManager targetAssets = vfsAssets.getOrLoadAssetManager(mappingData.getDstConfDir(), mappingData.getDstConf());
-
-	ItemMappingScope scope = new ItemMappingScope();
-	
-	if (sourceAssets != null && targetAssets != null) {
-	    scope.setTargetAssets(targetAssets);
-	    scope.setSourceAssets(sourceAssets);
-	    
-	    Map<Integer, Integer> mapping = mappingData.getMapping();
-	    for( Integer id : mapping.keySet() ){
-		Integer targetId = mapping.get(id);
-		
-		Item sourceItem = sourceAssets.getItems().getItem(id);
-		Item tatgetItem = targetAssets.getItems().getItem(targetId);
-		
-		scope.mapItems(sourceItem, tatgetItem);
-	    }
-	} else {
-	    // TODO: display a prompt here to either ignore this error or pick a directory!
-	    System.out.println("thebob.ja2maptool.scopes.ItemMappingScope.loadFromFile(): failed to laod assets");	    
+	public ObservableList<ItemMapping> getMapping() {
+		return mappingList;
 	}
 
-	return scope;
-    }
+	public Map<Integer, ItemMapping> getMappingIndex() {
+		return mappingIndex;
+	}
+
+	public AssetManager getSourceAssets() {
+		return sourceAssets;
+	}
+
+	public void setSourceAssets(AssetManager sourceAssets) {
+		this.sourceAssets = sourceAssets;
+	}
+
+	public AssetManager getTargetAssets() {
+		return targetAssets;
+	}
+
+	public void setTargetAssets(AssetManager targetAssets) {
+		this.targetAssets = targetAssets;
+	}
+
+	public void mapItems(Item srcItem, Item dstItem) {
+		if (mappingIndex.containsKey(srcItem.getId())) {
+			ItemMapping mapping = mappingIndex.get(srcItem.getId());
+			mapping.setDstItem(dstItem);
+		} else {
+			ItemMapping mapping = new ItemMapping(srcItem, dstItem);
+			this.mappingList.add(mapping);
+			mappingIndex.put(srcItem.getId(), mapping);
+		}
+		//System.out.println("mapItems: " + srcItem.getName() + " -> " + dstItem.getName());
+	}
+
+	public Map<Integer, Integer> getMappingAsMap() {
+		Map<Integer, Integer> mappingMap = new HashMap();
+		for (ItemMapping mapping : mappingList) {
+			mappingMap.put(mapping.getSrcItem().getId(), mapping.getDstItem().getId());
+		}
+		return mappingMap;
+	}
+
+	public static ItemMappingScope loadFromFile(String path, VfsAssetScope vfsAssets) {
+		ItemMappingFileData mappingData = MappingIO.loadItemMapping(path);
+
+		AssetManager sourceAssets = vfsAssets.getOrLoadAssetManager(mappingData.getSrcConfDir(), mappingData.getSrcConf());
+		AssetManager targetAssets = vfsAssets.getOrLoadAssetManager(mappingData.getDstConfDir(), mappingData.getDstConf());
+
+		ItemMappingScope scope = new ItemMappingScope();
+
+		if (sourceAssets != null && targetAssets != null) {
+			scope.setTargetAssets(targetAssets);
+			scope.setSourceAssets(sourceAssets);
+
+			Map<Integer, Integer> mapping = mappingData.getMapping();
+			for (Integer id : mapping.keySet()) {
+				Integer targetId = mapping.get(id);
+
+				Item sourceItem = sourceAssets.getItems().getItem(id);
+				Item tatgetItem = targetAssets.getItems().getItem(targetId);
+
+				scope.mapItems(sourceItem, tatgetItem);
+			}
+		} else {
+			// TODO: display a prompt here to either ignore this error or pick a directory!
+			System.out.println("thebob.ja2maptool.scopes.ItemMappingScope.loadFromFile(): failed to laod assets");
+		}
+
+		return scope;
+	}
 }

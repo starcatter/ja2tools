@@ -34,10 +34,9 @@ import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.compositor.SelectionPlacementOptions;
 import thebob.ja2maptool.util.compositor.SnippetPlacement;
 import thebob.ja2maptool.util.map.component.interaction.IMapInteractionComponent;
-import thebob.ja2maptool.util.map.component.interaction.data.MapInteractionData;
-import thebob.ja2maptool.util.map.component.interaction.data.types.PlacementInteractionData;
+import thebob.ja2maptool.util.map.component.interaction.eventdata.MapInteractionData;
+import thebob.ja2maptool.util.map.component.interaction.eventdata.types.PlacementInteractionData;
 import thebob.ja2maptool.util.map.component.interaction.layer.MapInteractionLayer;
-import thebob.ja2maptool.util.map.component.interaction.target.IMapInteractiveComponent;
 import thebob.ja2maptool.util.map.component.placement.base.MapPlacementComponentBase;
 import thebob.ja2maptool.util.map.events.MapEvent;
 import thebob.ja2maptool.util.map.events.MapPlacementEventPayload;
@@ -49,13 +48,14 @@ import thebob.ja2maptool.util.map.layers.cursor.MapCursor;
 import thebob.ja2maptool.util.map.layers.map.IMapLayerManager;
 import thebob.ja2maptool.util.map.layers.preview.PreviewLayer;
 import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
+import thebob.ja2maptool.util.map.component.interaction.target.IMapInteractionListener;
 
-public class MapSnippetPlacementComponent extends MapPlacementComponentBase implements IMapSnippetPlacementComponent, IMapInteractiveComponent {
+public class MapSnippetPlacementComponent extends MapPlacementComponentBase implements IMapSnippetPlacementComponent, IMapInteractionListener {
 
     private static final IndexedElement PLACEMENT_TILES_CURSOR = new IndexedElement(131, 7);
     private static final IndexedElement PLACEMENT_TILES_ACTIVE_CURSOR = new IndexedElement(131, 2);
     private static final IndexedElement PLACEMENT_CURSOR = new IndexedElement(131, 16);
-    private SelectionPlacementOptions snippetPlacementOptions = new SelectionPlacementOptions(true,true,true,true,true,true,true,true);
+    private SelectionPlacementOptions snippetPlacementOptions = new SelectionPlacementOptions(true, true, true, true, true, true, true, true);
 
     public enum PlacementMode {
         Single, // can place the payload once
@@ -184,20 +184,28 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
 
         // update state
         updateStateLayer();
-        updateVisibleLayers();
+        updateVisibleLayers(true);
     }
 
     @Override
     public void updateVisibleLayers() {
+        updateVisibleLayers(false);
+    }
+
+    private void updateVisibleLayers(boolean force) {
         previewLayer.setBatchMode(true);
         layers.forEach(layer -> {
             if (layer.isVisible()) {
                 layer.getPlacements().forEach((cell, placement) -> {
-                    previewLayer.addPlacement(cell, placement);
+                    if (placement.isDirty() || force) {
+                        previewLayer.addPlacement(cell, placement);
+                        placement.clearDirty();
+                    }
                 });
             } else {
                 layer.getPlacements().forEach((cell, placement) -> {
                     previewLayer.removePlacement(cell);
+                    placement.setDirty();
                 });
             }
         });
@@ -333,10 +341,9 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
     }
 
     private void pick_cancel() {
-        pickedPlacement = null;        
+        pickedPlacement = null;
         setMode(PlacementMode.Multi);
         setContents(null);  // make sure to set pickedPlacement to null first!
-        
 
         // System.out.println("thebob.ja2maptool.util.map.component.placement.snippets.MapSnippetPlacementComponent.pick_cancel()");
         //placements.put(pickedPlacement.getCell(),pickedPlacement);
@@ -357,17 +364,17 @@ public class MapSnippetPlacementComponent extends MapPlacementComponentBase impl
         previewLayer.addPlacement(added.getCell(), added);
 
         notifyObservers(new MapEvent(MapEvent.ChangeType.PLACEMENT_ADDED, new MapPlacementEventPayload(added)));
-        
+
         if (pickedPlacement != null) {
             remove(pickedPlacement);
         }
         if (mode == PlacementMode.Single) {
             setContents(null);
-            setMode(PlacementMode.Multi);            
+            setMode(PlacementMode.Multi);
         }
 
         //updateStateLayer();   // just select the new thing, it will update the state
-        select(added);        
+        select(added);
     }
 
     private void remove(SnippetPlacement deleted) {

@@ -33,24 +33,24 @@ import javafx.scene.input.MouseEvent;
 import thebob.assetloader.map.core.components.IndexedElement;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
 import thebob.ja2maptool.util.compositor.SnippetPlacement;
+import thebob.ja2maptool.util.map.component.base.MapComponentBase;
 import thebob.ja2maptool.util.map.component.interaction.IMapInteractionComponent;
-import thebob.ja2maptool.util.map.component.interaction.data.MapInteractionData;
+import thebob.ja2maptool.util.map.component.interaction.eventdata.MapInteractionData;
 import thebob.ja2maptool.util.map.component.interaction.layer.MapInteractionLayer;
-import thebob.ja2maptool.util.map.component.interaction.target.IMapInteractiveComponent;
 import thebob.ja2maptool.util.map.component.placement.snippets.IMapSnippetPlacementComponent;
-import thebob.ja2maptool.util.map.controller.base.MapControllerBase;
 import thebob.ja2maptool.util.map.events.MapEvent;
 import thebob.ja2maptool.util.map.layers.cursor.CursorLayer;
 import static thebob.ja2maptool.util.map.layers.cursor.CursorLayer.LAYER_ACTION;
 import thebob.ja2maptool.util.map.layers.cursor.ICursorLayerManager;
 import thebob.ja2maptool.util.map.layers.map.IMapLayerManager;
 import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
+import thebob.ja2maptool.util.map.component.interaction.target.IMapInteractionListener;
 
 /**
  *
  * @author the_bob
  */
-public class MapSelectionComponent extends MapControllerBase implements IMapSelectionComponent, IMapInteractiveComponent {
+public class MapSelectionComponent extends MapComponentBase implements IMapSelectionComponent, IMapInteractionListener {
 
     protected static final IndexedElement SELECTED_TILES_CURSOR = new IndexedElement(131, 10);
     protected static final IndexedElement SELECTED_TILES_HOVER_CURSOR = new IndexedElement(131, 8);

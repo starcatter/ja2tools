@@ -41,6 +41,8 @@ import thebob.ja2maptool.util.map.component.cursor.cursors.PlacementCursorContro
 import thebob.ja2maptool.util.map.component.cursor.cursors.SelectionCursorController;
 import thebob.ja2maptool.util.map.component.interaction.IMapInteractionComponent;
 import thebob.ja2maptool.util.map.component.interaction.MapInteractionComponent;
+import thebob.ja2maptool.util.map.component.interaction.handle.IMapHandleComponent;
+import thebob.ja2maptool.util.map.component.interaction.handle.MapHandleComponent;
 import thebob.ja2maptool.util.map.component.placement.base.IMapPlacementComponent;
 import thebob.ja2maptool.util.map.component.placement.clipboard.IMapClipboardComponent;
 import thebob.ja2maptool.util.map.component.placement.clipboard.MapClipboardComponent;
@@ -73,7 +75,9 @@ public class MapCompositorController extends MapControllerBase implements IMapCo
 
     // Components
     protected IMapInteractionComponent cells = new MapInteractionComponent(getRenderer(), getMap());
-    protected IMapCursorComponent cursors = new MapCursorComponent(getRenderer(), getMap(), cursorLayer, cells);
+	protected IMapCursorComponent cursors = new MapCursorComponent(getRenderer(), getMap(), cursorLayer, cells);
+	protected IMapHandleComponent handles = new MapHandleComponent(getRenderer(), getMap(), cursorLayer, cells);
+    
     protected IMapSnippetPlacementComponent placements = new MapSnippetPlacementComponent(getRenderer(), getMap(), cursorLayer, previewLayer, cells);
     protected IMapSelectionComponent selection = new MapSelectionComponent(getRenderer(), getMap(), cursorLayer, cells, placements);
     protected IMapClipboardComponent clipboard = new MapClipboardComponent(getRenderer(), getMap(), cursorLayer, previewLayer, selection);

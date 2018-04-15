@@ -23,9 +23,9 @@
  */
 package thebob.ja2maptool.util.map.component.interaction;
 
-import thebob.ja2maptool.util.map.component.interaction.data.MapInteractionData;
+import thebob.ja2maptool.util.map.component.interaction.eventdata.MapInteractionData;
 import thebob.ja2maptool.util.map.component.interaction.layer.MapInteractionLayer;
-import thebob.ja2maptool.util.map.component.interaction.target.IMapInteractiveComponent;
+import thebob.ja2maptool.util.map.component.interaction.target.IMapInteractionListener;
 
 /**
  *
@@ -42,7 +42,7 @@ public interface IMapInteractionComponent {
      * this layer
      * @return interaction layer for the component.
      */
-    MapInteractionLayer getLayer(IMapInteractiveComponent self);
+    MapInteractionLayer getLayer(IMapInteractionListener self);
 
     /**
      * Call this after performing any changes on interaction layers, this method

@@ -30,93 +30,81 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.stream.Collectors;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
-import thebob.ja2maptool.util.map.component.interaction.data.MapInteractionData;
+import thebob.ja2maptool.util.map.component.base.MapComponentBase;
+import thebob.ja2maptool.util.map.component.interaction.eventdata.MapInteractionData;
 import thebob.ja2maptool.util.map.component.interaction.layer.MapInteractionLayer;
-import thebob.ja2maptool.util.map.component.interaction.target.IMapInteractiveComponent;
-import thebob.ja2maptool.util.map.controller.base.MapControllerBase;
 import thebob.ja2maptool.util.map.layers.map.IMapLayerManager;
 import thebob.ja2maptool.util.map.renderer.ITileRendererManager;
+import thebob.ja2maptool.util.map.component.interaction.target.IMapInteractionListener;
 
 /**
- * The interaction component is hooked up to the cursor component and keeps
- * track of areas on the map that should react to being clicked or hovered.
+ * The interaction component is hooked up to the cursor component and keeps track of areas on the map that should react
+ * to being clicked or hovered.
  *
  * @author starcatter
  */
-public class MapInteractionComponent extends MapControllerBase implements IMapInteractionComponent {
+public class MapInteractionComponent extends MapComponentBase implements IMapInteractionComponent {
 
-    // map of registered layers (one per component)
-    Map<IMapInteractiveComponent, MapInteractionLayer> layers = new HashMap<IMapInteractiveComponent, MapInteractionLayer>();
-    // multimap of all active cells mapped to their layers.
-    ListMultimap<Integer, MapInteractionLayer> layerMap = ArrayListMultimap.create();
+	// map of registered layers (one per component)
+	Map<IMapInteractionListener, MapInteractionLayer> layers = new HashMap<IMapInteractionListener, MapInteractionLayer>();
+	// multimap of all active cells mapped to their layers.
+	ListMultimap<Integer, MapInteractionLayer> layerMap = ArrayListMultimap.create();
 
-    public MapInteractionComponent(ITileRendererManager renderer, IMapLayerManager map) {
-        super(renderer, map);
-    }
+	public MapInteractionComponent(ITileRendererManager renderer, IMapLayerManager map) {
+		super(renderer, map);
+	}
 
-    @Override
-    public MapInteractionLayer getLayer(IMapInteractiveComponent self) {
-        if (layers.containsKey(self) == false) {
-            MapInteractionLayer layer = new MapInteractionLayer(self);
-            layers.put(self, layer);
-            return layer;
-        } else {
-            return layers.get(self);
-        }
-    }
+	@Override
+	public MapInteractionLayer getLayer(IMapInteractionListener self) {
+		if (layers.containsKey(self) == false) {
+			MapInteractionLayer layer = new MapInteractionLayer(self);
+			layers.put(self, layer);
+			return layer;
+		} else {
+			return layers.get(self);
+		}
+	}
 
-    @Override
-    public void refreshLayers() {
-        layerMap.clear();
-        layers.forEach((component, layer) -> {
-            layer.getCells().forEach(cell -> {
-                layerMap.put(cell, layer);
-            });
-        });
-    }
+	@Override
+	public void refreshLayers() {
+		layerMap.clear();
+		layers.forEach((component, layer) -> {
+			layer.getCells().forEach(cell -> {
+				layerMap.put(cell, layer);
+			});
+		});
+	}
 
-    @Override
-    public void hoverCell(int cell, MapInteractionData data) {
-        List<MapInteractionLayer> missedLayers = layers.values().stream().filter( l -> l.isHovered() ).collect(Collectors.toList());
+	@Override
+	public void hoverCell(int cell, MapInteractionData data) {
+		List<MapInteractionLayer> missedLayers = layers.values().stream().filter(l -> l.isHovered()).collect(Collectors.toList());
 
-        boolean consumed = false;
-        for (MapInteractionLayer layer : layerMap.get(cell)) {
-            if (consumed == false) {
-                if (layer.hoverCell(cell, data)) {
-                    consumed = true;
-                }
-            }
-            missedLayers.remove(layer);
-        }
+		boolean consumed = false;
+		for (MapInteractionLayer layer : layerMap.get(cell)) {
+			if (consumed == false) {
+				if (layer.hoverCell(cell, data)) {
+					consumed = true;
+				}
+			}
+			missedLayers.remove(layer);
+		}
 
-        missedLayers.forEach( l -> l.hoverOff() );        
-    }
+		missedLayers.forEach(l -> l.hoverOff());
+	}
 
-    @Override
-    public boolean activateCell(int cell, MapInteractionData data) {
-        for (MapInteractionLayer component : layerMap.get(cell)) {
-            if (component.activateCell(cell, data)) {
-                return true;
-            }
-        }
-        return false;
-    }
+	@Override
+	public boolean activateCell(int cell, MapInteractionData data) {
+		for (MapInteractionLayer component : layerMap.get(cell)) {
+			if (component.activateCell(cell, data)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    @Override
-    public void mouseEvent(MouseEvent e) {
+	@Override
+	public void update(Observable o, Object arg) {
 
-    }
-
-    @Override
-    public void keyEvent(KeyEvent e) {
-
-    }
-
-    @Override
-    public void update(Observable o, Object arg) {
-
-    }
+	}
 
 }

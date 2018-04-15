@@ -23,17 +23,11 @@
  */
 package thebob.ja2maptool.components;
 
-import com.sun.javafx.scene.control.skin.TabPaneSkin;
-import de.saxsys.mvvmfx.Scope;
-import java.util.List;
-import javafx.event.ActionEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tab;
 import thebob.assetloader.vfs.VFSConfig;
 import thebob.assetloader.vfs.VirtualFileSystem;
 import thebob.ja2maptool.scopes.VfsAssetScope;
-import thebob.ja2maptool.ui.main.MainScreenView;
 
 /**
  *

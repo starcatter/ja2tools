@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 starcatter.
@@ -23,11 +23,6 @@
  */
 package thebob.ja2maptool.util.map.renderer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Observable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -40,8 +35,9 @@ import thebob.ja2maptool.util.map.layers.base.ITileLayerGroup;
 import thebob.ja2maptool.util.map.layers.base.TileLayer;
 import thebob.ja2maptool.util.map.renderer.renderlayer.OverlaySettings;
 
+import java.util.*;
+
 /**
- *
  * @author the_bob
  */
 public class TileRenderer extends Observable implements ITileRendererManager {
@@ -55,7 +51,7 @@ public class TileRenderer extends Observable implements ITileRendererManager {
 
         public void bind(Canvas parent) {
             //System.out.println("thebob.ja2maptool.util.renderer.base.TileRenderer.TileRendererTarget.bind()");
-            StackPane canvasParent = (StackPane) parent.getParent();	// hopefully the canvas is in a stackpane, like it should
+            StackPane canvasParent = (StackPane) parent.getParent();    // hopefully the canvas is in a stackpane, like it should
             if (canvasParent.getChildren().indexOf(targetCanvas) < 0) {
                 canvasParent.getChildren().add(targetCanvas);
             }
@@ -87,7 +83,7 @@ public class TileRenderer extends Observable implements ITileRendererManager {
             targetCanvas.setVisible(false);
             targetCanvas.setDisable(true);
 
-            StackPane canvasParent = (StackPane) targetCanvas.getParent();	// hopefully the canvas is in a stackpane, like it should
+            StackPane canvasParent = (StackPane) targetCanvas.getParent();    // hopefully the canvas is in a stackpane, like it should
             canvasParent.getChildren().remove(targetCanvas);
             targetCanvas = null;
             canvasGraphicsContext = null;
@@ -132,7 +128,11 @@ public class TileRenderer extends Observable implements ITileRendererManager {
     int canvasY = 800;
 
     public int mapRowColToPos(int r, int c) {
-        return ((r) * mapCols + (c));
+        if (r < 0 || r > mapRows || c < 0 || c > mapCols) {
+            return -1;
+        } else {
+            return ((r) * mapCols + (c));
+        }
     }
 
     // ----------------------------------------
@@ -176,66 +176,18 @@ public class TileRenderer extends Observable implements ITileRendererManager {
         }
     }
 
-    // experimental multi threaded rendering
-    
-//    ExecutorService rendererThreads = new ThreadPoolExecutor(4, 32, 250, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(64));
-//
-//    public void shutdown() {
-//        rendererThreads.shutdownNow();
-//    }
-
     protected void renderMapLayers() {
-//        long startTime = System.nanoTime();
-        
-//        try {
-//            rendererThreads.invokeAll(
-//                    renderLayers
-//                            .stream()
-//                            .map((layer) -> {
-//                                return (Callable<Integer>) () -> {
-//                                    renderLayerGroup(layer);
-//                                    return 0;
-//                                };
-//                            })
-//                            .collect(Collectors.toList())
-//            );
-//        } catch (InterruptedException ex) {
-//            Logger.getLogger(TileRenderer.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-        
         renderLayers.forEach(layer -> {
             renderLayerGroup(layer);
         });
-        
-//        long endTime = System.nanoTime();
-//        long timeDiff = endTime - startTime;                
-//        System.out.println("thebob.ja2maptool.util.map.renderer.TileRenderer.renderMapLayers() " + (1 / (timeDiff / 1_000_000_000d)) + " FPS" );
     }
-    
+
 
     public void shutdown() {
         // nothing to do!
     }
-    
 
-    /*
-    long startTime = 0;
-    int fps = 0;
-     */
     protected void renderLayerGroup(ITileLayerGroup layerGroup) {
-        /*
-        long endTime = System.nanoTime();
-        if (endTime > startTime + 1_000_000_000) {
-            long timeDiff = endTime - startTime;
-            System.out.println("thebob.ja2maptool.util.map.renderer.TileRenderer.renderLayerGroup() " + (timeDiff / 1_000_000_000d) + ": " + fps + " FPS");
-            startTime = System.nanoTime();
-            fps = 0;
-        } else if (fps > 600) {
-            return;
-        } else {
-            fps++;
-        }
-         */
         int cell = 0;
 
         int displayX = 0;
@@ -513,6 +465,8 @@ public class TileRenderer extends Observable implements ITileRendererManager {
                 case MAP_ALTERED:
                     updateLayerGroups();
                     break;
+                default:
+
             }
         }
 

@@ -153,8 +153,7 @@ public class MainScreenView implements FxmlView<MainScreenViewModel>, Initializa
 
 	MapSelectionDialogView selectorView = selectorTouple.getCodeBehind();
 	selectorView.setDisplayingStage(showDialog);
-
-	MapSelectionDialogViewModel selectorViewModel = selectorTouple.getViewModel();
+	
 	showDialog.setOnHidden(closeEvent -> {
 	    if (mapScope.getMapData() != null) {
 		addTab(MapViewerTabView.class, "Map", mapScope);

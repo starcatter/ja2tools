@@ -225,6 +225,8 @@ public abstract class MapCursorComponentBase extends MapComponentBase implements
                         updateCursor();
                     }
                     break;
+                default:
+
             }
         }
     }

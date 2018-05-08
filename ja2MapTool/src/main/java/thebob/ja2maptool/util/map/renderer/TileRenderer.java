@@ -135,6 +135,37 @@ public class TileRenderer extends Observable implements ITileRendererManager {
         }
     }
 
+    public int mapRowColToPos(int r, int c, ITileLayerGroup layerGroup) {
+        if (    // check limits
+                (layerGroup.limitDrawArea() && (
+                        r < 0
+                        || c < 0
+                        || r > mapRows
+                        || c > mapCols
+                )) || (layerGroup.trimEdges() && (
+                        // trim edges
+                        r + c <= mapRows / 2
+                        || r - c >= mapRows / 2
+                        || c - r >= mapRows / 2
+                        || r + c >= mapRows * 1.5
+                ))) {
+            return -1;
+        }
+
+        return ((r) * mapCols + (c));
+    }
+
+    /*
+    else if ( limits != null && (
+                    c >  layerGroup.gridNoToCellX( limits[0] )  // E
+                 || c <  layerGroup.gridNoToCellX( limits[1] )  // W
+                 || r <  layerGroup.gridNoToCellY( limits[2] )  // N
+                 || r >  layerGroup.gridNoToCellY( limits[3] )  // S
+        ) ){
+            return -1;
+        }
+    * */
+
     // ----------------------------------------
     // Canvas assignment
     // ----------------------------------------
@@ -217,7 +248,7 @@ public class TileRenderer extends Observable implements ITileRendererManager {
 
             do {
 
-                cell = mapRowColToPos(mapPosY, mapPosX);
+                cell = mapRowColToPos(mapPosY, mapPosX, layerGroup);
                 if (cell >= 0 && cell < mapSize) {
                     displayCellLayers(cell, displayX, displayY, layerGroup);
                 }
@@ -266,10 +297,10 @@ public class TileRenderer extends Observable implements ITileRendererManager {
                 if (tile != null) {
                     Image tileImage = tile.getImage();
                     int offsetX = tile.getOffsetX();
-                    int offxetY = tile.getOffsetY();
+                    int offsetY = tile.getOffsetY();
 
                     double tileX = (displayX + offsetX + layerOffsetX) * scale;
-                    double tileY = (displayY + offxetY + layerOffsetY) * scale;
+                    double tileY = (displayY + offsetY + layerOffsetY) * scale;
                     double tileWidth = tile.getWidth() * scale;
                     double tileHeight = tile.getHeight() * scale;
 

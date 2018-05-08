@@ -37,14 +37,14 @@ public class MapScope implements Scope {
     public static final String MAP_UPDATED = "MAP_UPDATED";
     public static final String SELECTION_UPDATED = "SELECTION_UPDATED";
     
-    public enum mapLoadMode{
+    public enum MapLoadMode {
 	From_VFS,
 	From_File
     }
     
     String mapName = null;	    // short name for the map
     String mapAssetPath = null;	    // vfs path for the map
-    mapLoadMode loadMode = null;
+    MapLoadMode loadMode = null;
     
     AssetManager mapAssets = null;
     
@@ -79,11 +79,11 @@ public class MapScope implements Scope {
 	this.mapAssetPath = mapAssetPath;
     }
 
-    public mapLoadMode getLoadMode() {
+    public MapLoadMode getLoadMode() {
 	return loadMode;
     }
 
-    public void setLoadMode(mapLoadMode loadMode) {
+    public void setLoadMode(MapLoadMode loadMode) {
 	this.loadMode = loadMode;
     }
 

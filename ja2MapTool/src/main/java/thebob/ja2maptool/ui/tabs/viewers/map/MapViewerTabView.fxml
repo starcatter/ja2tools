@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
 The MIT License
 
@@ -64,6 +65,8 @@ THE SOFTWARE.
                   <ToggleButton fx:id="layer_roof" mnemonicParsing="false" text="5" />
                   <ToggleButton fx:id="layer_onroof" mnemonicParsing="false" text="6" />
                   <Separator />
+                  <ToggleButton fx:id="render_limit" mnemonicParsing="false" text="L" />
+                  <ToggleButton fx:id="render_trim" mnemonicParsing="false" text="T" />
               </items>
             </ToolBar>
          </right>

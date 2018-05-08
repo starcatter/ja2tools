@@ -52,9 +52,19 @@ public class MapViewerTabViewModel implements ViewModel {
     IMapViewerController viewer = null;
 
     StringProperty mapNameProperty = new SimpleStringProperty();
+	private BooleanProperty[] displayButtons;
 
-    public void shutdownRenderer() {
+	public void shutdownRenderer() {
         renderer.shutdown();
+    }
+
+    public void setDisplayButtons(BooleanProperty[] displayButtons) {
+        this.displayButtons = displayButtons;
+		renderer.setMapDisplayButtons(displayButtons);
+    }
+
+    public BooleanProperty[] getDisplayButtons() {
+        return displayButtons;
     }
 
     public enum MapViewerMode {
@@ -120,7 +130,7 @@ public class MapViewerTabViewModel implements ViewModel {
 	return mapNameProperty;
     }
 
-    void setLayerButtons(BooleanProperty[] viewerButtons) {
+    void setViewerButtons(BooleanProperty[] viewerButtons) {
 	renderer.setMapLayerButtons(viewerButtons);
     }
 

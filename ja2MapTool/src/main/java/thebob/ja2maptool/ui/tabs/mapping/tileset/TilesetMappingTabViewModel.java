@@ -107,16 +107,16 @@ public class TilesetMappingTabViewModel implements ViewModel {
 	    Tile[] sourceTiles = mappingScope.getSourceTileset().getTiles(i);
 
 	    if (sourceTiles == null || sourceTiles.length < 1) {
-		System.out.println("thebob.ja2maptool.ui.tabs.mapping.tileset.TilesetMappingTabViewModel.initTilesetMappingLists(): skip src type " + i);
-		continue;
+			System.out.println("thebob.ja2maptool.ui.tabs.mapping.tileset.TilesetMappingTabViewModel.initTilesetMappingLists(): skip src type " + i);
+			continue;
 	    }
 
 	    Tile[] targetTiles = mappingScope.getTargetTileset().getTiles(j);
 	    if (targetTiles == null || targetTiles.length < 1) {
-		System.out.println("thebob.ja2maptool.ui.tabs.mapping.tileset.TilesetMappingTabViewModel.initTilesetMappingLists(): skip dst type " + j);
+			System.out.println("thebob.ja2maptool.ui.tabs.mapping.tileset.TilesetMappingTabViewModel.initTilesetMappingLists(): skip dst type " + j);
 	    };
 
-	    ObservableList<TileMapping> mappingListForType = buildMappingListForTileType(i, j, sourceTiles.length, targetTiles.length);
+	    ObservableList<TileMapping> mappingListForType = buildMappingListForTileType(i, j, sourceTiles.length, targetTiles != null ? targetTiles.length : 0);
 
 	    TileCategoryMapping tileCat = new TileCategoryMapping(i, TilesetMappingScope.getTileCategortyName(i), TileCategoryMapping.RemapStatus.None, mappingListForType);
 	    mappingScope.getMappings().add(tileCat);

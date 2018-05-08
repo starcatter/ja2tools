@@ -60,14 +60,14 @@ public interface ITileLayerGroup extends Iterable<TileLayer> {
      * @param sGridNo
      * @return X (column) coordinate of this grid for a map of this size
      */
-    public int GridNoToCellX(int sGridNo);
+    public int gridNoToCellX(int sGridNo);
 
     /**
      *
      * @param sGridNo
      * @return Y (row) coordinate of this grid for a map of this size
      */
-    public int GridNoToCellY(int sGridNo);
+    public int gridNoToCellY(int sGridNo);
 
     // -----------------------
     // layer info and setup
@@ -89,6 +89,18 @@ public interface ITileLayerGroup extends Iterable<TileLayer> {
      * @return total number of cells on this layer.
      */
     int getMapSize();
+
+    /**
+     * True means nothing can be drawn beyond the layer area defined by rows x cols
+     * @return
+     */
+    boolean limitDrawArea();
+
+    /**
+     * True means the triangular edges are to be trimmed, so the layer is rendered as a rectangle rather than a diamond
+     * @return
+     */
+    boolean trimEdges();
 
     Tileset getTileset();
 

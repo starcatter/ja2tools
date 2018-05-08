@@ -39,6 +39,8 @@ public interface IMapLayerControls {
     
     // connects viewer buttons to the map layers
     public void setMapLayerButtons(BooleanProperty[] viewerButtons);
+
+    void setMapDisplayButtons(BooleanProperty[] displayButtons);
 }
 
 

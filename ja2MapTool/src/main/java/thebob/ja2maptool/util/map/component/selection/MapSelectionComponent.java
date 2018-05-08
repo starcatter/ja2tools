@@ -25,6 +25,7 @@ package thebob.ja2maptool.util.map.component.selection;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Observable;
 import javafx.application.Platform;
 import javafx.scene.input.KeyEvent;
@@ -145,7 +146,7 @@ public class MapSelectionComponent extends MapComponentBase implements IMapSelec
             updateSelectionGrids(selMode);
 
             notifyObservers(new MapEvent(MapEvent.ChangeType.SELECTION_CHANGED));
-        } else if (selectionEndCell != null && mouseCellX == selectionEndX && mouseCellY == selectionEndY) {
+        } else if (mouseCellX == selectionEndX && mouseCellY == selectionEndY) {
             //selMode = selMode.getNext();
             //updateSelectionGrids(selMode);
         }
@@ -183,10 +184,15 @@ public class MapSelectionComponent extends MapComponentBase implements IMapSelec
     Integer lastSelectionEndCell = null;
 
     private void updateSelectionGrids(SelectionMode mode) {
-        if (selectionStartCell != null && selectionEndCell != null && (lastSelectionStartCell != selectionStartCell || lastSelectionEndCell != selectionEndCell || dragging)) {
+        if (    (selectionStartCell != null)
+             && (selectionEndCell != null)
+             && (       (!Objects.equals(lastSelectionStartCell, selectionStartCell))
+                     || (!Objects.equals(lastSelectionEndCell, selectionEndCell))
+                     || dragging)
+                ) {
 
             lastSelectionStartCell = selectionStartCell;
-            lastSelectionEndCell = lastSelectionEndCell;
+            lastSelectionEndCell = selectionEndCell;
 
             rectStartX = selectionStartX < selectionEndX ? selectionStartX : selectionEndX;
             rectEndX = selectionStartX > selectionEndX ? selectionStartX : selectionEndX;

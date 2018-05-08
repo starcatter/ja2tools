@@ -246,8 +246,6 @@ public class ConvertMapTabView implements FxmlView<ConvertMapTabViewModel>, Init
 
 	MapSelectionDialogView selectorView = selectorTouple.getCodeBehind();
 	selectorView.setDisplayingStage(showDialog);
-
-	MapSelectionDialogViewModel selectorViewModel = selectorTouple.getViewModel();
     }
 
     @FXML

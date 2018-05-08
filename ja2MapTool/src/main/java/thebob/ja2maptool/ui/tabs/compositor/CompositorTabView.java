@@ -91,8 +91,6 @@ public class CompositorTabView implements FxmlView<CompositorTabViewModel>, Init
 
         MapSelectionDialogView selectorView = selectorTouple.getCodeBehind();
         selectorView.setDisplayingStage(showDialog);
-
-        MapSelectionDialogViewModel selectorViewModel = selectorTouple.getViewModel();
     }
 
     // unused?

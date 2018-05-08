@@ -175,6 +175,7 @@ public class MapCompositorController extends MapControllerBase implements IMapCo
                 case PLACEMENT_LAYER_ADDED:
                     scope.updateLayers();
                     break;
+                default:
 
             }
         }

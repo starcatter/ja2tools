@@ -79,6 +79,12 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
     @FXML
     private ToggleButton layer_onroof;
 
+    @FXML
+    private ToggleButton render_limit;
+
+    @FXML
+    private ToggleButton render_trim;
+
     // -------------
     double zoomFactor = 0.05;
 
@@ -108,26 +114,9 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
 
         prev_window.requestFocus();
 
-        double dx = event.getX();
-        double dy = event.getY();
-
         if (event.getButton() == MouseButton.MIDDLE) {
             toggleToolbars();
-        }/* else if (event.getButton() == MouseButton.PRIMARY) {
-
-	    // move the window toward the click location
-	    double wx = prev_window.getWidth() / 2d;
-	    double wy = prev_window.getHeight() / 2d;
-
-	    double deltaX = (dx - wx) / wx;
-	    double deltaY = (dy - wy) / wx;
-
-	    double transX = deltaX / 2 + deltaY / 2;
-	    double transY = deltaY - deltaX / 2;
-
-	    viewModel.scrollPreview((int) (transX * 10d), (int) (transY * 10d));
-	}
-         */
+        }
     }
 
     @FXML
@@ -142,7 +131,7 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
         if (newZoom > maxZoom) {
             newZoom = maxZoom;
         }
-        if (zoom != newZoom) {
+        if ( Math.abs(zoom - newZoom) > 0.0001f ) {
             viewModel.getViewer().setScale(newZoom);
         }
 
@@ -234,8 +223,6 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
     @Inject
     private Stage primaryStage;
 
-    boolean cursorInViewer = false;
-
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // setup canvas autosize
@@ -267,10 +254,16 @@ public class MapViewerTabView implements FxmlView<MapViewerTabViewModel>, Initia
             layer_struct.selectedProperty(),
             layer_shadow.selectedProperty(),
             layer_roof.selectedProperty(),
-            layer_onroof.selectedProperty()
+            layer_onroof.selectedProperty(),
         };
 
-        viewModel.setLayerButtons(viewerButtons);
+        BooleanProperty[] displayButtons = new BooleanProperty[]{
+                render_limit.selectedProperty(),
+                render_trim.selectedProperty(),
+        };
+
+        viewModel.setViewerButtons(viewerButtons);
+        viewModel.setDisplayButtons(displayButtons);
 
         // events
         viewModel.subscribe(MapViewerTabViewModel.TOOLBAR_SWITCH, (key, value) -> {

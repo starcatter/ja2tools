@@ -65,7 +65,17 @@ public class PlacementLayer extends TileLayerGroup {
 	layers.add(placementLayerWrapper);
     }
 
-    public boolean togglePlacement(MapCursor placement, SelectedTiles previewTiles) {
+	@Override
+	public boolean limitDrawArea() {
+		return false;
+	}
+
+	@Override
+	public boolean trimEdges() {
+		return false;
+	}
+
+	public boolean togglePlacement(MapCursor placement, SelectedTiles previewTiles) {
 	int placementCell = placement.getCell();
 
 	if (placements.containsKey(placementCell)) {

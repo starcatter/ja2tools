@@ -72,6 +72,16 @@ public class CursorLayer extends TileLayerGroup implements ICursorLayerManager {
     }
 
     @Override
+    public boolean limitDrawArea() {
+        return false;
+    }
+
+    @Override
+    public boolean trimEdges() {
+        return false;
+    }
+
+    @Override
     public MapCursor getCursor(int x, int y, IndexedElement cursor) {
         return new MapCursor(this, x, y, cursor);
     }

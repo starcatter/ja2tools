@@ -127,6 +127,11 @@ public class MapDisplayManager implements IMapDisplayManager, Observer {
         map.setMapLayerButtons(viewerButtons);
     }
 
+    @Override
+    public void setMapDisplayButtons(BooleanProperty[] displayButtons) {
+        map.setMapDisplayButtons(displayButtons);
+    }
+
     // -- controller access
     private <E extends IMapController> E registerController(E controller, Class controllerType) {
         if (controllers.containsKey(controllerType)) {

@@ -42,11 +42,11 @@ public class MapUtils {
         return (int) (((2 * screenY) - screenX + 2) / 4);
     }
 
-    public static int FromCellToScreenCoordinatesX(int sCellX, int sCellY) {
+    public static int fromCellToScreenCoordinatesX(int sCellX, int sCellY) {
         return (2 * sCellX) - (2 * sCellY);
     }
 
-    public static int FromCellToScreenCoordinatesY(int sCellX, int sCellY) {
+    public static int fromCellToScreenCoordinatesY(int sCellX, int sCellY) {
         return sCellX + sCellY;
     }
 

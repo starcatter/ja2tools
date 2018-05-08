@@ -149,7 +149,7 @@ public class MapSelectionDialogViewModel implements ViewModel {
 	if (data != null) {
 	    mapScope.setMapName(mapFileName);
 	    mapScope.setMapAssetPath(mapAssetPath);
-	    mapScope.setLoadMode(MapScope.mapLoadMode.From_File);
+	    mapScope.setLoadMode(MapScope.MapLoadMode.From_File);
 
 	    mapScope.setMapData(data);
 
@@ -177,7 +177,7 @@ public class MapSelectionDialogViewModel implements ViewModel {
 	    if (data != null) {
 		mapScope.setMapName(mapFileName);
 		mapScope.setMapAssetPath(mapAssetPath);
-		mapScope.setLoadMode(MapScope.mapLoadMode.From_VFS);
+		mapScope.setLoadMode(MapScope.MapLoadMode.From_VFS);
 
 		mapScope.setMapData(data);
 
@@ -209,7 +209,7 @@ public class MapSelectionDialogViewModel implements ViewModel {
 	if (data != null) {
 	    mapScope.setMapName(mapFileName);
 	    mapScope.setMapAssetPath(accessor.getVFSPath());
-	    mapScope.setLoadMode(MapScope.mapLoadMode.From_VFS);
+	    mapScope.setLoadMode(MapScope.MapLoadMode.From_VFS);
 
 	    mapScope.setMapData(data);
 

@@ -45,6 +45,8 @@ public abstract class TileLayerGroup extends Observable implements ITileLayerGro
     protected int mapSize;
     protected Tileset tileset;
 
+    protected int[] limits = null;
+
     // ------------------------------
     // Tile coordinate transformation
     // ------------------------------
@@ -54,7 +56,7 @@ public abstract class TileLayerGroup extends Observable implements ITileLayerGro
     }
 
     @Override
-    public int GridNoToCellX(int sGridNo) {
+    public int gridNoToCellX(int sGridNo) {
         int sYPos = (sGridNo / mapCols);
         int sXPos = sGridNo - (sYPos * mapCols);
 
@@ -62,7 +64,7 @@ public abstract class TileLayerGroup extends Observable implements ITileLayerGro
     }
 
     @Override
-    public int GridNoToCellY(int sGridNo) {
+    public int gridNoToCellY(int sGridNo) {
         int sYPos = (sGridNo / mapCols);
 
         return sYPos;
@@ -103,6 +105,10 @@ public abstract class TileLayerGroup extends Observable implements ITileLayerGro
     @Override
     public void setTileset(Tileset tileset) {
         this.tileset = tileset;
+    }
+
+    public int[] getEntryPoints() {
+        return limits;
     }
 
     protected boolean batchMode = false;

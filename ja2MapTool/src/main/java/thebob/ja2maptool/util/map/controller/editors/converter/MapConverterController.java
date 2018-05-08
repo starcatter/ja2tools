@@ -117,6 +117,8 @@ public class MapConverterController extends MapControllerBase implements IMapCon
                     scope.getMap().setSelection(null);
                     scope.getMap().publish(SELECTION_UPDATED);
                     break;
+                default:
+
             }
         }
     }

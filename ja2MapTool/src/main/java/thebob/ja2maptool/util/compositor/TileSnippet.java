@@ -61,11 +61,11 @@ public class TileSnippet {
 		return ((y) * width + (x));
 	}
 
-	public int GridToX(int gridNo) {
+	public int gridToX(int gridNo) {
 		return gridNo - ((gridNo / width) * width); // so... gridNo%width ?
 	}
 
-	public int GridToY(int gridNo) {
+	public int gridToY(int gridNo) {
 		return (gridNo / width);
 	}
 	

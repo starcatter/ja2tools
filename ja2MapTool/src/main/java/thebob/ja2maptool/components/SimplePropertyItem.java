@@ -73,7 +73,7 @@ public class SimplePropertyItem implements PropertySheet.Item{
 
     @Override
     public void setValue(Object value) {
-	value = (String)value.toString();
+	    this.value = (String)value.toString();
     }
 
     @Override

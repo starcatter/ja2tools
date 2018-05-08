@@ -78,6 +78,16 @@ public class PreviewLayer extends TileLayerGroup {
     }
 
     @Override
+    public boolean limitDrawArea() {
+        return true;
+    }
+
+    @Override
+    public boolean trimEdges() {
+        return true;
+    }
+
+    @Override
     public void setBatchMode(boolean batchMode) {
         this.batchMode = batchMode;
         if (batchMode == false) {
@@ -172,8 +182,8 @@ public class PreviewLayer extends TileLayerGroup {
 
     private void addPreviewToLayers(SnippetPlacement previewTilesPlacement, int cell) {
         SelectedTiles previewTiles = previewTilesPlacement.getSnippet();
-        int cellX = GridNoToCellX(cell);
-        int cellY = GridNoToCellY(cell);
+        int cellX = gridNoToCellX(cell);
+        int cellY = gridNoToCellY(cell);
 
         int cursorWidth = previewTiles.getWidth();
         int cursorHeight = previewTiles.getHeight();

@@ -42,7 +42,7 @@ import thebob.assetmanager.managers.ItemManager;
 import thebob.assetmanager.managers.items.Item;
 import thebob.assetmanager.managers.items.categories.ItemCategory;
 import thebob.assetmanager.managers.items.categories.ItemClassEnum;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.ItemClassMap;
+import static thebob.assetmanager.managers.items.categories.ItemClassEnum.itemClassMap;
 
 /**
  *
@@ -89,7 +89,7 @@ public class ItemAutoMapper {
 			return 0d;
 		}
 
-		if (a.doubleValue() == Double.NaN || b.doubleValue() == Double.NaN || a.doubleValue() == 0d) {
+		if (  Double.isNaN(a.doubleValue()) || Double.isNaN(b.doubleValue()) || a.doubleValue() == 0d) {
 			return 0d;
 		}
 
@@ -121,45 +121,7 @@ public class ItemAutoMapper {
 	}
 
 	private Map<Item, Double> getScoreMap(Item sourceItem) {
-		// System.out.println("getScoreMap() " + sourceItem.getName() + " @ " + sourceItem.getParentCategory().getUcid());
-		/*
-		Map<String, ItemCategory> targetCategoryIndex = target.getCategories().getCategories();
-		// get cat tree id
-		String ucid = sourceItem.getParentCategory().getUcid();
-
-		ItemCategory targetCat = null;
-		do {
-			// try to get category for ucid from target category index
-			if (targetCategoryIndex.containsKey(ucid)) {
-				targetCat = targetCategoryIndex.get(ucid);
-				System.out.println("targetCat for " + ucid + ": " + targetCat.getName() + ", "+targetCat.totalItemCount()+" items");
-				if (targetCat.totalItemCount() > 0) break;
-			} else {
-				System.out.println("No category for path: " + ucid);
-			}
-
-			ucid = ucid.substring(0, ucid.lastIndexOf("->"));
-		} while (ucid.lastIndexOf("->") > 0); // keep trying while there's sub-categories left. Don't scan category root!
-
-		if (targetCat == null) {
-			return null;
-		}
-		 */
-
-		ItemCategory targetCat = null;
-		Map<String, ItemCategory> targetCategoryIndex = target.getCategories().getCategories();
-		String ucid = sourceItem.getParentCategory().getUcid();
-
-		
-//		if (targetCategoryIndex.containsKey(ucid)) {
-//			targetCat = targetCategoryIndex.get(ucid);
-//			//System.out.println("targetCat for " + ucid + ": " + targetCat.getName() + ", " + targetCat.totalItemCount() + " items");
-//		} else {
-//			targetCat = target.getCategories().getRootNode();
-//			//System.out.println("targetCat for " + ucid + ": " + targetCat.getName() + ", " + targetCat.totalItemCount() + " items");
-//		}
-		 
-		targetCat = target.getCategories().getRootNode();
+		ItemCategory targetCat = target.getCategories().getRootNode();
 
 		Map<Item, Double> scoreMap = new HashMap<>();
 
@@ -168,10 +130,6 @@ public class ItemAutoMapper {
 				//System.out.println("\t = " + sourceItem.getName() + "-> NULL");
 				return;
 			}
-
-//			if ("Impostor's Head".equals(sourceItem.getName())) {
-//				System.out.println("\t = " + sourceItem.getName() + "-> " + targetItem.getName() + " @ " + targetItem.getParentCategory().getUcid());
-//			}
 
 			long targetItemType = sourceItem.getItemType();
 			long itemType = targetItem.getItemType();
@@ -224,7 +182,7 @@ public class ItemAutoMapper {
 			double baseScore = Arrays.stream(ratios).sum();
 
 			// System.out.println("\t\t baseScore = "+baseScore);
-			ItemClassEnum itemClass = ItemClassMap.get(itemType);
+			ItemClassEnum itemClass = itemClassMap.get(itemType);
 
 			if (itemClass != null) {
 

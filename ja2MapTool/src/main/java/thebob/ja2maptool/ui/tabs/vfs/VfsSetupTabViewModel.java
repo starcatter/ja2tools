@@ -71,8 +71,8 @@ public class VfsSetupTabViewModel implements ViewModel {
         
 		addConfig(".");
 
-		vfsAssets.getOrLoadAssetManager("../../JA113.data/gameData", "vfs_config.JA2Vanilla.ini");
-		vfsAssets.getOrLoadAssetManager("../../JA113.data/gameData", "vfs_config.JA2113.ini");
+//		vfsAssets.getOrLoadAssetManager("../../JA113.data/gameData", "vfs_config.JA2Vanilla.ini");
+//		vfsAssets.getOrLoadAssetManager("../../JA113.data/gameData", "vfs_config.JA2113.ini");
     }
 
     public Command getLoadSelectedConfigsCommand() {

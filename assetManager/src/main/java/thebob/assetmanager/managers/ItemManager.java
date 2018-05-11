@@ -45,26 +45,8 @@ import thebob.assetmanager.AssetManager;
 import thebob.assetmanager.managers.items.Item;
 import thebob.assetmanager.managers.items.categories.ItemCategoryModel;
 import thebob.assetmanager.managers.items.categories.ItemClassEnum;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Ammo;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Armour;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Blunt_Weapon;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Bomb;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Face_Item;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Grenade;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Gun;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.ItemClassMap;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Key;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Kit;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Knife;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Launcher;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Load_Bearing_Equipment;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Medkit;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Misc;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Money;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Random_Item;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Tentacle;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Throwing_Knife;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Thrown_Weapon;
+
+import thebob.assetmanager.managers.items.categories.ItemClassEnum;
 
 /**
  *
@@ -216,18 +198,23 @@ public class ItemManager extends VFSContextBoundManager {
 
 			item.setImageSource(imageCache.get(item.getImageType()));
 
-			ItemClassEnum itemClass = ItemClassMap.get(item.getItemType());
+			ItemClassEnum itemClass = ItemClassEnum.getItemClassMap().get(item.getItemType());
 
 			if (itemClass != null) {
 				switch (itemClass) {
 					case Ammo:
 						MAGAZINELIST.MAGAZINE magType = magazines.get(item.getItemTypeId());
-						AMMO caliber = calibers.get((int) magType.getUbCalibre());
-						AMMOTYPELIST.AMMOTYPE ammoType = ammoTypes.get((int) magType.getUbAmmoType());
+						if(magType != null) {
+							AMMO caliber = calibers.get((int) magType.getUbCalibre());
+							AMMOTYPELIST.AMMOTYPE ammoType = ammoTypes.get((int) magType.getUbAmmoType());
 
-						item.setMagazineData(magType);
-						item.setCaliberData(caliber);
-						item.setAmmoTypeData(ammoType);
+							item.setMagazineData(magType);
+							item.setCaliberData(caliber);
+							item.setAmmoTypeData(ammoType);
+						} else {
+							System.err.println("[ItemManager]\t magType null for item " + item.getId() + ", type id " + item.getItemTypeId());
+						}
+
 						break;
 					case Gun:
 					case Knife:

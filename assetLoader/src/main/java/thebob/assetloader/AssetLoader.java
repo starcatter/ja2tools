@@ -46,20 +46,16 @@ public class AssetLoader {
     }
 
     protected static boolean testAssets() {
-	SlfLoader libLoader = new SlfLoader();
-	libLoader.loadFile("Tilesets.slf");
+		SlfLoader libLoader = new SlfLoader();
+		libLoader.loadFile("Tilesets.slf");
 
-	StiLoader stiLoader = new StiLoader();
+		StiLoader stiLoader = new StiLoader();
 
-	for (int i = 0; i < libLoader.getAssetCount(); i++) {
-	    ByteBuffer buffer = libLoader.getAsset(i);
-	    if (buffer != null) {
-		stiLoader.loadAsset(buffer);
-	    } else {
-		System.out.println("thebob.assetloader.AssetLoader.main() cant get to asset " + i);
-	    }
-	}
-	return true;
+		for (int i = 0; i < libLoader.getAssetCount(); i++) {
+			ByteBuffer buffer = libLoader.getAsset(i);
+			stiLoader.loadAsset(buffer);
+		}
+		return true;
     }
 
     protected static void printVFSFileVariants(VirtualFileSystem vfs, String filePath) {

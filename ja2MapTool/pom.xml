@@ -14,6 +14,7 @@
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <netbeans.hint.license>mit</netbeans.hint.license>
@@ -21,9 +22,14 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+            </plugin>
+            <plugin>
                 <groupId>com.zenjava</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>8.6.0</version>
+                <version>8.8.3</version>
                 <configuration>
                     <mainClass>Starter</mainClass>
                     <vendor>The_Bob</vendor>
@@ -72,12 +78,12 @@
         <dependency>
             <groupId>de.saxsys</groupId>
             <artifactId>mvvmfx</artifactId>
-            <version>1.6.0</version>
+            <version>1.7.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.saxsys</groupId>
             <artifactId>mvvmfx-guice</artifactId>
-            <version>1.6.0</version>
+            <version>1.7.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.controlsfx</groupId>
@@ -92,7 +98,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>23.0</version>
+            <version>25.0-jre</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

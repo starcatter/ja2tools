@@ -51,27 +51,31 @@ public enum ItemClassEnum {
     Money,
     Random_Item;
 
-    public static Map<Long, ItemClassEnum> ItemClassMap = new HashMap<Long, ItemClassEnum>();
+    protected static final Map<Long, ItemClassEnum> itemClassMap = new HashMap<Long, ItemClassEnum>();
+
+    public static Map<Long, ItemClassEnum> getItemClassMap() {
+        return itemClassMap;
+    }
 
     static {
-	ItemClassMap.put(2L, ItemClassEnum.Gun);
-	ItemClassMap.put(4L, ItemClassEnum.Knife);
-	ItemClassMap.put(8L, ItemClassEnum.Throwing_Knife);
-	ItemClassMap.put(16L, ItemClassEnum.Launcher);
-	ItemClassMap.put(32L, ItemClassEnum.Tentacle);
-	ItemClassMap.put(64L, ItemClassEnum.Thrown_Weapon);
-	ItemClassMap.put(128L, ItemClassEnum.Blunt_Weapon);
-	ItemClassMap.put(256L, ItemClassEnum.Grenade);
-	ItemClassMap.put(512L, ItemClassEnum.Bomb);
-	ItemClassMap.put(1024L, ItemClassEnum.Ammo);
-	ItemClassMap.put(2048L, ItemClassEnum.Armour);
-	ItemClassMap.put(4096L, ItemClassEnum.Medkit);
-	ItemClassMap.put(8192L, ItemClassEnum.Kit);
-	ItemClassMap.put(32768L, ItemClassEnum.Face_Item);
-	ItemClassMap.put(65536L, ItemClassEnum.Key);
-	ItemClassMap.put(131072L, ItemClassEnum.Load_Bearing_Equipment);
-	ItemClassMap.put(268435456L, ItemClassEnum.Misc);
-	ItemClassMap.put(536870912L, ItemClassEnum.Money);
-	ItemClassMap.put(1073741824L, ItemClassEnum.Random_Item);
+	itemClassMap.put(2L, ItemClassEnum.Gun);
+	itemClassMap.put(4L, ItemClassEnum.Knife);
+	itemClassMap.put(8L, ItemClassEnum.Throwing_Knife);
+	itemClassMap.put(16L, ItemClassEnum.Launcher);
+	itemClassMap.put(32L, ItemClassEnum.Tentacle);
+	itemClassMap.put(64L, ItemClassEnum.Thrown_Weapon);
+	itemClassMap.put(128L, ItemClassEnum.Blunt_Weapon);
+	itemClassMap.put(256L, ItemClassEnum.Grenade);
+	itemClassMap.put(512L, ItemClassEnum.Bomb);
+	itemClassMap.put(1024L, ItemClassEnum.Ammo);
+	itemClassMap.put(2048L, ItemClassEnum.Armour);
+	itemClassMap.put(4096L, ItemClassEnum.Medkit);
+	itemClassMap.put(8192L, ItemClassEnum.Kit);
+	itemClassMap.put(32768L, ItemClassEnum.Face_Item);
+	itemClassMap.put(65536L, ItemClassEnum.Key);
+	itemClassMap.put(131072L, ItemClassEnum.Load_Bearing_Equipment);
+	itemClassMap.put(268435456L, ItemClassEnum.Misc);
+	itemClassMap.put(536870912L, ItemClassEnum.Money);
+	itemClassMap.put(1073741824L, ItemClassEnum.Random_Item);
     }
 }

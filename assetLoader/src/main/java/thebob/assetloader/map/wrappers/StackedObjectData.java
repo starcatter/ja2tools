@@ -47,7 +47,7 @@ public class StackedObjectData extends MapLoaderWrapperBase{
         float dMajorMapVersion = map.getSettings().dMajorMapVersion;
         int ubMinorMapVersion = map.getSettings().ubMinorMapVersion;
         
-        if (dMajorMapVersion >= 7 && ubMinorMapVersion >= map.getSettings().MINOR_MAP_VERSION)
+        if (dMajorMapVersion >= 7 && ubMinorMapVersion >= map.getSettings().MINOR_MAP_VERSION) // FIXME
         {
             // Flugente: changed this, otherwise game would crash when reading WF maps if class ObjectData was different. this is a rough fix and by no means perfect
             data.setSource(source);

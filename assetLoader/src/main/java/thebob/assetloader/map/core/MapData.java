@@ -42,7 +42,7 @@ import thebob.assetloader.xml.XmlLoader;
 
 public class MapData {
 
-    public static int junkBytes = 0;
+    public int junkBytes = 0;
     public static XmlLoader xmlDataSource = null;
 
     MapSettings settings;
@@ -61,7 +61,7 @@ public class MapData {
         info = new MapContentInfo(this);
         actors = new MapActors(this);
         layers = new MapLayers(this);
-        GridPos.map = this;
+        GridPos.map = this; // FIXME
     }
 
     public boolean saveMap(String fileName) {
@@ -253,10 +253,10 @@ public class MapData {
         }
 
         if (settings.MAP_WORLDLIGHTS_SAVED) {
-            info.LoadMapLights();
+            info.loadMapLights();
         }
 
-        settings.LoadMapInfo();
+        settings.loadMapInfo();
 
         if (settings.MAP_FULLSOLDIER_SAVED) {
             if (!actors.loadPlacements()) {
@@ -274,7 +274,7 @@ public class MapData {
             info.loadEdgePoints();
         }
         if (settings.MAP_NPCSCHEDULES_SAVED) {
-            if (!actors.LoadSchedules()) {
+            if (!actors.loadSchedules()) {
                 System.out.println("loader.core.MapData.loadData(): failed while Loading Schedules!");
                 return false;
             }

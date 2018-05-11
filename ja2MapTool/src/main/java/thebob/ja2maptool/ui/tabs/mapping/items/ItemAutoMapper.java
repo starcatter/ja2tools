@@ -31,6 +31,8 @@ import static java.lang.Double.max;
 import static java.lang.Math.abs;
 import static java.lang.Math.min;
 import static java.lang.Math.pow;
+import thebob.assetmanager.managers.items.categories.ItemClassEnum;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +44,6 @@ import thebob.assetmanager.managers.ItemManager;
 import thebob.assetmanager.managers.items.Item;
 import thebob.assetmanager.managers.items.categories.ItemCategory;
 import thebob.assetmanager.managers.items.categories.ItemClassEnum;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.itemClassMap;
 
 /**
  *
@@ -182,7 +183,7 @@ public class ItemAutoMapper {
 			double baseScore = Arrays.stream(ratios).sum();
 
 			// System.out.println("\t\t baseScore = "+baseScore);
-			ItemClassEnum itemClass = itemClassMap.get(itemType);
+			ItemClassEnum itemClass = ItemClassEnum.getItemClassMap().get(itemType);
 
 			if (itemClass != null) {
 

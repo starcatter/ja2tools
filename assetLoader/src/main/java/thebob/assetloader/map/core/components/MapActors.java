@@ -89,9 +89,9 @@ public class MapActors extends MapComponent {
     }
 
     
-    public boolean LoadSchedules() {
+    public boolean loadSchedules() {
         schedules = new ArrayList<SCHEDULENODE>();
-        if(MapLoader.logFileIO) System.out.println("\n\nloader.core.MapActors.LoadSchedules() start @"+byteBuffer.position());
+        if(MapLoader.logFileIO) System.out.println("\n\nloader.core.MapActors.loadSchedules() start @"+byteBuffer.position());
         try {
             ubNumSchedules = byteBuffer.get() & 0xFF;
             if (ubNumSchedules < 1) {
@@ -112,12 +112,12 @@ public class MapActors extends MapComponent {
                 }
 
                 if (MapLoader.logEverything) {
-                    System.out.println("LoadSchedules(): Loaded\n\t" + schedule);
+                    System.out.println("loadSchedules(): Loaded\n\t" + schedule);
                 }
 
                 schedules.add(schedule);
             }
-            if(MapLoader.logFileIO) System.out.println("\n\nloader.core.MapActors.LoadSchedules() end @"+byteBuffer.position());
+            if(MapLoader.logFileIO) System.out.println("\n\nloader.core.MapActors.loadSchedules() end @"+byteBuffer.position());
             return true;
         } catch (Exception e) {
             System.out.println("loadWorldItems(): " + e.toString());

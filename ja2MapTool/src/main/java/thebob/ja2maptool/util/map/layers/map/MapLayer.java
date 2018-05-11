@@ -47,6 +47,9 @@ public class MapLayer extends TileLayerGroup implements IMapLayerManager {
     MapData map;
     List<TileLayer> layers = new ArrayList<>();
     private BooleanProperty[] displayButtons;
+    
+    BooleanProperty render_limit = new SimpleBooleanProperty(true);
+    BooleanProperty render_trim = new SimpleBooleanProperty(true);
 
     @Override
     public Iterator<TileLayer> iterator() {
@@ -215,9 +218,6 @@ public class MapLayer extends TileLayerGroup implements IMapLayerManager {
         bindDisplayButtons();
     }
 
-    BooleanProperty render_limit = new SimpleBooleanProperty(true);
-    BooleanProperty render_trim = new SimpleBooleanProperty(true);
-
     void bindLayerButtons() {
         if (viewerButtons != null) {
             for (int i = 0; i < layers.size(); i++) {
@@ -231,6 +231,9 @@ public class MapLayer extends TileLayerGroup implements IMapLayerManager {
     }
 
     private void bindDisplayButtons() {
+        displayButtons[ 0 ].set(render_limit.getValue());
+        displayButtons[ 1 ].set(render_trim.getValue());
+
         render_limit.bindBidirectional(displayButtons[ 0 ]);
         render_trim.bindBidirectional(displayButtons[ 1 ]);
 

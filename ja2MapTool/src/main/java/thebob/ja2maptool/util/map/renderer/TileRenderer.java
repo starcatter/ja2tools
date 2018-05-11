@@ -35,12 +35,20 @@ import thebob.ja2maptool.util.map.layers.base.ITileLayerGroup;
 import thebob.ja2maptool.util.map.layers.base.TileLayer;
 import thebob.ja2maptool.util.map.renderer.renderlayer.OverlaySettings;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.*;
+import java.util.List;
 
 /**
  * @author the_bob
  */
 public class TileRenderer extends Observable implements ITileRendererManager {
+
+    {
+        BufferedImage img = new BufferedImage(1024, 768, BufferedImage.TYPE_4BYTE_ABGR);
+        Graphics graphics = img.getGraphics();
+    }
 
     class TileRendererTarget {
 
@@ -65,7 +73,6 @@ public class TileRenderer extends Observable implements ITileRendererManager {
             targetCanvas.setHeight(parent.getHeight());
 
             parent.toFront();
-
         }
 
         TileRendererTarget(Canvas parent, OverlaySettings settings) {
@@ -97,6 +104,10 @@ public class TileRenderer extends Observable implements ITileRendererManager {
 
         private void clear() {
             canvasGraphicsContext.clearRect(0, 0, targetCanvas.getWidth(), targetCanvas.getHeight());
+        }
+
+        public void drawImage(Image tileImage, double tileX, double tileY, double tileWidth, double tileHeight) {
+            canvasGraphicsContext.drawImage(tileImage, tileX, tileY, tileWidth, tileHeight);
         }
     }
 
@@ -148,23 +159,15 @@ public class TileRenderer extends Observable implements ITileRendererManager {
                         || r - c >= mapRows / 2
                         || c - r >= mapRows / 2
                         || r + c >= mapRows * 1.5
-                ))) {
+                )) || (
+                        (c==windowOffsetX-2||c==windowOffsetX-1||c==windowOffsetX||c==windowOffsetX+1||c==windowOffsetX+2) && (r==windowOffsetY-2 || r==windowOffsetY-1 || r==windowOffsetY || r==windowOffsetY+1 || r==windowOffsetY+2 )
+                )
+                ) {
             return -1;
         }
 
         return ((r) * mapCols + (c));
     }
-
-    /*
-    else if ( limits != null && (
-                    c >  layerGroup.gridNoToCellX( limits[0] )  // E
-                 || c <  layerGroup.gridNoToCellX( limits[1] )  // W
-                 || r <  layerGroup.gridNoToCellY( limits[2] )  // N
-                 || r >  layerGroup.gridNoToCellY( limits[3] )  // S
-        ) ){
-            return -1;
-        }
-    * */
 
     // ----------------------------------------
     // Canvas assignment
@@ -182,7 +185,8 @@ public class TileRenderer extends Observable implements ITileRendererManager {
             target.bind(canvas);
         }
 
-        renderMap();
+        //renderMap();
+        centerWindow();
 
         setChanged();
         notifyObservers(new MapEvent(MapEvent.ChangeType.MAP_CANVAS_CHANGED));
@@ -304,7 +308,7 @@ public class TileRenderer extends Observable implements ITileRendererManager {
                     double tileWidth = tile.getWidth() * scale;
                     double tileHeight = tile.getHeight() * scale;
 
-                    layerTargetContext.drawImage(tileImage, tileX, tileY, tileWidth, tileHeight);
+                    layerTarget.drawImage(tileImage, tileX, tileY, tileWidth, tileHeight);
                 }
             }
 
@@ -321,6 +325,7 @@ public class TileRenderer extends Observable implements ITileRendererManager {
     public void setMapCols(int mapCols) {
         this.mapCols = mapCols;
         mapSize = mapCols * mapRows;
+        centerWindow();
     }
 
     public int getMapRows() {
@@ -330,6 +335,7 @@ public class TileRenderer extends Observable implements ITileRendererManager {
     public void setMapRows(int mapRows) {
         this.mapRows = mapRows;
         mapSize = mapCols * mapRows;
+        centerWindow();
     }
 
     // ----------------------------------------
@@ -352,8 +358,49 @@ public class TileRenderer extends Observable implements ITileRendererManager {
     }
 
     public void centerWindow() {
-        windowOffsetX = mapCols / 2 - (canvasX / xSpacing) / 2;
-        windowOffsetY = mapRows / 2 - (canvasY / ySpacing) / 2;
+
+        double width = ((mapCols+2) * xSpacing)/2;
+        double height = ((mapRows+2) * ySpacing)/2;
+
+        if(width > 0 && height > 0 && canvasX > 0 && canvasY > 0){
+            double xRatio = canvasX/width;
+            double yRatio = canvasY/height;
+
+            if(xRatio < yRatio){
+                scale = xRatio;
+            } else {
+                scale = yRatio;
+            }
+
+            double scaledWidth = width * scale;
+            double scaledHeight = height * scale;
+
+            int hSpace = (int) Math.abs(canvasX - scaledWidth);
+            int vSpace = (int) Math.abs(canvasY - scaledHeight);
+
+            double hSpaceTiles = hSpace/(xSpacing*scale);
+            double vSpaceTiles = vSpace/(ySpacing*scale);
+
+            int hOffset = (int)Math.ceil(hSpaceTiles)/2; // -1 / -2
+            int vOffset = (int)Math.ceil(vSpaceTiles)/2; // -32
+
+            // move map to top left
+            windowOffsetX = -2;
+            windowOffsetY = mapRows/2;
+
+            // center horizontal
+            windowOffsetX -= hOffset;
+            windowOffsetY += hOffset;
+
+            // center vertical
+            windowOffsetX -= vOffset;
+            windowOffsetY -= vOffset;
+
+        } else {
+            scale=1d;
+            windowOffsetX = mapCols / 2 - (canvasX / xSpacing) / 2;
+            windowOffsetY = mapRows / 2 - (canvasY / ySpacing) / 2;
+            }
 
         renderMap();
 

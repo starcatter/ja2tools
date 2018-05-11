@@ -99,7 +99,7 @@ public class MapSettings extends MapComponent {
         super(source);
     }
 
-    public void LoadMapInfo() {
+    public void loadMapInfo() {
         mapInfo = new MAPCREATE_STRUCT();
 
         if (dMajorMapVersion < 7.0) {

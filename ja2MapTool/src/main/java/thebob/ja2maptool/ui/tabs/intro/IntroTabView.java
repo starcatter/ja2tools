@@ -116,7 +116,7 @@ public class IntroTabView implements FxmlView<IntroTabViewModel>, Initializable 
         AnchorPane.setLeftAnchor(compositor, 0d);
         AnchorPane.setRightAnchor(compositor, 0d);
 
-        AssetManager assets = vfsAssets.getOrLoadAssetManager("../../JA113.data/gameData", "vfs_config.JA2Vanilla.ini");
+        AssetManager assets = vfsAssets.getOrLoadAssetManager("v:\\JA2.05-2018\\", "vfs_config.JA2Vanilla.ini");
         MapData mapData = assets.getMaps().loadMap("\\maps\\a3.dat");
         scope.getMap().setMapName("test map");
         scope.getMap().setMapAssets(assets);

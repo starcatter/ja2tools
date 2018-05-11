@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -50,9 +51,10 @@ import thebob.assetloader.vfs.accessors.VFSAccessor;
  */
 public class VFSConfig {
 
-    Path ini_path;
-    String basePath;
-    String currentProfileName = null;
+    protected final Path ini_path;
+    protected final String basePath;
+    protected String currentProfileName = null;
+
     private Map<String, SlfLoader> loadedLibraries = new HashMap<String, SlfLoader>();
     private Map<String, LinkedList<VFSAccessor>> files = new HashMap<String, LinkedList<VFSAccessor>>();
     private Map<String, ArrayList<VFSAccessor>> profiles = new HashMap<String, ArrayList<VFSAccessor>>();
@@ -206,31 +208,37 @@ public class VFSConfig {
 
         try {
             // first scan the dir for libraries and see if they contain files overriding what we have
-            Files.newDirectoryStream(Paths.get(dirPath), (Path path) -> path.toString().endsWith(".slf")).forEach(
+            try(DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(dirPath), (Path path) -> path.toString().endsWith(".slf")) ){
+                stream.forEach(
                     (Path filePath) -> {
                         String libraryFile = filePath.getFileName().toString();
                         if (libraries.contains(libraryFile)) {
                             scanLibrary(filePath.toString(), libraryFile.replace(".slf", "").toUpperCase());
                         }
                     });
+            }
 
             // then scan for directories named after the libraries we know of (or extra dirs that never were libraries)
-            Files.newDirectoryStream(Paths.get(dirPath), (Path path) -> path.toFile().isDirectory()).forEach(
+            try(DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(dirPath), (Path path) -> path.toFile().isDirectory())){
+                stream.forEach(
                     (Path dir) -> {
                         String dirName = dir.getFileName().toString().toUpperCase();
                         if (libraryDirs.contains(dirName) || VirtualFileSystem.extraDataDirs.contains(dirName)) {
                             scanSubDirForFiles(dir);
                         }
                     });
+            }
 
             // finally, scan for extra files if any were specified
-            Files.newDirectoryStream(Paths.get(dirPath), (Path path) -> path.toFile().isFile()).forEach(
+            try(DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(dirPath), (Path path) -> path.toFile().isFile())){
+                stream.forEach(
                     (Path filePath) -> {
                         String fileName = filePath.getFileName().toString().toUpperCase();
                         if (VirtualFileSystem.extraFiles.contains(fileName)) {
                             addFileToList("\\" + fileName, filePath.toString());
                         }
                     });
+            }
 
         } catch (IOException ex) {
             Logger.getLogger(VFSConfig.class.getName()).log(Level.SEVERE, null, ex);

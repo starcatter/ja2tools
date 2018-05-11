@@ -55,7 +55,7 @@ public class AssetManager {
         for (VFSContextBoundManager manager : new VFSContextBoundManager[]{maps, tilesets, items}) {
             // System.out.println("AssetManager loading: "+manager+'\n');
 	    if (!manager.init()) {
-                System.err.println("VFSContext failed to init manager: " + manager);
+            System.err.println("VFSContext failed to init manager: " + manager);
                 throw new RuntimeException("VFSContext failed to init manager: " + manager);
             }
 	    // System.out.println("\nAssetManager done: "+manager);
@@ -65,7 +65,7 @@ public class AssetManager {
     public final XmlLoader getXml() {
         return xml;
     }
-    
+
     public VFSConfig getVfs() {
         return vfs;
     }
@@ -83,7 +83,7 @@ public class AssetManager {
     }
 
     public String getVfsConfigName(){
-	return getVfs().getPath().getFileName().toString();
+	    return getVfs().getPath().getFileName().toString();
     }
     
     public static void main(String[] args) {
@@ -93,6 +93,7 @@ public class AssetManager {
             VFSConfig config = vfs.getConfig("vfs_config.JA2Vanilla.ini");
             //System.out.println("\n\n\nthebob.assetmanager.AssetManager.main() LOADING: " + configName + "\n");
             AssetManager am = new AssetManager(config);
+            System.out.println( am.toString() );
             return;
         //}
     }

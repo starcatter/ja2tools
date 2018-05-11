@@ -34,19 +34,6 @@ import java.util.HashMap;
 import java.util.Map;
 import thebob.assetloader.xml.XmlLoader;
 import thebob.assetmanager.managers.items.Item;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Ammo;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Armour;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Blunt_Weapon;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Bomb;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Grenade;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Gun;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.ItemClassMap;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Knife;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Launcher;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Load_Bearing_Equipment;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Tentacle;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Throwing_Knife;
-import static thebob.assetmanager.managers.items.categories.ItemClassEnum.Thrown_Weapon;
 
 /**
  *
@@ -158,7 +145,7 @@ public class ItemCategoryModel {
 		for (long itemClassId : itemclass.keySet()) {
 			ItemCategory node = new ItemCategory(itemclass.get(itemClassId).getName(), root);
 			itemClassMap.put(itemClassId, node);
-			ItemClassEnum itemClassEnum = ItemClassMap.get(itemClassId);
+			ItemClassEnum itemClassEnum = ItemClassEnum.itemClassMap.get(itemClassId);
 			if (itemClassEnum != null) {
 				switch (itemClassEnum) {
 					case Ammo:
@@ -244,7 +231,7 @@ public class ItemCategoryModel {
 		for (int itemId : items.keySet()) {
 			Item item = items.get(itemId);
 			long itemType = item.getItemType();
-			ItemClassEnum itemClass = ItemClassMap.get(itemType);
+			ItemClassEnum itemClass = ItemClassEnum.itemClassMap.get(itemType);
 
 			if (itemClass != null) {
 				switch (itemClass) {

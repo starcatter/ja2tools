@@ -243,13 +243,13 @@ public class MapContentInfo extends MapComponent {
         }
     }
 
-    public void LoadMapLights() {
+    public void loadMapLights() {
         if (MapLoader.logFileIO) {
-            System.out.println("loader.core.MapContentInfo.LoadMapLights() start @" + byteBuffer.position());
+            System.out.println("loader.core.MapContentInfo.loadMapLights() start @" + byteBuffer.position());
         }
         ubNumColors = byteBuffer.get(); // max 3
         if (MapLoader.logEverything) {
-            System.out.println("loader.core.MapContentInfo.LoadMapLights(): load colors=" + ubNumColors);
+            System.out.println("loader.core.MapContentInfo.loadMapLights(): load colors=" + ubNumColors);
         }
 
         LColors = new SGPPaletteEntry[3];
@@ -261,7 +261,7 @@ public class MapContentInfo extends MapComponent {
 
         usNumLights = byteBuffer.getShort() & 0xFFFF;
         if (MapLoader.logEverything) {
-            System.out.println("loader.core.MapContentInfo.LoadMapLights(): usNumLights=" + usNumLights);
+            System.out.println("loader.core.MapContentInfo.loadMapLights(): usNumLights=" + usNumLights);
         }
 
         lights = new LIGHT_SPRITE[usNumLights];
@@ -271,7 +271,7 @@ public class MapContentInfo extends MapComponent {
             LIGHT_SPRITE TmpLight = new LIGHT_SPRITE();
 
             if (MapLoader.logFileIO) {
-                System.out.println("loader.core.MapContentInfo.LoadMapLights() load light " + (cnt + 1) + " / (" + usNumLights + ") @" + byteBuffer.position());
+                System.out.println("loader.core.MapContentInfo.loadMapLights() load light " + (cnt + 1) + " / (" + usNumLights + ") @" + byteBuffer.position());
             }
 
             TmpLight.setSource(byteBuffer);
@@ -295,13 +295,13 @@ public class MapContentInfo extends MapComponent {
             }
 
             if (MapLoader.logFileIO) {
-                System.out.println("loader.core.MapContentInfo.LoadMapLights() loaded light " + (cnt + 1) + ": " + name + " @" + byteBuffer.position());
+                System.out.println("loader.core.MapContentInfo.loadMapLights() loaded light " + (cnt + 1) + ": " + name + " @" + byteBuffer.position());
             }
             lights[cnt] = TmpLight;
             lightNames[cnt] = name;
         }
         if (MapLoader.logFileIO) {
-            System.out.println("loader.core.MapContentInfo.LoadMapLights() end @" + byteBuffer.position());
+            System.out.println("loader.core.MapContentInfo.loadMapLights() end @" + byteBuffer.position());
         }
     }
 

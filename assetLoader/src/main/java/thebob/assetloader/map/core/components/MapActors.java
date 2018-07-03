@@ -69,9 +69,10 @@ public class MapActors extends MapComponent {
         public static final int IC_RANDOMITEM = 0x40000000; // added by Flugente for random items;    
     }
 
-    private List<SCHEDULENODE> schedules;
-    private List<WorldItemStack> items;
-    private List<SoldierCreate> soldierPlacements;
+    private List<SCHEDULENODE> schedules = new ArrayList<SCHEDULENODE>();
+    private List<WorldItemStack> items = new ArrayList<WorldItemStack>();
+    private List<SoldierCreate> soldierPlacements = new ArrayList<SoldierCreate>();
+
     private int ubNumSchedules = -1;
     private long uiNumWorldItems = -1;
     private int numPlacements = -1;
@@ -90,7 +91,7 @@ public class MapActors extends MapComponent {
 
     
     public boolean loadSchedules() {
-        schedules = new ArrayList<SCHEDULENODE>();
+        schedules.clear();
         if(MapLoader.logFileIO) System.out.println("\n\nloader.core.MapActors.loadSchedules() start @"+byteBuffer.position());
         try {
             ubNumSchedules = byteBuffer.get() & 0xFF;
@@ -129,7 +130,7 @@ public class MapActors extends MapComponent {
     }
 
     public boolean loadWorldItems() {        
-        items = new ArrayList<WorldItemStack>();
+        items.clear();
         try {
             if(MapLoader.logFileIO) System.out.println("\n\nloader.core.MapActors.loadWorldItems() start @"+byteBuffer.position());
             uiNumWorldItems = byteBuffer.getInt() & 0xffffffffl;
@@ -158,7 +159,7 @@ public class MapActors extends MapComponent {
     // TODO: check backward compat!
     public boolean loadPlacements() {
         if(MapLoader.logFileIO) System.out.println("\n\nloader.core.MapActors.loadPlacements() start @"+byteBuffer.position());
-        soldierPlacements = new ArrayList<SoldierCreate>();
+        soldierPlacements.clear();
         try {
             numPlacements = settings().mapInfo.ubNumIndividuals.get();
             for (int cnt = 0; cnt < numPlacements; cnt++) {

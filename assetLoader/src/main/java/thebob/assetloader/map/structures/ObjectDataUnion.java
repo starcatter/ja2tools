@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 the_bob.
@@ -23,14 +23,10 @@
  */
 package thebob.assetloader.map.structures;
 
-import ja2.xml.items.ITEMTYPE;
-import java.nio.ByteOrder;
 import javolution.io.Struct;
 import javolution.io.Union;
-import thebob.assetloader.map.structures.legacy.OLD_OBJECTTYPE_101;
-import static thebob.assetloader.map.core.components.MapActors.ItemClassTypes.*;
-import thebob.assetloader.map.structures.legacy.OLD_OBJECTTYPE_101_UNION;
-import static thebob.assetloader.map.core.MapData.xmlDataSource;
+
+import java.nio.ByteOrder;
 
 class OBJECT_GUN extends Struct {
 

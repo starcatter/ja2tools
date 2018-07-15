@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 the_bob.
@@ -23,30 +23,29 @@
  */
 package thebob.assetloader.map.structures;
 
-import thebob.assetloader.map.helpers.AutoLoadingMapStruct;
 import ja2.xml.items.ITEMTYPE;
-import java.nio.ByteOrder;
-import static thebob.assetloader.map.MapLoader.logEverything;
+import thebob.assetloader.map.helpers.AutoLoadingMapStruct;
 import thebob.assetloader.map.structures.legacy.OLD_OBJECTTYPE_101;
-import static thebob.assetloader.map.core.components.MapActors.ItemClassTypes.*;
 import thebob.assetloader.map.structures.legacy.OLD_OBJECTTYPE_101_UNION;
+
+import static thebob.assetloader.map.MapLoader.logEverything;
 import static thebob.assetloader.map.core.MapData.xmlDataSource;
+import static thebob.assetloader.map.core.components.MapActors.ItemClassTypes.*;
 
 /**
- *
  * @author the_bob
  */
 public class ObjectData extends AutoLoadingMapStruct {
 
-    public final int TRIPWIRE_NETWORK_OWNER_ENEMY = 0x00000001;	//1			// this wire belongs to an enemy network
-    public final int TRIPWIRE_NETWORK_OWNER_PLAYER = 0x00000002;	//2			// this wire was set by the player
+    public final int TRIPWIRE_NETWORK_OWNER_ENEMY = 0x00000001;    //1			// this wire belongs to an enemy network
+    public final int TRIPWIRE_NETWORK_OWNER_PLAYER = 0x00000002;    //2			// this wire was set by the player
 
-    public final int TRIPWIRE_NETWORK_NET_1 = 0x00000010;	//16		// network number  of the wire
-    public final int TRIPWIRE_NETWORK_NET_2 = 0x00000020;	//32
-    public final int TRIPWIRE_NETWORK_NET_3 = 0x00000040;	//64
-    public final int TRIPWIRE_NETWORK_NET_4 = 0x00000080;	//128
+    public final int TRIPWIRE_NETWORK_NET_1 = 0x00000010;    //16		// network number  of the wire
+    public final int TRIPWIRE_NETWORK_NET_2 = 0x00000020;    //32
+    public final int TRIPWIRE_NETWORK_NET_3 = 0x00000040;    //64
+    public final int TRIPWIRE_NETWORK_NET_4 = 0x00000080;    //128
 
-    public final int TRIPWIRE_NETWORK_LVL_1 = 0x00100000;	//1048576	// hierarchy level of the wire
+    public final int TRIPWIRE_NETWORK_LVL_1 = 0x00100000;    //1048576	// hierarchy level of the wire
 
     //public final Signed8[] unionPlaceholder = array(new Signed8[12]);
     public final ObjectDataUnion data = inner(new ObjectDataUnion());
@@ -79,8 +78,17 @@ public class ObjectData extends AutoLoadingMapStruct {
         //
         int itemId = oldItem.usItem.get();
         OLD_OBJECTTYPE_101_UNION oldData = oldItem.data;
-        ITEMTYPE itemData = xmlDataSource.getItems().getITEM().get(itemId);
-        int itemClass = (int) itemData.getUsItemClass();
+
+        int itemClass = IC_GUN;
+
+        try {
+            ITEMTYPE itemData = xmlDataSource.getItems().getITEM().get(itemId);
+            itemClass = itemData != null
+                    ? (int) itemData.getUsItemClass()
+                    : IC_GUN;
+        } catch (IndexOutOfBoundsException e) {
+            System.err.println("ObjectData::loadOld() item id not found: " + itemId + ", assuming item type=IC_GUN");
+        }
 
         //CHRISL: Instead of a memcpy, copy values individually so we can account for the larger union size
         //memcpy(&((*this)[0]->data.gun), &src.ugYucky, __min(SIZEOF_OLD_OBJECTTYPE_101_UNION,sizeof(ObjectData)));
@@ -96,16 +104,16 @@ public class ObjectData extends AutoLoadingMapStruct {
 
         switch (itemClass) {
             case IC_MONEY:
-                if(logEverything) System.out.println("loader.structures.ObjectData.loadOld(): AS MONEY");
+                if (logEverything) System.out.println("loader.structures.ObjectData.loadOld(): AS MONEY");
                 data.money.uiMoneyAmount.set(oldData.money.uiMoneyAmount.get());
                 break;
             case IC_KEY:
-                if(logEverything) System.out.println("loader.structures.ObjectData.loadOld(): AS KEY");
+                if (logEverything) System.out.println("loader.structures.ObjectData.loadOld(): AS KEY");
                 data.key.ubKeyID.set(oldData.key.ubKeyID.get());
                 break;
             case IC_GRENADE:
             case IC_BOMB:
-                if(logEverything) System.out.println("loader.structures.ObjectData.loadOld(): AS EXPLOSIVE");
+                if (logEverything) System.out.println("loader.structures.ObjectData.loadOld(): AS EXPLOSIVE");
                 data.misc.bDetonatorType.set(oldData.misc.bDetonatorType.get());
                 data.misc.usBombItem.set(oldData.misc.usBombItem.get());
                 data.misc.u1.bDelay.set(oldData.misc.u1.bDelay.get());
@@ -117,7 +125,7 @@ public class ObjectData extends AutoLoadingMapStruct {
                 bDefuseFrequency.set((byte) 0);
                 break;
             default:
-                if(logEverything) System.out.println("loader.structures.ObjectData.loadOld(): AS GUN");
+                if (logEverything) System.out.println("loader.structures.ObjectData.loadOld(): AS GUN");
                 data.gun.ubGunAmmoType.set(oldData.gun.ubGunAmmoType.get());
                 data.gun.ubGunShotsLeft.set(oldData.gun.ubGunShotsLeft.get());
                 data.gun.usGunAmmoItem.set(oldData.gun.usGunAmmoItem.get());

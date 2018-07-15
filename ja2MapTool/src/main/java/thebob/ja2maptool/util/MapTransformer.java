@@ -29,6 +29,7 @@ import thebob.assetloader.map.core.MapData;
 import thebob.assetloader.map.core.components.IndexedElement;
 import thebob.assetloader.map.wrappers.WorldItemStack;
 import thebob.assetmanager.AssetManager;
+import thebob.assetmanager.managers.items.Item;
 import thebob.ja2maptool.model.TileCategoryMapping;
 import thebob.ja2maptool.model.TileMapping;
 import thebob.ja2maptool.scopes.map.ConvertMapScope;
@@ -160,7 +161,15 @@ public class MapTransformer {
 	private void applyItemRemapping() {
 		for (WorldItemStack stack : map.getActors().getItems()) {
 			int itemId = stack.getStack().getObject().usItem.get();
-			String itemName = mapAssets.getItems().getItem(itemId).getName();
+			Item item = mapAssets.getItems().getItem(itemId);
+
+			if(item == null){
+				System.err.println("Remapping item id ["+itemId+"] missing from source map assets!");
+			}
+
+			String itemName = item != null
+					? item.getName()
+					: "[UNKNOWN ITEM]";
 			
 			Integer newId = itemMapping.get(itemId);
 			if (newId == null) {				

@@ -67,6 +67,11 @@ public class ItemMappingScope implements Scope {
 	}
 
 	public void mapItems(Item srcItem, Item dstItem) {
+		if(srcItem == null){
+			System.err.println("Attempt to remap null item to " + (dstItem != null ? dstItem.getId() : "ANOTHER NULL ITEM WTF?"));
+			return;
+		}
+
 		if (mappingIndex.containsKey(srcItem.getId())) {
 			ItemMapping mapping = mappingIndex.get(srcItem.getId());
 			mapping.setDstItem(dstItem);
@@ -75,6 +80,7 @@ public class ItemMappingScope implements Scope {
 			this.mappingList.add(mapping);
 			mappingIndex.put(srcItem.getId(), mapping);
 		}
+
 		//System.out.println("mapItems: " + srcItem.getName() + " -> " + dstItem.getName());
 	}
 

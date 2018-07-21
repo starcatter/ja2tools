@@ -77,9 +77,15 @@ public class ObjectStack extends MapLoaderWrapperBase {
 
     void loadOld(OLD_OBJECTTYPE_101 oldItem) {
         object.loadOld(oldItem);
+
         stackSize = oldItem.ubNumberOfObjects.get();
+
+        if (MapLoader.logEverything) {
+            System.out.print("loader.wrappers.ObjectStack.loadOld(): loading " + stackSize + " items:");
+        }
+
         for (int i = 0; i < oldItem.ubNumberOfObjects.get(); i++) {
-            // if(MapLoader.logEverything) System.out.println("loader.wrappers.ObjectStack.loadOld() converting item "+(i+1)+"/"+oldItem.ubNumberOfObjects.get());
+            //if(MapLoader.logEverything) System.out.println("loader.wrappers.ObjectStack.loadOld() converting item "+(i+1)+"/"+oldItem.ubNumberOfObjects.get());
             StackedObjectData objectInStack = new StackedObjectData();
             objectInStack.loadOld(oldItem, i);
             objects.add(objectInStack);

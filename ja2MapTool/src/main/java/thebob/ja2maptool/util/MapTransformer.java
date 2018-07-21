@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 starcatter.
@@ -23,10 +23,11 @@
  */
 package thebob.ja2maptool.util;
 
-import java.util.Map;
 import javafx.collections.ObservableList;
 import thebob.assetloader.map.core.MapData;
 import thebob.assetloader.map.core.components.IndexedElement;
+import thebob.assetloader.map.wrappers.ObjectStack;
+import thebob.assetloader.map.wrappers.SoldierCreate;
 import thebob.assetloader.map.wrappers.WorldItemStack;
 import thebob.assetmanager.AssetManager;
 import thebob.assetmanager.managers.items.Item;
@@ -35,182 +36,228 @@ import thebob.ja2maptool.model.TileMapping;
 import thebob.ja2maptool.scopes.map.ConvertMapScope;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
 
+import java.util.List;
+import java.util.Map;
+
 /**
- *
  * @author the_bob
  */
 public class MapTransformer {
 
-	AssetManager mapAssets = null;
-	AssetManager targetAssets = null;
-	
-	MapData map = null;
-	Map<Integer, TileCategoryMapping> tileMapping = null;
-	Map<Integer, Integer> itemMapping = null;
-	Integer tileset = null;
+    AssetManager mapAssets = null;
+    AssetManager targetAssets = null;
 
-	public MapTransformer(ConvertMapScope convertMapScope) {
-		mapAssets = convertMapScope.getMap().getMapAssets();
-		targetAssets = convertMapScope.getItemMapping().getTargetAssets();
+    MapData map = null;
+    Map<Integer, TileCategoryMapping> tileMapping = null;
+    Map<Integer, Integer> itemMapping = null;
+    Integer tileset = null;
 
-		map = convertMapScope.getMap().getMapData();
-		tileMapping = convertMapScope.getTilesetMapping() != null ? convertMapScope.getTilesetMapping().getMappingList() : null;
-		itemMapping = convertMapScope.getItemMapping() != null ? convertMapScope.getItemMapping().getMappingAsMap() : null;
-		tileset = convertMapScope.getTilesetMapping() != null ? convertMapScope.getTilesetMapping().getTargetTilesetId() : map.getSettings().iTilesetID;
-	}
+    public MapTransformer(ConvertMapScope convertMapScope) {
+        mapAssets = convertMapScope.getMap().getMapAssets();
+        targetAssets = convertMapScope.getItemMapping().getTargetAssets();
 
-	public MapData getMap() {
-		return map;
-	}
-
-	public void setMap(MapData map) {
-		this.map = map;
-	}
-
-	public Map<Integer, TileCategoryMapping> getTileMapping() {
-		return tileMapping;
-	}
-
-	public void setTileMapping(Map<Integer, TileCategoryMapping> mapping) {
-		this.tileMapping = mapping;
-	}
-
-	public Map<Integer, Integer> getItemMapping() {
-		return itemMapping;
-	}
-
-	public void setItemMapping(Map<Integer, Integer> itemMapping) {
-		this.itemMapping = itemMapping;
-	}
-
-	public Integer getTileset() {
-		return tileset;
-	}
-
-	public void setTileset(Integer tileset) {
-		this.tileset = tileset;
-	}
-
-	public void saveTo(String path) {
-		getRemappedData(true).saveMap(path);
-	}
-
-	public void remapSnippet(SelectedTiles snippet) {
-		if (tileMapping != null) {
-			for (IndexedElement[][] layer : snippet.getLayers()) {
-				remapLayer(layer);
-			}
-		}
-	}
-
-	public void applyTileRemapping() {
-		remapLayer(map.getLayers().landLayer);
-		remapLayer(map.getLayers().objectLayer);
-		remapLayer(map.getLayers().structLayer);
-		remapLayer(map.getLayers().shadowLayer);
-		remapLayer(map.getLayers().roofLayer);
-		remapLayer(map.getLayers().onRoofLayer);
-	}
-
-	/*
-    private IndexedElement[][] remapLayer(IndexedElement[][] layerType, Map<Integer, TileCategoryMapping> mappingList) {
-	IndexedElement[][] newLayer = new IndexedElement[layerType.length][];
-
-	for (int i = 0; i < layerType.length; i++) {
-	    IndexedElement[] layers = layerType[i];
-	    newLayer[i] = new IndexedElement[layers.length];
-
-	    for (int j = 0; j < layers.length; j++) {
-		IndexedElement tile = layers[j];
-
-		ObservableList<TileMapping> mappingType = mappingList.get(tile.type).getMappings();
-		if (mappingType.size() >= tile.index) {
-		    TileMapping mapping = mappingType.get(tile.index - 1);
-		    newLayer[i][j] = new IndexedElement(mapping.getTargetType(), mapping.getTargetIndex() + 1);
-		} else {
-		    newLayer[i][j] = tile;
-		}
-
-	    }
-	}
-	return newLayer;
+        map = convertMapScope.getMap().getMapData();
+        tileMapping = convertMapScope.getTilesetMapping() != null ? convertMapScope.getTilesetMapping().getMappingList() : null;
+        itemMapping = convertMapScope.getItemMapping() != null ? convertMapScope.getItemMapping().getMappingAsMap() : null;
+        tileset = convertMapScope.getTilesetMapping() != null ? convertMapScope.getTilesetMapping().getTargetTilesetId() : map.getSettings().iTilesetID;
     }
-	 */
-	private void remapLayer(IndexedElement[][] layerType) {
-		for (int i = 0; i < layerType.length; i++) {
-			IndexedElement[] layers = layerType[i];
 
-			for (int j = 0; j < layers.length; j++) {
-				IndexedElement tile = layers[j];
-				ObservableList<TileMapping> mappingType = tileMapping.get(tile.type).getMappings();
+    public MapData getMap() {
+        return map;
+    }
 
-				if (mappingType.size() >= tile.index) {
-					TileMapping mapping = mappingType.get(tile.index - 1);
+    public void setMap(MapData map) {
+        this.map = map;
+    }
 
-					tile.type = mapping.getTargetType();
-					tile.index = mapping.getTargetIndex() + 1;
+    public Map<Integer, TileCategoryMapping> getTileMapping() {
+        return tileMapping;
+    }
 
-				} else {
-					// TODO: fix dis here
-				}
+    public void setTileMapping(Map<Integer, TileCategoryMapping> mapping) {
+        this.tileMapping = mapping;
+    }
 
-			}
-		}
-	}
+    public Map<Integer, Integer> getItemMapping() {
+        return itemMapping;
+    }
 
-	private void applyItemRemapping() {
-		for (WorldItemStack stack : map.getActors().getItems()) {
-			int itemId = stack.getStack().getObject().usItem.get();
-			Item item = mapAssets.getItems().getItem(itemId);
+    public void setItemMapping(Map<Integer, Integer> itemMapping) {
+        this.itemMapping = itemMapping;
+    }
 
-			if(item == null){
-				System.err.println("Remapping item id ["+itemId+"] missing from source map assets!");
-			}
+    public Integer getTileset() {
+        return tileset;
+    }
 
-			String itemName = item != null
-					? item.getName()
-					: "[UNKNOWN ITEM]";
-			
-			Integer newId = itemMapping.get(itemId);
-			if (newId == null) {				
-				
-				System.out.println("thebob.ja2maptool.util.MapTransformer.applyItemRemapping() remove " + itemId + "("+itemName+")");
-				stack.getItem().fExists.set(false);
-				stack.getItem().ubNonExistChance.set((short) 100);
-				stack.getStack().getObject().usItem.set(0);
-				stack.getStack().getObject().ubNumberOfObjects.set((short) 0);
-			} else {
-				String newItemName = targetAssets.getItems().getItem(newId).getName();
-				System.out.println("thebob.ja2maptool.util.MapTransformer.applyItemRemapping() remap " + itemId + "("+itemName+") -> " + newId + "("+newItemName+")");
-				stack.getStack().getObject().usItem.set(newId);
-			}
+    public void setTileset(Integer tileset) {
+        this.tileset = tileset;
+    }
 
-		}
-	}
+    public void saveTo(String path) {
+        getRemappedData(true).saveMap(path);
+    }
 
-	public MapData getRemappedData(boolean preview) {
-		if (map == null) {
-			return null;
-		}
+    public void remapSnippet(SelectedTiles snippet) {
+        if (tileMapping != null) {
+            for (IndexedElement[][] layer : snippet.getLayers()) {
+                remapLayer(layer);
+            }
+        }
+    }
 
-		if (preview) { // loads a copy of the input map and does the remapping there
-			map.getByteBuffer().rewind();
-			map = mapAssets.getMaps().loadMapData(map.getByteBuffer());
-		}
+    public void applyTileRemapping() {
+        remapLayer(map.getLayers().landLayer);
+        remapLayer(map.getLayers().objectLayer);
+        remapLayer(map.getLayers().structLayer);
+        remapLayer(map.getLayers().shadowLayer);
+        remapLayer(map.getLayers().roofLayer);
+        remapLayer(map.getLayers().onRoofLayer);
+    }
 
-		if (tileset != null) {
-			map.getSettings().iTilesetID = tileset;
-		}
+    /*
+    private IndexedElement[][] remapLayer(IndexedElement[][] layerType, Map<Integer, TileCategoryMapping> mappingList) {
+    IndexedElement[][] newLayer = new IndexedElement[layerType.length][];
 
-		if (tileMapping != null) {
-			applyTileRemapping();
-		}
+    for (int i = 0; i < layerType.length; i++) {
+        IndexedElement[] layers = layerType[i];
+        newLayer[i] = new IndexedElement[layers.length];
 
-		if (itemMapping != null) {
-			applyItemRemapping();
-		}
+        for (int j = 0; j < layers.length; j++) {
+        IndexedElement tile = layers[j];
 
-		return map;
-	}
+        ObservableList<TileMapping> mappingType = mappingList.get(tile.type).getMappings();
+        if (mappingType.size() >= tile.index) {
+            TileMapping mapping = mappingType.get(tile.index - 1);
+            newLayer[i][j] = new IndexedElement(mapping.getTargetType(), mapping.getTargetIndex() + 1);
+        } else {
+            newLayer[i][j] = tile;
+        }
+
+        }
+    }
+    return newLayer;
+    }
+     */
+    private void remapLayer(IndexedElement[][] layerType) {
+        for (int i = 0; i < layerType.length; i++) {
+            IndexedElement[] layers = layerType[i];
+
+            for (int j = 0; j < layers.length; j++) {
+                IndexedElement tile = layers[j];
+                ObservableList<TileMapping> mappingType = tileMapping.get(tile.type).getMappings();
+
+                if (mappingType.size() >= tile.index) {
+                    TileMapping mapping = mappingType.get(tile.index - 1);
+
+                    tile.type = mapping.getTargetType();
+                    tile.index = mapping.getTargetIndex() + 1;
+
+                } else {
+                    // TODO: fix dis here
+                }
+
+            }
+        }
+    }
+
+    private void applyItemRemapping() {
+        System.out.println("thebob.ja2maptool.util.MapTransformer.applyItemRemapping() - WORLD ITEMS:");
+
+        for (WorldItemStack stack : map.getActors().getItems()) {
+            remapWorldItemStack(stack);
+        }
+
+        System.out.println("thebob.ja2maptool.util.MapTransformer.applyItemRemapping() - SOLDIERS:");
+        List<SoldierCreate> soldierPlacements = map.getActors().getSoldierPlacements();
+        for (SoldierCreate soldierPlacement : soldierPlacements) {
+            if (soldierPlacement.isDetailed()) {
+                System.out.println("== Profile: " + soldierPlacement.getDetailedPlacementInfo().ubProfile.get() + ", Team " + soldierPlacement.getDetailedPlacementInfo().bTeam.get());
+                soldierPlacement.getDetailedPlacementInventory().forEach((ObjectStack stack) -> {
+                    if (stack.getObject().usItem.get() != 0) {
+                        remapObjectStack(stack);
+                    }
+                });
+            }
+        }
+
+    }
+
+    private Integer getRemappedItemId(int itemId) {
+        Item item = mapAssets.getItems().getItem(itemId);
+
+        if (item == null) {
+            System.err.println("Remapping item id [" + itemId + "] missing from source map assets!");
+        }
+
+        String itemName = item != null
+                ? item.getName()
+                : "[UNKNOWN ITEM]";
+
+        Integer newId = itemMapping.get(itemId);
+        String newItemName = newId != null
+                ? targetAssets.getItems().getItem(newId).getName()
+                : "NULL";
+
+        if (newId == null) {
+            System.out.println("\t [remove] => " + itemId + "(" + itemName + ") -> [NULL]");
+            return null;
+        } else {
+            System.out.println("\t [map] => " + itemId + "(" + itemName + ") -> " + newId + "(" + newItemName + ")");
+            return newId;
+        }
+    }
+
+    private void remapObjectStack(ObjectStack stack) {
+        int itemId = stack.getObject().usItem.get();
+        Integer newId = getRemappedItemId(itemId);
+
+        if (newId == null) {
+            stack.getObject().usItem.set(0);
+            stack.getObject().ubNumberOfObjects.set((short) 0);
+        } else {
+            stack.getObject().usItem.set(newId);
+        }
+    }
+
+    private void remapWorldItemStack(WorldItemStack stack) {
+        int itemId = stack.getStack().getObject().usItem.get();
+        Integer newId = getRemappedItemId(itemId);
+
+        if (newId == null) {
+            stack.getItem().fExists.set(false);
+            stack.getItem().ubNonExistChance.set((short) 100);
+            stack.getStack().getObject().usItem.set(0);
+            stack.getStack().getObject().ubNumberOfObjects.set((short) 0);
+        } else {
+            stack.getStack().getObject().usItem.set(newId);
+        }
+    }
+
+
+    public MapData getRemappedData(boolean preview) {
+        if (map == null) {
+            return null;
+        }
+
+        if (preview) { // loads a copy of the input map and does the remapping there
+            map.getByteBuffer().rewind();
+            map = mapAssets.getMaps().loadMapData(map.getByteBuffer());
+        }
+
+        if (tileset != null) {
+            map.getSettings().iTilesetID = tileset;
+        }
+
+        if (tileMapping != null) {
+            applyTileRemapping();
+        }
+
+        if (itemMapping != null) {
+            applyItemRemapping();
+        }
+
+        return map;
+    }
 
 }

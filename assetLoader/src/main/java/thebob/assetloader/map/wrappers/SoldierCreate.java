@@ -227,4 +227,19 @@ public class SoldierCreate extends MapLoaderWrapperBase {
             Logger.getLogger(WorldItemStack.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    // ---
+
+
+    public BASIC_SOLDIERCREATE_STRUCT getPlacementInfo() {
+        return placementInfo;
+    }
+
+    public SOLDIERCREATE_STRUCT getDetailedPlacementInfo() {
+        return detailedPlacementInfo;
+    }
+
+    public List<ObjectStack> getDetailedPlacementInventory() {
+        return detailedPlacementInventory;
+    }
 }

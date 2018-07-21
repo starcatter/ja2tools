@@ -128,9 +128,16 @@ public class ItemMappingScope implements Scope {
 				Integer targetId = mapping.get(id);
 
 				Item sourceItem = sourceAssets.getItems().getItem(id);
-				Item tatgetItem = targetAssets.getItems().getItem(targetId);
+				Item targetItem = targetAssets.getItems().getItem(targetId);
 
-				scope.mapItems(sourceItem, tatgetItem);
+				if(sourceItem != null && targetItem != null) {
+                    scope.mapItems(sourceItem, targetItem);
+                } else {
+				    scope.mapIds(id,
+                            sourceItem != null ? sourceItem.getName() : "Unknown",
+                            targetId,
+                            targetItem != null ? targetItem.getName() : "Unknown");
+                }
 			}
 		} else {
 			// TODO: display a prompt here to either ignore this error or pick a directory!

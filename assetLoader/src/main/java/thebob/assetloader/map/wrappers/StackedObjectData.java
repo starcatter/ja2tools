@@ -115,5 +115,12 @@ public class StackedObjectData extends MapLoaderWrapperBase{
             Logger.getLogger(WorldItemStack.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
+    public ObjectData getData() {
+        return data;
+    }
+
+    public AttachmentList getAttachments() {
+        return attachments;
+    }
 }

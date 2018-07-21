@@ -49,7 +49,8 @@ import static thebob.ja2maptool.ui.tabs.mapping.items.ItemMappingTabViewModel.SE
 import static thebob.ja2maptool.ui.tabs.mapping.items.ItemMappingTabViewModel.UPDATE_MAPPING;
 import static thebob.ja2maptool.ui.tabs.mapping.items.ItemMappingTabViewModel.UPDATE_PROPS_LEFT;
 import static thebob.ja2maptool.ui.tabs.mapping.items.ItemMappingTabViewModel.UPDATE_PROPS_RIGHT;
-import thebob.ja2maptool.util.mapping.ItemMapping;
+import thebob.ja2maptool.util.mapping.item.ItemMapping;
+import thebob.ja2maptool.util.mapping.item.Mapping;
 
 public class ItemMappingTabView implements FxmlView<ItemMappingTabViewModel>, Initializable {
 
@@ -66,7 +67,7 @@ public class ItemMappingTabView implements FxmlView<ItemMappingTabViewModel>, In
 	private TreeView<String> list_right;
 
 	@FXML
-	private ListView<ItemMapping> mapping_list;
+	private ListView<Mapping> mapping_list;
 
 	@FXML
 	void onAuto(MouseEvent event) {
@@ -192,7 +193,7 @@ public class ItemMappingTabView implements FxmlView<ItemMappingTabViewModel>, In
 		// setup mapping list
 		mapping_list.setItems(viewModel.getMappingList());
 		mapping_list.setOnMouseClicked(event -> {
-			ItemMapping selectedMapping = mapping_list.getSelectionModel().getSelectedItem();
+			Mapping selectedMapping = mapping_list.getSelectionModel().getSelectedItem();
 			viewModel.showMapping(selectedMapping);
 		});
 
@@ -220,7 +221,7 @@ public class ItemMappingTabView implements FxmlView<ItemMappingTabViewModel>, In
 		});
 
 		viewModel.subscribe(SELECT_MAPPING_LIST, (key, value) -> {
-			ItemMapping mapping = (ItemMapping) value[0];
+			Mapping mapping = (Mapping) value[0];
 			mapping_list.scrollTo(mapping);
 			mapping_list.getSelectionModel().select(mapping);
 		});

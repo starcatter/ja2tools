@@ -31,22 +31,24 @@ import javafx.collections.ObservableList;
 import thebob.assetmanager.AssetManager;
 import thebob.assetmanager.managers.items.Item;
 import thebob.ja2maptool.scopes.VfsAssetScope;
-import thebob.ja2maptool.util.mapping.ItemMapping;
+import thebob.ja2maptool.util.mapping.item.IdMapping;
+import thebob.ja2maptool.util.mapping.item.ItemMapping;
 import thebob.ja2maptool.util.mapping.ItemMappingFileData;
 import thebob.ja2maptool.util.mapping.MappingIO;
+import thebob.ja2maptool.util.mapping.item.Mapping;
 
 public class ItemMappingScope implements Scope {
 
-	ObservableList<ItemMapping> mappingList = FXCollections.observableArrayList();
-	Map<Integer, ItemMapping> mappingIndex = new HashMap<Integer, ItemMapping>();
+	ObservableList<Mapping> mappingList = FXCollections.observableArrayList();
+	Map<Integer, Mapping> mappingIndex = new HashMap<Integer, Mapping>();
 	AssetManager sourceAssets;
 	AssetManager targetAssets;
 
-	public ObservableList<ItemMapping> getMapping() {
+	public ObservableList<Mapping> getMapping() {
 		return mappingList;
 	}
 
-	public Map<Integer, ItemMapping> getMappingIndex() {
+	public Map<Integer, Mapping> getMappingIndex() {
 		return mappingIndex;
 	}
 
@@ -66,6 +68,23 @@ public class ItemMappingScope implements Scope {
 		this.targetAssets = targetAssets;
 	}
 
+	public void mapIds(Integer srcItem, String srcName, Integer dstItem, String dstName) {
+		if(srcItem == null){
+			System.err.println("Attempt to remap null item to " + (dstItem != null ? dstItem : "ANOTHER NULL ITEM WTF?"));
+			return;
+		}
+
+		if (mappingIndex.containsKey(srcItem)) {
+			Mapping mapping = mappingIndex.get(srcItem);
+			mapping.setTargetId(dstItem);
+			mapping.setTargetName(dstName);
+		} else {
+			Mapping mapping = new IdMapping(srcItem, srcName, dstItem, dstName);
+			this.mappingList.add(mapping);
+			mappingIndex.put(srcItem, mapping);
+		}
+	}
+
 	public void mapItems(Item srcItem, Item dstItem) {
 		if(srcItem == null){
 			System.err.println("Attempt to remap null item to " + (dstItem != null ? dstItem.getId() : "ANOTHER NULL ITEM WTF?"));
@@ -73,10 +92,10 @@ public class ItemMappingScope implements Scope {
 		}
 
 		if (mappingIndex.containsKey(srcItem.getId())) {
-			ItemMapping mapping = mappingIndex.get(srcItem.getId());
-			mapping.setDstItem(dstItem);
+			Mapping mapping = mappingIndex.get(srcItem.getId());
+			mapping.setTarget(dstItem);
 		} else {
-			ItemMapping mapping = new ItemMapping(srcItem, dstItem);
+			Mapping mapping = new ItemMapping(srcItem, dstItem);
 			this.mappingList.add(mapping);
 			mappingIndex.put(srcItem.getId(), mapping);
 		}
@@ -86,8 +105,8 @@ public class ItemMappingScope implements Scope {
 
 	public Map<Integer, Integer> getMappingAsMap() {
 		Map<Integer, Integer> mappingMap = new HashMap();
-		for (ItemMapping mapping : mappingList) {
-			mappingMap.put(mapping.getSrcItem().getId(), mapping.getDstItem().getId());
+		for (Mapping mapping : mappingList) {
+			mappingMap.put(mapping.getSourceId(), mapping.getTargetId());
 		}
 		return mappingMap;
 	}
@@ -101,8 +120,8 @@ public class ItemMappingScope implements Scope {
 		ItemMappingScope scope = new ItemMappingScope();
 
 		if (sourceAssets != null && targetAssets != null) {
-			scope.setTargetAssets(targetAssets);
 			scope.setSourceAssets(sourceAssets);
+			scope.setTargetAssets(targetAssets);
 
 			Map<Integer, Integer> mapping = mappingData.getMapping();
 			for (Integer id : mapping.keySet()) {

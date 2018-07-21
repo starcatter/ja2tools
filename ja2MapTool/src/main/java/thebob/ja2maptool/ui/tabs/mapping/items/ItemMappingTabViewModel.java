@@ -38,8 +38,9 @@ import thebob.ja2maptool.components.ItemMappingTreeItem;
 import thebob.ja2maptool.scopes.MainScope;
 import thebob.ja2maptool.scopes.VfsAssetScope;
 import thebob.ja2maptool.scopes.mapping.ItemMappingScope;
-import thebob.ja2maptool.util.mapping.ItemMapping;
+import thebob.ja2maptool.util.mapping.item.ItemMapping;
 import thebob.ja2maptool.util.mapping.MappingIO;
+import thebob.ja2maptool.util.mapping.item.Mapping;
 
 public class ItemMappingTabViewModel implements ViewModel {
 
@@ -61,8 +62,8 @@ public class ItemMappingTabViewModel implements ViewModel {
 	ObservableList<PropertySheet.Item> propsRight;
 	ObservableList<PropertySheet.Item> propsLeft;
 
-	Map<Item, TreeItem> itemNodesLeft = new HashMap<Item, TreeItem>();
-	Map<Item, TreeItem> itemNodesRight = new HashMap<Item, TreeItem>();
+	Map<Integer, TreeItem> itemNodesLeft = new HashMap<>();
+	Map<Integer, TreeItem> itemNodesRight = new HashMap<>();
 
 	TreeItem<String> root_left;
 	TreeItem<String> root_right;
@@ -80,13 +81,13 @@ public class ItemMappingTabViewModel implements ViewModel {
 		populateTreePane(root_right, mappingScope.getTargetAssets(), itemNodesRight);
 	}
 
-	private void populateTreePane(TreeItem<String> root, AssetManager assets, Map<Item, TreeItem> itemNodes) {
+	private void populateTreePane(TreeItem<String> root, AssetManager assets, Map<Integer, TreeItem> itemNodes) {
 		ItemCategory categoryRoot = assets.getItems().getCategories().getRootNode();
 		Iterator<ItemCategory> iterator = categoryRoot.categoryIterator();
 		insertNodes(root, iterator, itemNodes);
 	}
 
-	private boolean insertNodes(TreeItem<String> root, Iterator<ItemCategory> iterator, Map<Item, TreeItem> itemNodes) {
+	private boolean insertNodes(TreeItem<String> root, Iterator<ItemCategory> iterator, Map<Integer, TreeItem> itemNodes) {
 		boolean displayThisTree = false;
 		while (iterator.hasNext()) {
 			boolean displayThisNode = false;
@@ -101,7 +102,7 @@ public class ItemMappingTabViewModel implements ViewModel {
 					ItemMappingTreeItem itemNode = new ItemMappingTreeItem(item);
 					categoryNode.getChildren().add(itemNode);
 					if (itemNodes != null) {
-						itemNodes.put(item, itemNode);
+						itemNodes.put(item.getId(), itemNode);
 					}
 				}
 			}
@@ -176,12 +177,12 @@ public class ItemMappingTabViewModel implements ViewModel {
 
 	void selectedSource(Item item) {
 		int srcId = item.getId();
-		ItemMapping oldMapping = mappingScope.getMappingIndex().get(srcId);
+		Mapping oldMapping = mappingScope.getMappingIndex().get(srcId);
 		if (oldMapping == null) {
 			return;
 		}
 
-		Integer oldMappingId = oldMapping.getDstItem().getId();
+		Integer oldMappingId = oldMapping.getTargetId();
 		if (oldMappingId != null) {
 			Item mappedItem = mappingScope.getTargetAssets().getItems().getItem(oldMappingId);
 			publish(SELECT_MAPPING_RIGHT, itemNodesRight.get(mappedItem));
@@ -189,17 +190,17 @@ public class ItemMappingTabViewModel implements ViewModel {
 		}
 	}
 
-	ObservableList<ItemMapping> getMappingList() {
+	ObservableList<Mapping> getMappingList() {
 		return mappingScope.getMapping();
 	}
 
-	void showMapping(ItemMapping selectedMapping) {
+	void showMapping(Mapping selectedMapping) {
 		if (selectedMapping == null) {
 			return;
 		}
 
-		Item src = selectedMapping.getSrcItem();
-		Item dst = selectedMapping.getDstItem();
+		Integer src = selectedMapping.getSourceId();
+		Integer dst = selectedMapping.getTargetId();
 
 		publish(SELECT_MAPPING_LEFT, itemNodesLeft.get(src));
 		publish(SELECT_MAPPING_RIGHT, itemNodesRight.get(dst));

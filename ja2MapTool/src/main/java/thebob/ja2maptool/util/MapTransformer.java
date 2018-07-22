@@ -35,14 +35,24 @@ import thebob.ja2maptool.model.TileCategoryMapping;
 import thebob.ja2maptool.model.TileMapping;
 import thebob.ja2maptool.scopes.map.ConvertMapScope;
 import thebob.ja2maptool.util.compositor.SelectedTiles;
+import thebob.ja2maptool.util.mapping.ItemMappingFileData;
+import thebob.ja2maptool.util.mapping.TileMappingFileData;
 
 import java.util.List;
 import java.util.Map;
+
+import static thebob.ja2maptool.util.MapTransformer.UnmappedAction.RemoveIfMissing;
 
 /**
  * @author the_bob
  */
 public class MapTransformer {
+
+    public enum UnmappedAction {
+        Remove,
+        RemoveIfMissing,
+        Ignore
+    }
 
     AssetManager mapAssets = null;
     AssetManager targetAssets = null;
@@ -51,6 +61,15 @@ public class MapTransformer {
     Map<Integer, TileCategoryMapping> tileMapping = null;
     Map<Integer, Integer> itemMapping = null;
     Integer tileset = null;
+
+    UnmappedAction unmappedAction = RemoveIfMissing;
+
+    StringBuilder remapLog = new StringBuilder();
+
+    private void log(String text){
+        remapLog.append(text);
+        remapLog.append("\n");
+    }
 
     public MapTransformer(ConvertMapScope convertMapScope) {
         mapAssets = convertMapScope.getMap().getMapAssets();
@@ -61,6 +80,26 @@ public class MapTransformer {
         itemMapping = convertMapScope.getItemMapping() != null ? convertMapScope.getItemMapping().getMappingAsMap() : null;
         tileset = convertMapScope.getTilesetMapping() != null ? convertMapScope.getTilesetMapping().getTargetTilesetId() : map.getSettings().iTilesetID;
     }
+
+    public MapTransformer(AssetManager sourceAssets, AssetManager targetAssets, TileMappingFileData tileMappingFileData, ItemMappingFileData itemMappingFileData, MapData mapData) {
+        mapAssets = sourceAssets;
+        this.targetAssets = targetAssets;
+
+        map = mapData;
+
+        tileMapping = tileMappingFileData != null
+                ? tileMappingFileData.getMappingList()
+                : null;
+
+        itemMapping = itemMappingFileData != null
+                ? itemMappingFileData.getMapping()
+                : null;
+
+        tileset = tileMappingFileData != null
+                ? tileMappingFileData.getTargetTilesetId()
+                : mapData.getSettings().iTilesetID;
+    }
+
 
     public MapData getMap() {
         return map;
@@ -94,8 +133,9 @@ public class MapTransformer {
         this.tileset = tileset;
     }
 
-    public void saveTo(String path) {
+    public String saveTo(String path) {
         getRemappedData(true).saveMap(path);
+        return remapLog.toString();
     }
 
     public void remapSnippet(SelectedTiles snippet) {
@@ -115,30 +155,6 @@ public class MapTransformer {
         remapLayer(map.getLayers().onRoofLayer);
     }
 
-    /*
-    private IndexedElement[][] remapLayer(IndexedElement[][] layerType, Map<Integer, TileCategoryMapping> mappingList) {
-    IndexedElement[][] newLayer = new IndexedElement[layerType.length][];
-
-    for (int i = 0; i < layerType.length; i++) {
-        IndexedElement[] layers = layerType[i];
-        newLayer[i] = new IndexedElement[layers.length];
-
-        for (int j = 0; j < layers.length; j++) {
-        IndexedElement tile = layers[j];
-
-        ObservableList<TileMapping> mappingType = mappingList.get(tile.type).getMappings();
-        if (mappingType.size() >= tile.index) {
-            TileMapping mapping = mappingType.get(tile.index - 1);
-            newLayer[i][j] = new IndexedElement(mapping.getTargetType(), mapping.getTargetIndex() + 1);
-        } else {
-            newLayer[i][j] = tile;
-        }
-
-        }
-    }
-    return newLayer;
-    }
-     */
     private void remapLayer(IndexedElement[][] layerType) {
         for (int i = 0; i < layerType.length; i++) {
             IndexedElement[] layers = layerType[i];
@@ -162,17 +178,17 @@ public class MapTransformer {
     }
 
     private void applyItemRemapping() {
-        System.out.println("thebob.ja2maptool.util.MapTransformer.applyItemRemapping() - WORLD ITEMS:");
+        log("thebob.ja2maptool.util.MapTransformer.applyItemRemapping() - WORLD ITEMS:");
 
         for (WorldItemStack stack : map.getActors().getItems()) {
             remapWorldItemStack(stack);
         }
 
-        System.out.println("thebob.ja2maptool.util.MapTransformer.applyItemRemapping() - SOLDIERS:");
+        log("thebob.ja2maptool.util.MapTransformer.applyItemRemapping() - SOLDIERS:");
         List<SoldierCreate> soldierPlacements = map.getActors().getSoldierPlacements();
         for (SoldierCreate soldierPlacement : soldierPlacements) {
             if (soldierPlacement.isDetailed()) {
-                System.out.println("== Profile: " + soldierPlacement.getDetailedPlacementInfo().ubProfile.get() + ", Team " + soldierPlacement.getDetailedPlacementInfo().bTeam.get());
+                log("== Profile: " + soldierPlacement.getDetailedPlacementInfo().ubProfile.get() + ", Team " + soldierPlacement.getDetailedPlacementInfo().bTeam.get());
                 soldierPlacement.getDetailedPlacementInventory().forEach((ObjectStack stack) -> {
                     if (stack.getObject().usItem.get() != 0) {
                         remapObjectStack(stack);
@@ -186,10 +202,6 @@ public class MapTransformer {
     private Integer getRemappedItemId(int itemId) {
         Item item = mapAssets.getItems().getItem(itemId);
 
-        if (item == null) {
-            System.err.println("Remapping item id [" + itemId + "] missing from source map assets!");
-        }
-
         String itemName = item != null
                 ? item.getName()
                 : "[UNKNOWN ITEM]";
@@ -200,10 +212,35 @@ public class MapTransformer {
                 : "NULL";
 
         if (newId == null) {
-            System.out.println("\t [remove] => " + itemId + "(" + itemName + ") -> [NULL]");
-            return null;
+            Item targetItem = targetAssets.getItems().getItem(itemId);
+
+            switch (unmappedAction) {
+                case Remove:
+                    log("\t [remove] => " + itemId + "(" + itemName + ") -> [NULL]");
+                    return null;
+
+                case RemoveIfMissing:
+                    if (targetItem != null) {
+                        log("\t [skip] => " + itemId + "(" + itemName + ") -> " + itemId + " (" + targetItem.getName() + ")");
+                        return itemId;
+                    } else {
+                        log("\t [remove] => " + itemId + "(" + itemName + ") -> [NULL]");
+                        return null;
+                    }
+
+                case Ignore:
+                    if (targetItem != null) {
+                        log("\t [skip] => " + itemId + "(" + itemName + ") -> " + itemId + " (" + targetItem.getName() + ")");
+                        return itemId;
+                    } else {
+                        log("\t [skip] => " + itemId + "(" + itemName + ") -> " + itemId + " (ERROR)");
+                        return null;
+                    }
+                default:
+                    return null;
+            }
         } else {
-            System.out.println("\t [map] => " + itemId + "(" + itemName + ") -> " + newId + "(" + newItemName + ")");
+            log("\t [map] => " + itemId + "(" + itemName + ") -> " + newId + "(" + newItemName + ")");
             return newId;
         }
     }

@@ -232,7 +232,8 @@ public class ConvertMapTabViewModel implements ViewModel {
     // export the map with remapped items/tiles
     void saveMap(String path) {
 	MapTransformer transformer = new MapTransformer(convertMapScope);
-	transformer.saveTo(path);
+	String out = transformer.saveTo(path);
+	System.out.println(out);
     }
 
     // property display handling

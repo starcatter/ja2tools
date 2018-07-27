@@ -58,24 +58,33 @@ public abstract class AutoLoadingMapStruct extends AutoLoadingStruct {
         return output.toString();
     }
 
-    protected static String printArrayAsGrids(Member[] array) {
-        StringBuilder output = new StringBuilder(array.length);
-        
-        if (array[0] instanceof Signed32) {
-            for (Member m : array) {
-                Signed32 character = (Signed32) m;
-                output.append( character.get() == 0 ? "0" : new GridPos(character.get()) );
+    public static String printArrayAsGrids(Member[] array){
+        StringBuilder output = new StringBuilder(array.length*3);
+        for (Member m : array) {
+            long c;
+
+            if (m instanceof Signed8) {
+                c = ((Signed8) m).get();
+            } else if (m instanceof Signed16) {
+                c = ((Signed16) m).get();
+            } else if (m instanceof Signed32) {
+                c = ((Signed32) m).get();
+            } else if (m instanceof Unsigned8) {
+                c = ((Unsigned8) m).get();
+            } else if (m instanceof Unsigned16) {
+                c = ((Unsigned16) m).get();
+            } else if (m instanceof Unsigned32) {
+                c = ((Unsigned32) m).get();
+            } else {
+                throw new RuntimeException("Unknown data type: " + m.getClass().getSimpleName());
             }
+
+            output.append('[');
+            output.append( c == 0 || c == 65535 ? "Blank" : new GridPos(c) );
+            output.append(']');
         }
 
-        if (array[0] instanceof Signed16) {
-            for (Member m : array) {
-                Signed16 character = (Signed16) m;
-                output.append( character.get() == 0 ? "0" : new GridPos(character.get()) );
-            }
-        }
-        
         return output.toString();
     }
-    
+
 }

@@ -95,11 +95,13 @@ public class MapActors extends MapComponent {
         if(MapLoader.logFileIO) System.out.println("\n\nloader.core.MapActors.loadSchedules() start @"+byteBuffer.position());
         try {
             ubNumSchedules = byteBuffer.get() & 0xFF;
+
             if (ubNumSchedules < 1) {
                 if (MapLoader.logEverything) {
                     System.out.println("\n\n\tloadData() Schedules saved yet count < 1!!!\n\n");
                 }
             }
+
             for (int cnt = 0; cnt < ubNumSchedules; cnt++) {
 
                 SCHEDULENODE schedule = new SCHEDULENODE();
@@ -108,12 +110,18 @@ public class MapActors extends MapComponent {
                     OLD_SCHEDULENODE schedule_old = new OLD_SCHEDULENODE();
                     schedule_old.setSource(byteBuffer);
                     schedule.loadOld(schedule_old);
+
+                    if (MapLoader.logEverything) {
+                        System.out.println("loadSchedules(): Loaded"
+                                + "\n\t old -> " + schedule_old
+                                + "\n\t new ->     " + schedule);
+                    }
                 } else {
                     schedule.setSource(byteBuffer);
-                }
 
-                if (MapLoader.logEverything) {
-                    System.out.println("loadSchedules(): Loaded\n\t" + schedule);
+                    if (MapLoader.logEverything) {
+                        System.out.println("loadSchedules(): Loaded " + schedule);
+                    }
                 }
 
                 schedules.add(schedule);
@@ -220,7 +228,7 @@ public class MapActors extends MapComponent {
 
     public void saveSchedules(ByteBuffer outputBuffer) {
         if(MapLoader.logFileIO) System.out.println("\nloader.core.MapActors.saveSchedules() start @"+outputBuffer.position());
-        outputBuffer.putInt(schedules.size());
+        outputBuffer.put((byte) schedules.size());
         ByteArrayOutputStream schedulesAsBytes = new ByteArrayOutputStream();
         try {
             for (SCHEDULENODE item : schedules) {

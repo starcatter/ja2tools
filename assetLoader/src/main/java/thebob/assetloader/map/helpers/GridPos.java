@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 the_bob.
@@ -26,32 +26,35 @@ package thebob.assetloader.map.helpers;
 import thebob.assetloader.map.core.MapData;
 
 /**
- *
  * @author the_bob
  */
 public class GridPos {
-    
+
     public static MapData map;
-    
-    public int sYPos;
-    public int sXPos;
-    int sGridNo;
+
+    public long sYPos;
+    public long sXPos;
+    long sGridNo;
 
     public GridPos(int sGridNo) {
+        this((long) sGridNo);
+    }
+
+    public GridPos(long sGridNo) {
         this.sGridNo = sGridNo;
         sYPos = sGridNo / map.getSettings().iColSize;
         sXPos = (sGridNo - (sYPos * map.getSettings().iColSize));
-        
-        if( sYPos > map.getSettings().iColSize) throw new RuntimeException("Invalid grid number!");
-        if( sXPos > map.getSettings().iRowSize) throw new RuntimeException("Invalid grid number!");
-        
-        if( sYPos < 0) throw new RuntimeException("Invalid grid number!");
-        if( sXPos < 0) throw new RuntimeException("Invalid grid number!");
+
+        if (sYPos > map.getSettings().iColSize) throw new RuntimeException("Invalid grid number! " + toString());
+        if (sXPos > map.getSettings().iRowSize) throw new RuntimeException("Invalid grid number!" + toString());
+
+        if (sYPos < 0) throw new RuntimeException("Invalid grid number!");
+        if (sXPos < 0) throw new RuntimeException("Invalid grid number!");
     }
 
     @Override
     public String toString() {
         return "GridPos{" + "sYPos=" + sYPos + ", sXPos=" + sXPos + ", sGridNo=" + sGridNo + '}';
     }
-    
+
 }

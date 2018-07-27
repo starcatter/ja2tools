@@ -81,6 +81,35 @@ public abstract class AutoLoadingStruct extends Struct {
         }
         return output.toString();
     }
+
+    public static String mappedArrayToNumberString(Member[] array){
+        StringBuilder output = new StringBuilder(array.length*3);
+            for (Member m : array) {
+                long c;
+
+                if (m instanceof Signed8) {
+                    c = ((Signed8) m).get();
+                } else if (m instanceof Signed16) {
+                    c = ((Signed16) m).get();
+                } else if (m instanceof Signed32) {
+                    c = ((Signed32) m).get();
+                } else if (m instanceof Unsigned8) {
+                    c = ((Unsigned8) m).get();
+                } else if (m instanceof Unsigned16) {
+                    c = ((Unsigned16) m).get();
+                } else if (m instanceof Unsigned32) {
+                    c = ((Unsigned32) m).get();
+                } else {
+                    throw new RuntimeException("Unknown data type: " + m.getClass().getSimpleName());
+                }
+
+                output.append('[');
+                output.append(String.valueOf(c));
+                output.append(']');
+            }
+
+        return output.toString();
+    }
     
     public static String printArrayAsChars(Member[] array) {
         return mappedArrayToString(array);

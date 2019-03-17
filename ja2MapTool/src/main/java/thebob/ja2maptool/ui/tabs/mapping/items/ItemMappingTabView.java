@@ -36,6 +36,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import org.controlsfx.control.PropertySheet;
@@ -196,6 +197,17 @@ public class ItemMappingTabView implements FxmlView<ItemMappingTabViewModel>, In
 			Mapping selectedMapping = mapping_list.getSelectionModel().getSelectedItem();
 			viewModel.showMapping(selectedMapping);
 		});
+
+		mapping_list.setOnKeyPressed( event -> {
+			if(event.getCode().equals(KeyCode.DELETE)){
+				Mapping selectedMapping = mapping_list.getSelectionModel().getSelectedItem();
+				mapping_list.getSelectionModel().clearSelection();
+				if(selectedMapping != null){
+					viewModel.removeMapping(selectedMapping);
+					event.consume();
+				}
+			}
+		} );
 
 		// setup events
 		viewModel.subscribe(SELECT_MAPPING_LEFT, (key, value) -> {

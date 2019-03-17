@@ -206,4 +206,9 @@ public class ItemMappingTabViewModel implements ViewModel {
 		publish(SELECT_MAPPING_RIGHT, itemNodesRight.get(dst));
 		publish(SELECT_MAPPING_LIST, selectedMapping);
 	}
+
+	public void removeMapping(Mapping selectedMapping) {
+		mappingScope.removeMapping(selectedMapping);
+		publish(UPDATE_MAPPING);
+	}
 }

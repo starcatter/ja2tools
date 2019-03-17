@@ -146,4 +146,9 @@ public class ItemMappingScope implements Scope {
 
 		return scope;
 	}
+
+    public void removeMapping(Mapping selectedMapping) {
+		mappingIndex.remove(selectedMapping.getSourceId());
+		mappingList.remove(selectedMapping);
+    }
 }

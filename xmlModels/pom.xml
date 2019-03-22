@@ -1,68 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+
     <parent>
-	<groupId>thebob</groupId>
-	<artifactId>ja2tools-main</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+        <groupId>thebob</groupId>
+        <artifactId>ja2tools-main</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
-    
+
     <groupId>thebob</groupId>
     <artifactId>xmlModels</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    
+
     <properties>
-	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	<maven.compiler.source>1.8</maven.compiler.source>
-	<maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
-    
+
     <build>
-	<plugins>
-	    <plugin>
-		<groupId>org.jvnet.jaxb2.maven2</groupId>
-		<artifactId>maven-jaxb2-plugin</artifactId>
-		<version>0.13.1</version>
-		<executions>
-		    <execution>
-			<id>xsd-generate</id>
-			<phase>generate-sources</phase>
-			<goals>
-			    <goal>generate</goal>
-			</goals>
-		    </execution>
-		    <execution>
-			<goals>
-			    <goal>generate</goal>
-			</goals>
-			<configuration>
-			    <schemaIncludes>
-				<include>xsd/*.xsd</include>
-			    </schemaIncludes>
-			    <bindingIncludes>
-				<include>xjb/*.xjb</include>
-			    </bindingIncludes>
-			    <episodeFile>${project.build.directory}/generated-sources/xjc/META-INF/jaxb-data.episode</episodeFile>
-			</configuration>
-			<id>jaxb-generate-data</id>
-		    </execution>
-		</executions>
-		<configuration>
-		    <schemaIncludes>
-			<schemaInclude>**/*.xsd</schemaInclude>
-		    </schemaIncludes>
-		    <bindingIncludes>
-			<bindingInclude>**/*.xjb</bindingInclude>
-		    </bindingIncludes>
-		    <!--<strict>true</strict>-->
-		    <verbose>true</verbose>
-		    <extension>true</extension>
-		    <removeOldOutput>true</removeOldOutput>
-		</configuration>
-	    </plugin>
-	</plugins>
+        <plugins>
+            <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.14.0</version>
+                <executions>
+                    <execution>
+                        <id>xsd-generate</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <schemaIncludes>
+                                <include>xsd/*.xsd</include>
+                            </schemaIncludes>
+                            <bindingIncludes>
+                                <include>xjb/*.xjb</include>
+                            </bindingIncludes>
+                            <episodeFile>${project.build.directory}/generated-sources/xjc/META-INF/jaxb-data.episode
+                            </episodeFile>
+                        </configuration>
+                        <id>jaxb-generate-data</id>
+                    </execution>
+                </executions>
+                <configuration>
+                    <schemaIncludes>
+                        <schemaInclude>**/*.xsd</schemaInclude>
+                    </schemaIncludes>
+                    <bindingIncludes>
+                        <bindingInclude>**/*.xjb</bindingInclude>
+                    </bindingIncludes>
+                    <!--<strict>true</strict>-->
+                    <verbose>true</verbose>
+                    <extension>true</extension>
+                    <removeOldOutput>true</removeOldOutput>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
     <name>xmlModels</name>
 </project>

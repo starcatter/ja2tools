@@ -25,6 +25,7 @@ package thebob.ja2maptoolpackage;
 
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.guice.MvvmfxGuiceApplication;
+import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -44,6 +45,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
+
 import static thebob.ja2maptool.util.mapping.MappingIO.loadItemMapping;
 import static thebob.ja2maptool.util.mapping.MappingIO.loadTilesetMapping;
 
@@ -54,7 +56,7 @@ public class MainApp extends MvvmfxGuiceApplication {
 
     public static void main(final String[] args) {
         if (args.length == 0) {
-            launch(args);
+            Application.launch(args);
         } else if (args.length == 5) {
             String sourceAssetsPath = args[0];
             String targetAssetsPath = args[1];
@@ -159,7 +161,7 @@ public class MainApp extends MvvmfxGuiceApplication {
         final Scene scene = new Scene(view);
 
         stage.setScene(scene);
-        stage.setTitle("JA2 1.13 Map Tool (Alpha12)");
+        stage.setTitle("JA2 1.13 Map Tool (Alpha15)");
         stage.show();
     }
 

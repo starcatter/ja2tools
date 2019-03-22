@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 starcatter.
@@ -23,25 +23,29 @@
  */
 package thebob.ja2maptool.components;
 
+import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import thebob.assetmanager.managers.items.Item;
 
 /**
- *
  * @author the_bob
  */
 public class ItemMappingTreeItem extends TreeItem<String> {
-    
+
     Item item;
 
     public ItemMappingTreeItem(Item item) {
-	super(item.getName(), new ImageView(item.getImage()));
-	this.item = item;
+        super(item.getName(), new VBox(
+                new ImageView(item.getImage()), new Label(String.valueOf(item.getId())))
+        );
+        this.item = item;
     }
 
     public Item getItem() {
-	return item;
+        return item;
     }
-    
+
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 the_bob.
@@ -23,17 +23,20 @@
  */
 package thebob.assetmanager.managers.items.categories;
 
+import thebob.assetmanager.managers.items.Item;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
-import thebob.assetmanager.managers.items.Item;
 
 /**
  *
  * @author the_bob
  */
 public class ItemCategory {
+
+	public static boolean dumpTreeInToString = false;
 
 	public static class SubCategoryItemIterator implements Iterator<Item> {
 
@@ -155,39 +158,43 @@ public class ItemCategory {
 	}
 
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		if (subCategoryCount() + totalItemCount() > 0) {
-			sb.append('\n');
-			for (int i = 0; i < depth; i++) {
-				sb.append('\t');
-			}
-			sb.append('[');
-			sb.append(name);
-			sb.append(']');
-			if (totalItemCount() > 0) {
-				sb.append(",  ");
-				sb.append(totalItemCount());
-				sb.append(" items: ");
+		if(dumpTreeInToString){
+            StringBuilder sb = new StringBuilder();
+            if (subCategoryCount() + totalItemCount() > 0) {
+                sb.append('\n');
+                for (int i = 0; i < depth; i++) {
+                    sb.append('\t');
+                }
+                sb.append('[');
+                sb.append(name);
+                sb.append(']');
+                if (totalItemCount() > 0) {
+                    sb.append(",  ");
+                    sb.append(totalItemCount());
+                    sb.append(" items: ");
 
-				for (Iterator<Item> iterator = items.iterator(); iterator.hasNext();) {
-					sb.append('\n');
-					for (int i = 0; i < depth + 1; i++) {
-						sb.append('\t');
-					}
-					sb.append(iterator.next().getName());
-				}
-			}
-			if (subCategoryCount() > 0) {
-				sb.append(",  ");
-				sb.append(subCategoryCount());
-				sb.append(" sub categories: ");
-				for (Iterator<ItemCategory> iterator = children.iterator(); iterator.hasNext();) {
-					ItemCategory next = iterator.next();
-					sb.append(next);
-				}
-			}
-		}
-		return sb.toString();
+                    for (Iterator<Item> iterator = items.iterator(); iterator.hasNext(); ) {
+                        sb.append('\n');
+                        for (int i = 0; i < depth + 1; i++) {
+                            sb.append('\t');
+                        }
+                        sb.append(iterator.next().getName());
+                    }
+                }
+                if (subCategoryCount() > 0) {
+                    sb.append(",  ");
+                    sb.append(subCategoryCount());
+                    sb.append(" sub categories: ");
+                    for (Iterator<ItemCategory> iterator = children.iterator(); iterator.hasNext(); ) {
+                        ItemCategory next = iterator.next();
+                        sb.append(next);
+                    }
+                }
+            }
+            return sb.toString();
+        } else {
+            return name;
+        }
 	}
 
 	/**

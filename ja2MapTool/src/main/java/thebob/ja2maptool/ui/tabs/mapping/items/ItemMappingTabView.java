@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 starcatter.
@@ -25,9 +25,14 @@ package thebob.ja2maptool.ui.tabs.mapping.items;
 
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
+
+import java.beans.PropertyDescriptor;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.Map;
 import java.util.ResourceBundle;
+
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -39,237 +44,256 @@ import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.BeanUtilsBean;
 import org.controlsfx.control.PropertySheet;
+import org.controlsfx.property.BeanProperty;
 import org.controlsfx.property.editor.PropertyEditor;
 import thebob.assetmanager.managers.items.Item;
 import thebob.ja2maptool.components.ItemMappingTreeItem;
 import thebob.ja2maptool.components.SimplePropertyItem;
+
 import static thebob.ja2maptool.ui.tabs.mapping.items.ItemMappingTabViewModel.SELECT_MAPPING_LEFT;
 import static thebob.ja2maptool.ui.tabs.mapping.items.ItemMappingTabViewModel.SELECT_MAPPING_LIST;
 import static thebob.ja2maptool.ui.tabs.mapping.items.ItemMappingTabViewModel.SELECT_MAPPING_RIGHT;
 import static thebob.ja2maptool.ui.tabs.mapping.items.ItemMappingTabViewModel.UPDATE_MAPPING;
 import static thebob.ja2maptool.ui.tabs.mapping.items.ItemMappingTabViewModel.UPDATE_PROPS_LEFT;
 import static thebob.ja2maptool.ui.tabs.mapping.items.ItemMappingTabViewModel.UPDATE_PROPS_RIGHT;
+
 import thebob.ja2maptool.util.mapping.item.ItemMapping;
 import thebob.ja2maptool.util.mapping.item.Mapping;
 
 public class ItemMappingTabView implements FxmlView<ItemMappingTabViewModel>, Initializable {
 
-	@FXML
-	private PropertySheet props_left;
+    @FXML
+    private PropertySheet props_left;
 
-	@FXML
-	private PropertySheet props_right;
+    @FXML
+    private PropertySheet props_right;
 
-	@FXML
-	private TreeView<String> list_left;
+    @FXML
+    private TreeView<String> list_left;
 
-	@FXML
-	private TreeView<String> list_right;
+    @FXML
+    private TreeView<String> list_right;
 
-	@FXML
-	private ListView<Mapping> mapping_list;
+    @FXML
+    private ListView<Mapping> mapping_list;
 
-	@FXML
-	void onAuto(MouseEvent event) {
-		viewModel.autoMapping();
-	}
+    @FXML
+    void onAuto(MouseEvent event) {
+        viewModel.autoMapping();
+    }
 
-	@FXML
-	void onLoad(MouseEvent event) {
-		FileChooser chooser = new FileChooser();
-		chooser.setTitle("Load mapping");
-		chooser.setInitialDirectory(new File("."));
-		chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("item mapping files", "*.itemmap"));
-		chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("all files", "*.*"));
-		File selectedDirectory = chooser.showOpenDialog(list_left.getScene().getWindow());
-		if (selectedDirectory != null) {
-			viewModel.loadMapping(selectedDirectory.getPath());
-		}
-	}
+    @FXML
+    void onLoad(MouseEvent event) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Load mapping");
+        chooser.setInitialDirectory(new File("."));
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("item mapping files", "*.itemmap"));
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("all files", "*.*"));
+        File selectedDirectory = chooser.showOpenDialog(list_left.getScene().getWindow());
+        if (selectedDirectory != null) {
+            viewModel.loadMapping(selectedDirectory.getPath());
+        }
+    }
 
-	@FXML
-	void onSave(MouseEvent event) {
-		FileChooser chooser = new FileChooser();
-		chooser.setTitle("Save mapping as...");
-		chooser.setInitialDirectory(new File("."));
-		chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("item mapping files", "*.itemmap"));
-		chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("all files", "*.*"));
-		File selectedDirectory = chooser.showSaveDialog(list_left.getScene().getWindow());
-		if (selectedDirectory != null) {
-			viewModel.saveMapping(selectedDirectory.getPath());
-		}
-	}
+    @FXML
+    void onSave(MouseEvent event) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Save mapping as...");
+        chooser.setInitialDirectory(new File("."));
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("item mapping files", "*.itemmap"));
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("all files", "*.*"));
+        File selectedDirectory = chooser.showSaveDialog(list_left.getScene().getWindow());
+        if (selectedDirectory != null) {
+            viewModel.saveMapping(selectedDirectory.getPath());
+        }
+    }
 
-	// MVVMFX inject
-	@InjectViewModel
-	private ItemMappingTabViewModel viewModel;
+    // MVVMFX inject
+    @InjectViewModel
+    private ItemMappingTabViewModel viewModel;
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
 
-		// setup main lists
-		list_left.setRoot(viewModel.getRootLeft());
-		list_right.setRoot(viewModel.getRootRight());
+        // setup main lists
+        list_left.setRoot(viewModel.getRootLeft());
+        list_right.setRoot(viewModel.getRootRight());
 
-		list_left.setOnMouseClicked(event -> {
-			TreeItem<String> selectedNode = list_left.getSelectionModel().getSelectedItem();
-			if (selectedNode != null && selectedNode.isLeaf()) {
-				ItemMappingTreeItem mappedNode = (ItemMappingTreeItem) selectedNode;
-				viewModel.selectedSource(mappedNode.getItem());
-			}
-		});
+        list_left.setOnMouseClicked(event -> {
+            TreeItem<String> selectedNode = list_left.getSelectionModel().getSelectedItem();
+            if (selectedNode != null && selectedNode.isLeaf()) {
+                ItemMappingTreeItem mappedNode = (ItemMappingTreeItem) selectedNode;
+                viewModel.selectedSource(mappedNode.getItem());
+            }
+        });
 
-		// setup main list events
-		list_right.setOnMouseClicked(event -> {
-			Item itemLeft = null;
-			Item itemRight = null;
+        // setup main list events
+        list_right.setOnMouseClicked(event -> {
+            Item itemLeft = null;
+            Item itemRight = null;
 
-			TreeItem<String> selectedNodeLeft = list_left.getSelectionModel().getSelectedItem();
-			if (selectedNodeLeft != null && selectedNodeLeft.isLeaf()) {
-				ItemMappingTreeItem mappedNode = (ItemMappingTreeItem) selectedNodeLeft;
-				itemLeft = mappedNode.getItem();
-			}
+            TreeItem<String> selectedNodeLeft = list_left.getSelectionModel().getSelectedItem();
+            if (selectedNodeLeft != null && selectedNodeLeft.isLeaf()) {
+                ItemMappingTreeItem mappedNode = (ItemMappingTreeItem) selectedNodeLeft;
+                itemLeft = mappedNode.getItem();
+            }
 
-			TreeItem<String> selectedNodeRight = list_right.getSelectionModel().getSelectedItem();
-			if (selectedNodeRight != null && selectedNodeRight.isLeaf()) {
-				ItemMappingTreeItem mappedNode = (ItemMappingTreeItem) selectedNodeRight;
-				itemRight = mappedNode.getItem();
-			}
+            TreeItem<String> selectedNodeRight = list_right.getSelectionModel().getSelectedItem();
+            if (selectedNodeRight != null && selectedNodeRight.isLeaf()) {
+                ItemMappingTreeItem mappedNode = (ItemMappingTreeItem) selectedNodeRight;
+                itemRight = mappedNode.getItem();
+            }
 
-			if (itemLeft != null && itemRight != null) {
-				viewModel.setItemMapping(itemLeft, itemRight, selectedNodeRight);
-			}
-		});
+            if (itemLeft != null && itemRight != null) {
+                viewModel.setItemMapping(itemLeft, itemRight, selectedNodeRight);
+            }
+        });
 
-		list_left.getSelectionModel().selectedIndexProperty().addListener(event -> {
-			updateItemPropsLeft();
-		});
-		list_right.getSelectionModel().selectedIndexProperty().addListener(event -> {
-			updateItemPropsRight();
-		});
+        list_left.getSelectionModel().selectedIndexProperty().addListener(event -> {
+            updateItemPropsLeft();
+        });
+        list_right.getSelectionModel().selectedIndexProperty().addListener(event -> {
+            updateItemPropsRight();
+        });
 
-		// setup prop lists
-		viewModel.setPropsLeft(props_left.getItems());
-		viewModel.setPropsRight(props_right.getItems());
+        // setup prop lists
+        viewModel.setPropsLeft(props_left.getItems());
+        viewModel.setPropsRight(props_right.getItems());
 
-		props_left.setPropertyEditorFactory(item -> {
-			return new PropertyEditor() {
-				@Override
-				public Node getEditor() {
-					return new Label(item.getValue().toString());
-				}
+        props_left.setPropertyEditorFactory(item -> {
+            return new PropertyEditor() {
+                @Override
+                public Node getEditor() {
+                    return new Label(item == null || item.getValue() == null ? "null" : item.getValue().toString());
+                }
 
-				@Override
-				public Object getValue() {
-					return item;
-				}
+                @Override
+                public Object getValue() {
+                    return item;
+                }
 
-				@Override
-				public void setValue(Object value) {
+                @Override
+                public void setValue(Object value) {
 
-				}
-			};
-		});
+                }
+            };
+        });
 
-		props_right.setPropertyEditorFactory(item -> {
-			return new PropertyEditor() {
-				@Override
-				public Node getEditor() {
-					return new Label(item.getValue().toString());
-				}
+        props_right.setPropertyEditorFactory(item -> {
+            return new PropertyEditor() {
+                @Override
+                public Node getEditor() {
+                    return new Label(item == null || item.getValue() == null ? "null" : item.getValue().toString());
+                }
 
-				@Override
-				public Object getValue() {
-					return item;
-				}
+                @Override
+                public Object getValue() {
+                    return item;
+                }
 
-				@Override
-				public void setValue(Object value) {
+                @Override
+                public void setValue(Object value) {
 
-				}
-			};
-		});
+                }
+            };
+        });
 
-		// setup mapping list
-		mapping_list.setItems(viewModel.getMappingList());
-		mapping_list.setOnMouseClicked(event -> {
-			Mapping selectedMapping = mapping_list.getSelectionModel().getSelectedItem();
-			viewModel.showMapping(selectedMapping);
-		});
+        // setup mapping list
+        mapping_list.setItems(viewModel.getMappingList());
+        mapping_list.setOnMouseClicked(event -> {
+            Mapping selectedMapping = mapping_list.getSelectionModel().getSelectedItem();
+            viewModel.showMapping(selectedMapping);
+        });
 
-		mapping_list.setOnKeyPressed( event -> {
-			if(event.getCode().equals(KeyCode.DELETE)){
-				Mapping selectedMapping = mapping_list.getSelectionModel().getSelectedItem();
-				mapping_list.getSelectionModel().clearSelection();
-				if(selectedMapping != null){
-					viewModel.removeMapping(selectedMapping);
-					event.consume();
-				}
-			}
-		} );
+        mapping_list.setOnKeyPressed(event -> {
+            if (event.getCode().equals(KeyCode.DELETE)) {
+                Mapping selectedMapping = mapping_list.getSelectionModel().getSelectedItem();
+                mapping_list.getSelectionModel().clearSelection();
+                if (selectedMapping != null) {
+                    viewModel.removeMapping(selectedMapping);
+                    event.consume();
+                }
+            }
+        });
 
-		// setup events
-		viewModel.subscribe(SELECT_MAPPING_LEFT, (key, value) -> {
-			TreeItem node = (TreeItem) value[0];
-			list_left.getSelectionModel().select(node);
+        // setup events
+        viewModel.subscribe(SELECT_MAPPING_LEFT, (key, value) -> {
+            TreeItem node = (TreeItem) value[0];
+            list_left.getSelectionModel().select(node);
 
-			int index = list_left.getSelectionModel().getSelectedIndex();
-			list_left.getFocusModel().focus(index);
-			list_left.scrollTo(index - 5);
-			list_left.scrollTo(index + 5);
-			list_left.scrollTo(index);
-		});
+            int index = list_left.getSelectionModel().getSelectedIndex();
+            list_left.getFocusModel().focus(index);
+            list_left.scrollTo(index - 5);
+            list_left.scrollTo(index + 5);
+            list_left.scrollTo(index);
+        });
 
-		viewModel.subscribe(SELECT_MAPPING_RIGHT, (key, value) -> {
-			TreeItem node = (TreeItem) value[0];
-			list_right.getSelectionModel().select(node);
+        viewModel.subscribe(SELECT_MAPPING_RIGHT, (key, value) -> {
+            TreeItem node = (TreeItem) value[0];
+            list_right.getSelectionModel().select(node);
 
-			int index = list_right.getSelectionModel().getSelectedIndex();
-			list_right.getFocusModel().focus(index);
-			list_right.scrollTo(index - 5);
-			list_right.scrollTo(index + 5);
-			list_right.scrollTo(index);
-		});
+            int index = list_right.getSelectionModel().getSelectedIndex();
+            list_right.getFocusModel().focus(index);
+            list_right.scrollTo(index - 5);
+            list_right.scrollTo(index + 5);
+            list_right.scrollTo(index);
+        });
 
-		viewModel.subscribe(SELECT_MAPPING_LIST, (key, value) -> {
-			Mapping mapping = (Mapping) value[0];
-			mapping_list.scrollTo(mapping);
-			mapping_list.getSelectionModel().select(mapping);
-		});
+        viewModel.subscribe(SELECT_MAPPING_LIST, (key, value) -> {
+            Mapping mapping = (Mapping) value[0];
+            mapping_list.scrollTo(mapping);
+            mapping_list.getSelectionModel().select(mapping);
+        });
 
-		viewModel.subscribe(UPDATE_MAPPING, (key, value) -> {
-			mapping_list.refresh();
-		});
+        viewModel.subscribe(UPDATE_MAPPING, (key, value) -> {
+            mapping_list.refresh();
+        });
 
-		viewModel.subscribe(UPDATE_PROPS_LEFT, (key, value) -> {
-			updateItemPropsLeft();
-		});
-		viewModel.subscribe(UPDATE_PROPS_RIGHT, (key, value) -> {
-			updateItemPropsRight();
-		});
-	}
+        viewModel.subscribe(UPDATE_PROPS_LEFT, (key, value) -> {
+            updateItemPropsLeft();
+        });
+        viewModel.subscribe(UPDATE_PROPS_RIGHT, (key, value) -> {
+            updateItemPropsRight();
+        });
+    }
 
-	private void updateItemPropsLeft() {
-		TreeItem<String> selectedNode = list_left.getSelectionModel().getSelectedItem();
-		if (selectedNode != null && selectedNode.isLeaf()) {
-			Item item = ((ItemMappingTreeItem) list_left.getSelectionModel().getSelectedItem()).getItem();
-			updateItemProps(item, props_left.getItems());
-		}
-	}
+    private void updateItemPropsLeft() {
+        TreeItem<String> selectedNode = list_left.getSelectionModel().getSelectedItem();
+        if (selectedNode != null && selectedNode.isLeaf()) {
+            Item item = ((ItemMappingTreeItem) list_left.getSelectionModel().getSelectedItem()).getItem();
+            updateItemProps(item, props_left.getItems());
+        }
+    }
 
-	private void updateItemPropsRight() {
-		TreeItem<String> selectedNode = list_right.getSelectionModel().getSelectedItem();
-		if (selectedNode != null && selectedNode.isLeaf()) {
-			Item item = ((ItemMappingTreeItem) list_right.getSelectionModel().getSelectedItem()).getItem();
-			updateItemProps(item, props_right.getItems());
-		}
-	}
+    private void updateItemPropsRight() {
+        TreeItem<String> selectedNode = list_right.getSelectionModel().getSelectedItem();
+        if (selectedNode != null && selectedNode.isLeaf()) {
+            Item item = ((ItemMappingTreeItem) list_right.getSelectionModel().getSelectedItem()).getItem();
+            updateItemProps(item, props_right.getItems());
+        }
+    }
 
-	private void updateItemProps(Item item, ObservableList<PropertySheet.Item> propList) {
-		propList.clear();
+    private void updateItemProps(Item item, ObservableList<PropertySheet.Item> propList) {
+        BeanUtilsBean beanUtilsBean = new BeanUtilsBean();
 
-		propList.add(new SimplePropertyItem("Name", item.getName(), "General", ""));
-		propList.add(new SimplePropertyItem("Coolness", item.getCoolness() + "", "General", ""));
-	}
+        propList.clear();
+
+        //propList.add(new SimplePropertyItem("Name", item.getName(), "General", ""));
+        //propList.add(new SimplePropertyItem("Coolness", item.getCoolness() + "", "General", ""));
+
+        PropertyDescriptor[] propertyDescriptors = beanUtilsBean.getPropertyUtils().getPropertyDescriptors(item);
+        for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+            try {
+                BeanProperty beanProperty = new BeanProperty(item, propertyDescriptor);
+                if (beanProperty.getValue() != null) {
+                    propList.add(beanProperty);
+                }
+            } catch (NullPointerException e) {
+                // skip properties that cause problems
+            }
+        }
+    }
 }

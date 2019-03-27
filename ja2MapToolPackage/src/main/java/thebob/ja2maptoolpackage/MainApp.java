@@ -161,7 +161,7 @@ public class MainApp extends MvvmfxGuiceApplication {
         final Scene scene = new Scene(view);
 
         stage.setScene(scene);
-        stage.setTitle("JA2 1.13 Map Tool (Alpha15)");
+        stage.setTitle("JA2 1.13 Map Tool (Alpha16)");
         stage.show();
     }
 

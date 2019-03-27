@@ -40,6 +40,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import thebob.assetloader.sti.StiLoader;
+import thebob.assetloader.vfs.accessors.VFSAccessor;
 import thebob.assetloader.xml.XmlLoader;
 import thebob.assetmanager.AssetManager;
 import thebob.assetmanager.managers.items.Item;
@@ -135,9 +136,9 @@ public class ItemManager extends VFSContextBoundManager {
 			StiLoader asset = new StiLoader();
 
 			// System.out.print("thebob.assetmanager.managers.ItemManager.loadItemImages(): loading " + assetName);
-			ByteBuffer assetData = context.getVfs().getFile(assetName);
-			if (assetData != null) {
-				asset.loadAsset(assetData);
+			VFSAccessor fileAccess = context.getVfs().getFileAccess(assetName);
+			if (fileAccess != null) {
+				asset.loadAsset(fileAccess);
 				// System.out.println("\t->  payload=" + asset.getImageCount());
 				imageCache.put(i, asset);
 			} else {

@@ -56,6 +56,7 @@ public class Item {
 	int imageType;
 	int imageId;
 	Image image = null;
+	boolean imageLoadFailed = false;
 
 	int clothesType;
 	int foodType;
@@ -104,17 +105,18 @@ public class Item {
 	}
 
 	public Image getImage() {
-		if (image == null) {
+		if (image == null && !imageLoadFailed) {
 			loadImage();
 		}
 		return image;
 	}
 
 	private void loadImage() {
-		int width = loader.getImageWidth(imageId);
-		int height = loader.getImageHeight(imageId);
-		// TODO: do this once per file, in stiloader or tileloader (right now we're createing multiple JavaFX Images per STI subimage instance)
-		image = ImageAdapter.convertStiImage(width, height, loader.getImage(imageId), loader.getPalette());
+		image = loader.getJFXImage(imageId);
+		if(image == null){
+			imageLoadFailed = true;
+			System.err.println("Failed loading image id: " + imageId + " for " + this + ", from: " + loader.toString());
+		}
 	}
 
 	public int getId() {
@@ -304,7 +306,7 @@ public class Item {
 
 	@Override
 	public String toString() {
-		return "Item{" + "id=" + id + ", name=" + name + ", parentCategory=" + parentCategory.getName() + '}';
+		return "Item{" + "id=" + id + ", name=" + name + ", category=" + parentCategory.getNameWithPath() + '}';
 	}
 
 	

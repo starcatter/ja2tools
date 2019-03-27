@@ -94,6 +94,10 @@ public class ItemCategory {
 		return name;
 	}
 
+	public String getNameWithPath() {
+		return parent != null ?  parent.getNameWithPath() + "->" + name : name;
+	}
+
 	public ItemCategory(String name, ItemCategory parent) {
 		this.name = name;
 		this.parent = parent;

@@ -40,7 +40,7 @@ public class TileArray {
     public TileArray(VFSAccessor file, int tileType) {
 	this.file=file;
 	
-        loader.loadAsset(file.getBytes());
+        loader.loadAsset(file);
         int tileCount = loader.getImageCount();
         
         tileArray = new Tile[tileCount];

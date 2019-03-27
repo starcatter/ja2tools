@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 the_bob.
@@ -23,28 +23,28 @@
  */
 package thebob.assetloader.sti;
 
+import javolution.io.Union;
+import thebob.assetloader.common.AutoLoadingStruct;
+import thebob.assetloader.common.ImageAdapter;
+import thebob.assetloader.slf.SlfLoader;
+import thebob.assetloader.vfs.accessors.VFSAccessor;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javolution.io.Struct;
-import javolution.io.Union;
-import thebob.assetloader.common.AutoLoadingStruct;
-import thebob.assetloader.slf.SlfLoader;
+
+import static thebob.assetloader.sti.HImageConstants.iCOMPRESS_RUN_MASK;
+import static thebob.assetloader.sti.HImageConstants.iCOMPRESS_TRANSPARENT;
 import static thebob.assetloader.sti.StiConstants.*;
-import static thebob.assetloader.sti.HImageConstants.*;
 
 /**
- *
- *
  * BufferedImage img = ImageIO.read(new ByteArrayInputStream(bytes));
- *
  *
  * @author the_bob
  */
@@ -113,7 +113,7 @@ class STCIHeader extends AutoLoadingStruct {
     Unsigned16 usHeight = new Unsigned16();
     Unsigned16 usWidth = new Unsigned16();
     STCIHeaderFormatInfo format = inner(new STCIHeaderFormatInfo());
-    Unsigned8 ubDepth = new Unsigned8();	// size in bits of one pixel as stored in the file
+    Unsigned8 ubDepth = new Unsigned8();    // size in bits of one pixel as stored in the file
     Unsigned32 uiAppDataSize = new Unsigned32();
     Unsigned8[] cUnused = array(new Unsigned8[11]); // was [15] in JA2, shortened to match required 64B size
 
@@ -204,7 +204,7 @@ class HImageConstants {
     public static final int iCOMPRESS_TRANSPARENT = 0x80;
     public static final int iCOMPRESS_RUN_MASK = 0x7F;
 
-// Defines for type of file readers
+    // Defines for type of file readers
     public static final int PCX_FILE_READER = 0x1;
     public static final int TGA_FILE_READER = 0x2;
     public static final int STCI_FILE_READER = 0x4;
@@ -213,11 +213,11 @@ class HImageConstants {
     public static final int JPC_FILE_READER = 0x20;
     public static final int UNKNOWN_FILE_READER = 0x200;
 
-// Defines for buffer bit depth
+    // Defines for buffer bit depth
     public static final int BUFFER_8BPP = 0x1;
     public static final int BUFFER_16BPP = 0x2;
 
-// Defines for image charactoristics
+    // Defines for image charactoristics
     public static final int IMAGE_COMPRESSED = 0x0001;
     public static final int IMAGE_TRLECOMPRESSED = 0x0002;
     public static final int IMAGE_PALETTE = 0x0004;
@@ -248,7 +248,7 @@ class StiConstants {
     public static final int STCI_ALPHA = 0x0002;
     public static final int STCI_TRANSPARENT = 0x0001;
 
-// ETRLE defines
+    // ETRLE defines
     public static final int COMPRESS_TRANSPARENT = 0x80;
     public static final int COMPRESS_NON_TRANSPARENT = 0x00;
     public static final int COMPRESS_RUN_LIMIT = 0x7F;
@@ -262,6 +262,8 @@ class StiConstants {
 
 public class StiLoader {
 
+    private String file;
+
     private long fileLength;
     ByteBuffer buffer;
 
@@ -272,32 +274,52 @@ public class StiLoader {
     private STCIPaletteElement[] palette = null;
     private ETRLEObject[] objects = null;
 
-    public int getTransparentValue(){
+    private javafx.scene.image.Image[] jfxImageCache;
+
+    public int getTransparentValue() {
         return (int) header.uiTransparentValue.get();
     }
-    
-    public int getImageWidth(int index){
+
+    public int getImageWidth(int index) {
         return objects == null ? header.usWidth.get() : objects[index].usWidth.get();
     }
-    
-    public int getImageHeight(int index){
+
+    public int getImageHeight(int index) {
         return objects == null ? header.usHeight.get() : objects[index].usHeight.get();
     }
-    
-    public int getImageOffsetX(int index){
+
+    public int getImageOffsetX(int index) {
         return objects == null ? 0 : objects[index].sOffsetX.get();
     }
-    
-    public int getImageOffsetY(int index){
+
+    public int getImageOffsetY(int index) {
         return objects == null ? 0 : objects[index].sOffsetY.get();
     }
-    
+
     public int getImageCount() {
         if (objects == null) {
             return 1;
         } else {
             return objects.length;
         }
+    }
+
+
+    public javafx.scene.image.Image getJFXImage(int index) {
+        if (jfxImageCache == null) {
+            jfxImageCache = new javafx.scene.image.Image[getImageCount()];
+        }
+
+        if (index >= getImageCount()) {
+            // System.err.println("Requested image index out of bounds: " + index + "/"+(getImageCount()-1));
+            return null;
+        }
+
+        if (jfxImageCache[index] == null) {
+            jfxImageCache[index] = ImageAdapter.convertStiImage(getImageWidth(index), getImageHeight(index), getImage(index), getPalette());
+        }
+
+        return jfxImageCache[index];
     }
 
     public byte[] getImage(int index) {
@@ -320,7 +342,10 @@ public class StiLoader {
         return paletteArray;
     }
 
+    // ---
+
     public boolean loadFile(String fileName) {
+        file = fileName;
         try (final RandomAccessFile file = new RandomAccessFile(fileName, "r")) {
             fileLength = file.length();
 
@@ -337,7 +362,12 @@ public class StiLoader {
         return true;
     }
 
-    public boolean loadAsset(ByteBuffer inputBuffer) {
+    public boolean loadAsset(VFSAccessor accessor) {
+        file = accessor.toString();
+        return loadAsset(accessor.getBytes());
+    }
+
+    private boolean loadAsset(ByteBuffer inputBuffer) {
         buffer = inputBuffer;
 
         if (buffer.limit() < STCI_HEADER_SIZE) {
@@ -368,7 +398,7 @@ public class StiLoader {
             if (!STCILoadIndexed()) {
                 return (false);
             }
-        } else {	// unsupported type of data, or the right flags weren't set!
+        } else {    // unsupported type of data, or the right flags weren't set!
             throw new UnsupportedOperationException("Unsupported file type.");  // throw here cause we should've caught the bogus data earlier!
         }
 
@@ -380,6 +410,8 @@ public class StiLoader {
 
         return true;
     }
+
+    // ---
 
     private boolean STCILoadRGB() {
 
@@ -503,4 +535,11 @@ public class StiLoader {
         return decodeImage(objects[index]);
     }
 
+    @Override
+    public String toString() {
+        return "StiLoader{" +
+                "file='" + file + '\'' +
+                ", imageCount=" + getImageCount() +
+                '}';
+    }
 }

@@ -31,6 +31,8 @@ import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.ViewTuple;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -41,13 +43,20 @@ import javafx.stage.Stage;
 import javax.inject.Inject;
 import thebob.assetloader.map.core.MapData;
 import thebob.assetmanager.AssetManager;
+import thebob.ja2maptool.scopes.MainScope;
 import thebob.ja2maptool.scopes.VfsAssetScope;
+import thebob.ja2maptool.scopes.map.ConvertMapScope;
 import thebob.ja2maptool.scopes.map.MapCompositorScope;
 import thebob.ja2maptool.scopes.map.MapScope;
+import thebob.ja2maptool.scopes.mapping.ItemMappingScope;
 import thebob.ja2maptool.scopes.view.StiViewerScope;
 import thebob.ja2maptool.ui.tabs.compositor.CompositorTabView;
+import thebob.ja2maptool.ui.tabs.convert.ConvertMapTabView;
+import thebob.ja2maptool.ui.tabs.mapping.items.ItemMappingTabView;
 import thebob.ja2maptool.ui.tabs.viewers.sti.StiViewerTabView;
 import thebob.ja2maptool.ui.tabs.viewers.sti.StiViewerTabViewModel;
+
+import static thebob.ja2maptool.ui.tabs.convert.ConvertMapTabViewModel.ITEM_MAPPING_LOADED;
 
 public class IntroTabView implements FxmlView<IntroTabViewModel>, Initializable {
 
@@ -127,6 +136,66 @@ public class IntroTabView implements FxmlView<IntroTabViewModel>, Initializable 
 
     }
 
+    private void showConverter() {
+
+        VfsAssetScope vfsAssets = viewModel.getVfsAssets();
+
+        ConvertMapScope scope = new ConvertMapScope();
+
+        //ItemMappingScope mappingScope = ItemMappingScope.loadFromFile("C:\\JA2 Workshop\\JA2\\Tools\\Map Tool\\1.13 - AIMNAS.itemmap", vfsAssets);
+        //scope.setItemMapping(mappingScope);
+
+        ViewTuple tabTouple = FluentViewLoader.fxmlView(ConvertMapTabView.class)
+                .context(context) // VfsAssetScope, MainScope
+                .providedScopes(scope)
+                .load();
+
+        AnchorPane pane = intro_pane;
+        Parent compositor = tabTouple.getView();
+        pane.getChildren().clear();
+        pane.getChildren().add(compositor);
+
+        AnchorPane.setBottomAnchor(compositor, 0d);
+        AnchorPane.setTopAnchor(compositor, 0d);
+        AnchorPane.setLeftAnchor(compositor, 0d);
+        AnchorPane.setRightAnchor(compositor, 0d);
+
+        AssetManager assets = vfsAssets.getOrLoadAssetManager("C:\\Code\\JA2\\Data\\", "vfs_config.UC113.ini");
+//        AssetManager assets = vfsAssets.getOrLoadAssetManager("C:\\Code\\JA2\\Data\\", "vfs_config.JA2113Wildfire607.ini");
+//        AssetManager assets = vfsAssets.getOrLoadAssetManager("C:\\Games\\JA2.8578\\", "vfs_config.JA2113AIMNAS-WF.ini");
+        MapData mapData = assets.getMaps().loadMap("\\maps\\c13.dat");
+
+        AssetManager assets2 = vfsAssets.getOrLoadAssetManager("C:\\Code\\JA2\\Data\\", "vfs_config.JA2113AIMNAS.ini");
+
+        scope.getMap().setMapName("test map");
+        scope.getMap().setMapAssets(assets);
+        scope.getMap().setTilesetId(mapData.getSettings().iTilesetID);
+        scope.getMap().setTileset(assets.getTilesets().getTileset(mapData.getSettings().iTilesetID));
+        scope.getMap().setMapData(mapData);
+        scope.getMap().publish(MapScope.MAP_UPDATED);
+
+//        scope.setItemMapping(mappingScope);
+//        scope.publish(ITEM_MAPPING_LOADED);
+    }
+
+    private void showMapper() {
+        VfsAssetScope vfsAssets = viewModel.getVfsAssets();
+
+        AssetManager assets = vfsAssets.getOrLoadAssetManager("D:\\NetBeansProjects\\JA113.data\\gameData", "vfs_config.JA2113AIMNAS.ini");
+        AssetManager assets2 = vfsAssets.getOrLoadAssetManager("D:\\NetBeansProjects\\JA113.data\\gameData", "vfs_config.UC113.ini");
+
+
+        Platform.runLater(()->{
+            ItemMappingScope itemMappingScope = new ItemMappingScope();
+
+            itemMappingScope.setSourceAssets(assets);
+            itemMappingScope.setTargetAssets(assets2);
+
+            viewModel.getMainScreen().publish(MainScope.NEW_TAB, ItemMappingTabView.class, "Map items", itemMappingScope);
+            viewModel.getMainScreen().registerItemMappingScope(itemMappingScope);
+        });
+    }
+
     // MVVMFX inject
     @InjectViewModel
     private IntroTabViewModel viewModel;
@@ -140,7 +209,8 @@ public class IntroTabView implements FxmlView<IntroTabViewModel>, Initializable 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         //showLogo();
-        //showCompositor();
+        //showConverter();
+        //showMapper();
     }
 
 }

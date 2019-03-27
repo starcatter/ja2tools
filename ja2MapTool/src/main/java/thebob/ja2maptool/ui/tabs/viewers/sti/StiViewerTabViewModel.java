@@ -33,7 +33,6 @@ import javafx.scene.image.Image;
 import thebob.assetloader.common.ImageAdapter;
 import thebob.assetloader.sti.StiLoader;
 import thebob.ja2maptool.scopes.view.StiViewerScope;
-import thebob.ja2maptool.scopes.view.VfsBrowserScope;
 
 /**
  *
@@ -58,8 +57,8 @@ public class StiViewerTabViewModel implements ViewModel {
     public void initialize() {
 	if (scope.getFilePath() != null) {
 	    loader.loadFile(scope.getFilePath());
-	} else if (scope.getFileBytes() != null) {
-	    loader.loadAsset(scope.getFileBytes());
+	} else if (scope.getVfsAccessor() != null) {
+	    loader.loadAsset(scope.getVfsAccessor());
 	} else {
 
 	}

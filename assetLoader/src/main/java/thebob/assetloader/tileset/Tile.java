@@ -64,9 +64,8 @@ public class Tile {
         height = loader.getImageHeight(index);
         offsetX = loader.getImageOffsetX(index);
         offsetY = loader.getImageOffsetY(index);
-        
-	// TODO: do this once per file, in stiloader or tileloader        
-        image = ImageAdapter.convertStiImage(width, height, loader.getImage(index), loader.getPalette());
+
+        image = loader.getJFXImage(index);
     }
 
     public int getWidth() {

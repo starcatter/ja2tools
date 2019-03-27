@@ -23,6 +23,7 @@
  */
 package thebob.ja2maptool.components;
 
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
@@ -38,9 +39,18 @@ public class ItemMappingTreeItem extends TreeItem<String> {
     Item item;
 
     public ItemMappingTreeItem(Item item) {
-        super(item.getName(), new VBox(
-                new ImageView(item.getImage()), new Label(String.valueOf(item.getId())))
-        );
+        super();
+
+        Label label = new Label(String.valueOf(item.getId()));
+        label.setAlignment(Pos.CENTER);
+
+        ImageView imageView = new ImageView(item.getImage());
+
+        VBox info = new VBox(imageView, label);
+
+        setValue(item.getName());
+        setGraphic(info);
+
         this.item = item;
     }
 

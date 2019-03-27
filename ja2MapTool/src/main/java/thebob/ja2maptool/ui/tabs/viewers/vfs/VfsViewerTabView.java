@@ -200,7 +200,7 @@ public class VfsViewerTabView implements FxmlView<VfsViewerTabViewModel>, Initia
 
     private void loadStiPreview(VFSAccessor source) {
 	StiViewerScope scope = new StiViewerScope();
-	scope.setFileBytes(source.getBytes());
+	scope.setVfsAccessor(source);
 
 	ViewTuple<StiViewerTabView, StiViewerTabViewModel> selectorTouple = FluentViewLoader.fxmlView(StiViewerTabView.class)
 		.providedScopes(scope)
